@@ -1,0 +1,128 @@
+/*
+ * Copyright 2016-present The Material Motion Authors. All Rights Reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/*
+ * This Gradle script does 4 things that enable local dependencies.
+ *
+ * 1. Ensure config file exists.
+ * 2. Substitute each dependencies declared in the file for local versions.
+ * 3. Publish each local dependencies on every build.
+ * 4. Alert the user.
+ */
+
+def config = new File('local.dependencies')
+def substitutions = [] as Set<Dependency>
+
+/* 1. Ensure local.dependencies exists */
+
+config.exists() || config << new File('.local.dependencies.template').text
+
+/* 2. Substitute each dependencies declared in local.dependencies with the ":local" version. */
+
+subprojects {
+  repositories {
+    mavenLocal()
+  }
+
+  def trim = { line ->
+    def comment = line.indexOf('#')
+    if (comment != -1) {
+      line = line.substring(0, comment)
+    }
+    line.trim()
+  }
+
+  configurations.all {
+    List<Dependency> localDependencies = (
+      config as String[]
+    ).collect {
+      def line = trim it
+      if (line) {
+        this.project.dependencies.create("$line:local")
+      }
+    }.findAll()
+
+    resolutionStrategy.dependencySubstitution.all { DependencySubstitution dependency ->
+      if (dependency.requested instanceof ModuleComponentSelector) {
+        ModuleComponentSelector requested = dependency.requested;
+
+        Dependency local = localDependencies.find {
+          it.group == requested.group && it.name == requested.module
+        }
+
+        if (local) {
+          substitutions << local
+          dependency.useTarget([
+            group  : local.group,
+            name   : local.name,
+            version: local.version,
+          ])
+          logger.info("Substituded local dependency for: $requested.")
+        }
+      }
+    }
+  }
+}
+
+/* 3. Publish each local dependencies's changes to the local maven repository on every build. */
+
+subprojects {
+  afterEvaluate {
+    preBuild.dependsOn installLocalDependencies
+  }
+
+  task installLocalDependencies << {
+    configurations
+      .collectMany { it.allDependencies }
+      .unique()
+      .each { Dependency dependency ->
+      if (substitutions.find { it.group == dependency.group && it.name == dependency.name }) {
+        logger.lifecycle("Installing $dependency.group:$dependency.name")
+        logger.info(
+          "Executing \"./install-local-dependency.sh $dependency.group $dependency.name\"")
+
+        def log = new File("${getTemporaryDir()}/${dependency.group}/${dependency.name}.log")
+        log.parentFile.mkdirs()
+        def out = new FileOutputStream(log)
+        logger.info("Streaming output to $log")
+
+        def result = exec {
+          commandLine './install-local-dependency.sh'
+          args dependency.group, dependency.name
+          standardOutput out
+          errorOutput out
+          ignoreExitValue true
+        }
+
+        if (result.exitValue != 0) {
+          throw new TaskExecutionException(it,
+            new Exception("Command './install-local-dependency.sh' failed. See $log for output."))
+        }
+      }
+    }
+  }
+}
+
+/* 4. Alert the user that local dependencies are being used. */
+
+gradle.buildFinished {
+  if (substitutions) {
+    logger.lifecycle('Applied {} local dependency substitution(s).', substitutions.size())
+    logger.info(substitutions.inject('') { acc, val ->
+      acc << "\n\t* $val.group:$val.name"
+    }.substring(1))
+  }
+}

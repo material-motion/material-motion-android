@@ -1,0 +1,35 @@
+apply plugin: 'com.android.application'
+
+android {
+  compileSdkVersion 24
+  buildToolsVersion "24.0.3"
+
+  defaultConfig {
+    applicationId "com.google.android.material.motion.streams.sample"
+    minSdkVersion 15
+    targetSdkVersion 24
+    versionCode 1
+    versionName "1.0"
+  }
+
+  lintOptions {
+    abortOnError false
+
+    // Disable gradle dependency check for new versions.
+    // Many of these have been chosen to work with Google Tools.
+    disable 'GradleDependency'
+  }
+
+  buildTypes {
+    release {
+      minifyEnabled true
+      proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+    }
+  }
+}
+
+dependencies {
+  // If you are developing any dependencies locally, also list them in local.dependencies.
+  compile project(':library')
+  compile 'com.android.support:appcompat-v7:24.2.1'
+}

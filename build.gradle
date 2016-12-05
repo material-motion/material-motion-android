@@ -1,0 +1,30 @@
+apply from: 'local-dependency-substitution.gradle'
+apply plugin: "checkstyle"
+
+buildscript {
+  repositories {
+    jcenter()
+  }
+  dependencies {
+    classpath 'com.android.tools.build:gradle:2.2.0'
+    classpath 'com.github.dcendents:android-maven-gradle-plugin:1.4.1'
+    classpath 'com.vanniktech:gradle-android-junit-jacoco-plugin:0.5.0'
+  }
+}
+
+allprojects {
+  repositories {
+    jcenter()
+    maven { url "https://jitpack.io" }
+  }
+}
+
+subprojects {
+  apply plugin: 'checkstyle'
+  apply plugin: 'pmd'
+
+  checkstyle {
+    configFile = rootProject.file('checkstyle.xml')
+    toolVersion = '7.1'
+  }
+}

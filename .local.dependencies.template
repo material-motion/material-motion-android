@@ -1,0 +1,21 @@
+# List local dependencies here to be applied to all projects in this library.
+#
+# ██████╗ ██╗     ███████╗ █████╗ ███████╗███████╗    ██████╗ ███████╗ █████╗ ██████╗
+# ██╔══██╗██║     ██╔════╝██╔══██╗██╔════╝██╔════╝    ██╔══██╗██╔════╝██╔══██╗██╔══██╗
+# ██████╔╝██║     █████╗  ███████║███████╗█████╗      ██████╔╝█████╗  ███████║██║  ██║
+# ██╔═══╝ ██║     ██╔══╝  ██╔══██║╚════██║██╔══╝      ██╔══██╗██╔══╝  ██╔══██║██║  ██║
+# ██║     ███████╗███████╗██║  ██║███████║███████╗    ██║  ██║███████╗██║  ██║██████╔╝
+# ╚═╝     ╚══════╝╚══════╝╚═╝  ╚═╝╚══════╝╚══════╝    ╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝╚═════╝
+#
+# Format:
+#
+# [group]:[name]
+#
+# Example:
+#
+# com.github.material-motion:streams-android
+#
+# These are dependencies defined in your build.gradle for which you would like to reflect any local
+# changes. This is useful if you would like to develop multiple libraries in tandem.
+#
+# You must `Sync Project with Gradle Files` every time you add or remove a local dependency.
