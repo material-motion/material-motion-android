@@ -15,16 +15,35 @@
  */
 package com.google.android.material.motion.streams.sample;
 
-import com.google.android.material.motion.streams.Library;
-
+import android.graphics.Color;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
+import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
+
+import com.google.android.material.motion.observable.IndefiniteObservable.Subscriber;
+import com.google.android.material.motion.observable.IndefiniteObservable.Subscription;
+import com.google.android.material.motion.observable.IndefiniteObservable.Unsubscriber;
+import com.google.android.material.motion.streams.MotionObservable;
+import com.google.android.material.motion.streams.MotionObservable.MotionObserver;
+import com.google.android.material.motion.streams.MotionObservable.MotionState;
+
+import static com.google.android.material.motion.streams.MotionObservable.ACTIVE;
+import static com.google.android.material.motion.streams.MotionObservable.AT_REST;
 
 /**
  * Streams for Android sample Activity.
  */
 public class MainActivity extends AppCompatActivity {
+
+  private static final String[] values = new String[]{
+    "foo", "bar", "baz", "qux"
+  };
+
+  private MotionObserver<String> callback;
+  private int index = 0;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -32,7 +51,76 @@ public class MainActivity extends AppCompatActivity {
 
     setContentView(R.layout.main_activity);
 
-    TextView text = (TextView) findViewById(R.id.text);
-    text.setText(Library.LIBRARY_NAME);
+    final TextView text = (TextView) findViewById(R.id.text);
+    Button nextButton = (Button) findViewById(R.id.next_button);
+    Button unsubscribeButton = (Button) findViewById(R.id.unsubscribe_button);
+
+    MotionObservable<String> observable = new MotionObservable<>(
+      new Subscriber<MotionObserver<String>>() {
+        @Nullable
+        @Override
+        public Unsubscriber subscribe(MotionObserver<String> observer) {
+          registerButtonCallback(observer);
+          return new Unsubscriber() {
+            @Override
+            public void unsubscribe() {
+              unregisterButtonCallback();
+            }
+          };
+        }
+      });
+
+    final Subscription subscription = observable.subscribe(new MotionObserver<String>() {
+      @Override
+      public void next(String value) {
+        text.setText(value);
+      }
+
+      @Override
+      public void state(@MotionState int state) {
+        switch (state) {
+          case AT_REST:
+            text.setTextColor(Color.BLACK);
+            break;
+          case ACTIVE:
+            text.setTextColor(Color.RED);
+            break;
+        }
+      }
+    });
+
+    nextButton.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View v) {
+        if (callback != null) {
+          if (index < values.length) {
+            callback.next(values[index]);
+          }
+
+          if (index + 1 < values.length) {
+            callback.state(ACTIVE);
+          } else {
+            callback.state(AT_REST);
+          }
+
+          index++;
+        }
+      }
+    });
+
+    unsubscribeButton.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View v) {
+        subscription.unsubscribe();
+      }
+    });
+  }
+
+  private void registerButtonCallback(MotionObserver<String> observer) {
+    callback = observer;
+  }
+
+  private void unregisterButtonCallback() {
+    callback = null;
   }
 }
