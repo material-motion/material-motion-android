@@ -16,6 +16,7 @@
 package com.google.android.material.motion.streams;
 
 import android.support.annotation.IntDef;
+import android.support.annotation.Nullable;
 
 import com.google.android.material.motion.observable.IndefiniteObservable;
 import com.google.android.material.motion.observable.Observer;
@@ -76,5 +77,62 @@ public class MotionObservable<T> extends IndefiniteObservable<MotionObserver<T>>
      * A method to handle new state values from upstream.
      */
     void state(@MotionState int state);
+  }
+
+  /**
+   * An operation is able to transform incoming values before choosing whether or not to pass them
+   * downstream.
+   *
+   * @param <T> The incoming value type.
+   * @param <U> The downstream value type.
+   */
+  public interface Operation<T, U> {
+
+    /**
+     * Modifies the given value before passing it downstream, or blocks the value.
+     *
+     * @param observer Downstream.
+     * @param value The value from upstream.
+     */
+    void next(MotionObserver<U> observer, T value);
+  }
+
+  /**
+   * A light-weight operator builder.
+   * <p>
+   * This is the preferred method for building new operators. This builder can be used to create
+   * any operator that only needs to modify or block values. All state events are forwarded
+   * along.
+   *
+   * @see <a href="https://material-motion.github.io/material-motion/starmap/specifications/streams/operators/$._operator">The
+   * operator() specification</a>
+   */
+  public <U> MotionObservable<U> operator(final Operation<T, U> operation) {
+    final MotionObservable<T> upstream = MotionObservable.this;
+
+    return new MotionObservable<>(new Subscriber<MotionObserver<U>>() {
+      @Nullable
+      @Override
+      public Unsubscriber subscribe(final MotionObserver<U> observer) {
+        final Subscription subscription = upstream.subscribe(new MotionObserver<T>() {
+          @Override
+          public void next(T value) {
+            operation.next(observer, value);
+          }
+
+          @Override
+          public void state(@MotionState int state) {
+            observer.state(state);
+          }
+        });
+
+        return new Unsubscriber() {
+          @Override
+          public void unsubscribe() {
+            subscription.unsubscribe();
+          }
+        };
+      }
+    });
   }
 }

@@ -16,9 +16,13 @@
 package com.google.android.material.motion.streams.sample;
 
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
+import android.text.Spannable;
+import android.text.SpannableString;
+import android.text.style.StyleSpan;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -29,6 +33,7 @@ import com.google.android.material.motion.observable.IndefiniteObservable.Unsubs
 import com.google.android.material.motion.streams.MotionObservable;
 import com.google.android.material.motion.streams.MotionObservable.MotionObserver;
 import com.google.android.material.motion.streams.MotionObservable.MotionState;
+import com.google.android.material.motion.streams.MotionObservable.Operation;
 
 import static com.google.android.material.motion.streams.MotionObservable.ACTIVE;
 import static com.google.android.material.motion.streams.MotionObservable.AT_REST;
@@ -55,13 +60,15 @@ public class MainActivity extends AppCompatActivity {
     Button nextButton = (Button) findViewById(R.id.next_button);
     Button unsubscribeButton = (Button) findViewById(R.id.unsubscribe_button);
 
-    MotionObservable<String> observable = new MotionObservable<>(
+    final MotionObservable<String> observable = new MotionObservable<>(
       new Subscriber<MotionObserver<String>>() {
+
         @Nullable
         @Override
         public Unsubscriber subscribe(MotionObserver<String> observer) {
           registerButtonCallback(observer);
           return new Unsubscriber() {
+
             @Override
             public void unsubscribe() {
               unregisterButtonCallback();
@@ -70,9 +77,17 @@ public class MainActivity extends AppCompatActivity {
         }
       });
 
-    final Subscription subscription = observable.subscribe(new MotionObserver<String>() {
+    final Subscription subscription = observable.operator(new Operation<String, CharSequence>() {
+
       @Override
-      public void next(String value) {
+      public void next(MotionObserver<CharSequence> observer, String value) {
+        CharSequence charSequence = italicizeAndCapitalize(value);
+        observer.next(charSequence);
+      }
+    }).subscribe(new MotionObserver<CharSequence>() {
+
+      @Override
+      public void next(CharSequence value) {
         text.setText(value);
       }
 
@@ -114,6 +129,12 @@ public class MainActivity extends AppCompatActivity {
         subscription.unsubscribe();
       }
     });
+  }
+
+  private CharSequence italicizeAndCapitalize(String value) {
+    Spannable spannable = new SpannableString(value.toUpperCase());
+    spannable.setSpan(new StyleSpan(Typeface.ITALIC), 0, spannable.length(), 0);
+    return spannable;
   }
 
   private void registerButtonCallback(MotionObserver<String> observer) {
