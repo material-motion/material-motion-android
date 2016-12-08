@@ -23,6 +23,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.style.StyleSpan;
+import android.util.Property;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -91,11 +92,12 @@ public class MainActivity extends AppCompatActivity {
           return italicizeAndCapitalize(value);
         }
       })
+      .write(text, TEXT_PROPERTY)
       .subscribe(new MotionObserver<CharSequence>() {
 
         @Override
         public void next(CharSequence value) {
-          text.setText(value);
+          // No-op. Handled by write() above.
         }
 
         @Override
@@ -151,4 +153,17 @@ public class MainActivity extends AppCompatActivity {
   private void unregisterButtonCallback() {
     callback = null;
   }
+
+  private static Property<TextView, CharSequence> TEXT_PROPERTY = new Property<TextView, CharSequence>(CharSequence.class, "text") {
+
+    @Override
+    public CharSequence get(TextView object) {
+      return object.getText();
+    }
+
+    @Override
+    public void set(TextView object, CharSequence value) {
+      object.setText(value);
+    }
+  };
 }

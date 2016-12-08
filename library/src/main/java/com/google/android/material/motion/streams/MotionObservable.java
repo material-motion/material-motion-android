@@ -17,6 +17,7 @@ package com.google.android.material.motion.streams;
 
 import android.support.annotation.IntDef;
 import android.support.annotation.Nullable;
+import android.util.Property;
 
 import com.google.android.material.motion.observable.IndefiniteObservable;
 import com.google.android.material.motion.observable.Observer;
@@ -161,7 +162,7 @@ public class MotionObservable<T> extends IndefiniteObservable<MotionObserver<T>>
   }
 
   /**
-   * Transform the items emitted by an Observable by applying a function to each item.
+   * Transforms the items emitted by an Observable by applying a function to each item.
    *
    * @see <a href="https://material-motion.github.io/material-motion/starmap/specifications/streams/operators/$._map">The
    * filter() specification</a>
@@ -176,7 +177,7 @@ public class MotionObservable<T> extends IndefiniteObservable<MotionObserver<T>>
   }
 
   /**
-   * Only emit those values from an Observable that satisfy a predicate.
+   * Only emits those values from an Observable that satisfy a predicate.
    *
    * @see <a href="https://material-motion.github.io/material-motion/starmap/specifications/streams/operators/$._filter">The
    * filter() specification</a>
@@ -188,6 +189,22 @@ public class MotionObservable<T> extends IndefiniteObservable<MotionObserver<T>>
         if (predicate.evaluate(value)) {
           observer.next(value);
         }
+      }
+    });
+  }
+
+  /**
+   * Writes the values from an Observable onto the given target and property.
+   *
+   * @see <a href="https://material-motion.github.io/material-motion/starmap/specifications/streams/operators/$.write">The
+   * write() specification</a>
+   */
+  public <O> MotionObservable<T> write(final O target, final Property<O, T> property) {
+    return operator(new Operation<T, T>() {
+      @Override
+      public void next(MotionObserver<T> observer, T value) {
+        property.set(target, value);
+        observer.next(value);
       }
     });
   }
