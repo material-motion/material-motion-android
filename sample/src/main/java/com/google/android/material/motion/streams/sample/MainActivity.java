@@ -77,7 +77,7 @@ public class MainActivity extends AppCompatActivity {
         }
       });
 
-    final Subscription subscription = observable
+    MotionObservable<CharSequence> stream = observable
       .filter(new MotionObservable.Predicate<String>() {
 
         @Override
@@ -92,7 +92,9 @@ public class MainActivity extends AppCompatActivity {
           return italicizeAndCapitalize(value);
         }
       })
-      .write(text, TEXT_PROPERTY)
+      .write(text, TEXT_PROPERTY);
+
+    final Subscription subscription = stream
       .subscribe(new MotionObserver<CharSequence>() {
 
         @Override
