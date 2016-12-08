@@ -69,32 +69,32 @@ public class MotionObservable<T> extends IndefiniteObservable<MotionObserver<T>>
   /**
    * An observer with an additional {@link #state(int)} method.
    */
-  public interface MotionObserver<T> extends Observer<T> {
+  public static abstract class MotionObserver<T> implements Observer<T> {
 
     @Override
-    void next(T value);
+    public abstract void next(T value);
 
     /**
      * A method to handle new incoming state values.
      */
-    void state(@MotionState int state);
+    public abstract void state(@MotionState int state);
   }
 
   /**
    * An operation is able to transform incoming values before choosing whether or not to pass them
-   * to the observer.
+   * downstream.
    *
    * @param <T> The incoming value type.
-   * @param <U> The observer value type.
+   * @param <U> The downstream value type.
    */
-  public interface Operation<T, U> {
+  public static abstract class Operation<T, U> {
 
     /**
      * Transforms the incoming value before passing it to the observer, or blocks the value.
      *
      * @param value The incoming value.
      */
-    void next(MotionObserver<U> observer, T value);
+    public abstract void next(MotionObserver<U> observer, T value);
   }
 
   /**
@@ -103,23 +103,23 @@ public class MotionObservable<T> extends IndefiniteObservable<MotionObserver<T>>
    * @param <T> The incoming value type.
    * @param <U> The downstream value type.
    */
-  public interface Transformation<T, U> {
+  public static abstract class Transformation<T, U> {
 
     /**
      * Transforms the given value.
      */
-    U transform(T value);
+    public abstract U transform(T value);
   }
 
   /**
    * A predicate evaluates whether to pass a value downstream.
    */
-  public interface Predicate<T> {
+  public static abstract class Predicate<T> {
 
     /**
      * Evaluates whether to pass the value.
      */
-    boolean evaluate(T value);
+    public abstract boolean evaluate(T value);
   }
 
   /**
