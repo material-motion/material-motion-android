@@ -120,9 +120,9 @@ public class MotionObservable<T> extends IndefiniteObservable<MotionObserver<T>>
   }
 
   /**
-   * An inline property that can be read into a MotionObservable stream.
+   * A property that can be read into a MotionObservable stream.
    */
-  public static abstract class InlineReadable<T> {
+  public static abstract class ScopedReadable<T> {
 
     /**
      * Reads the property's value.
@@ -131,14 +131,32 @@ public class MotionObservable<T> extends IndefiniteObservable<MotionObserver<T>>
   }
 
   /**
-   * An inline property that can be written from a MotionObservable stream.
+   * A property that can be written from a MotionObservable stream.
    */
-  public static abstract class InlineWritable<T> {
+  public static abstract class ScopedWritable<T> {
 
     /**
      * Writes the property with the given value.
      */
     public abstract void write(T value);
+  }
+
+  /**
+   * A property that can be read into a MotionObservable stream.
+   *
+   * @deprecated in #develop#. Use {@link ScopedReadable} instead.
+   */
+  @Deprecated
+  public static abstract class InlineReadable<T> extends ScopedReadable<T> {
+  }
+
+  /**
+   * A property that can be written from a MotionObservable stream.
+   *
+   * @deprecated in #develop#. Use {@link ScopedWritable} instead.
+   */
+  @Deprecated
+  public static abstract class InlineWritable<T> extends ScopedWritable<T> {
   }
 
   /**
@@ -219,7 +237,7 @@ public class MotionObservable<T> extends IndefiniteObservable<MotionObserver<T>>
   /**
    * Writes the values from an Observable onto the given inline property.
    */
-  public <O> MotionObservable<T> write(final InlineWritable<T> property) {
+  public <O> MotionObservable<T> write(final ScopedWritable<T> property) {
     return operator(new Operation<T, T>() {
       @Override
       public void next(MotionObserver<T> observer, T value) {
