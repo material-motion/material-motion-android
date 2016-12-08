@@ -123,6 +123,28 @@ public class MotionObservable<T> extends IndefiniteObservable<MotionObserver<T>>
   }
 
   /**
+   * An inline property that can be read into a MotionObservable stream.
+   */
+  public static abstract class InlineReadable<T> {
+
+    /**
+     * Reads the property's value.
+     */
+    public abstract T read();
+  }
+
+  /**
+   * An inline property that can be written from a MotionObservable stream.
+   */
+  public static abstract class InlineWritable<T> {
+
+    /**
+     * Writes the property with the given value.
+     */
+    public abstract void write(T value);
+  }
+
+  /**
    * A light-weight operator builder.
    * <p>
    * This is the preferred method for building new operators. This builder can be used to create
@@ -194,7 +216,7 @@ public class MotionObservable<T> extends IndefiniteObservable<MotionObserver<T>>
   }
 
   /**
-   * Writes the values from an Observable onto the given target and property.
+   * Writes the values from an Observable onto the given unscoped property.
    *
    * @see <a href="https://material-motion.github.io/material-motion/starmap/specifications/streams/operators/$.write">The
    * write() specification</a>
@@ -204,6 +226,22 @@ public class MotionObservable<T> extends IndefiniteObservable<MotionObserver<T>>
       @Override
       public void next(MotionObserver<T> observer, T value) {
         property.set(target, value);
+        observer.next(value);
+      }
+    });
+  }
+
+  /**
+   * Writes the values from an Observable onto the given inline property.
+   *
+   * @see <a href="https://material-motion.github.io/material-motion/starmap/specifications/streams/operators/$.write">The
+   * write() specification</a>
+   */
+  public <O> MotionObservable<T> write(final InlineWritable<T> property) {
+    return operator(new Operation<T, T>() {
+      @Override
+      public void next(MotionObserver<T> observer, T value) {
+        property.write(value);
         observer.next(value);
       }
     });
