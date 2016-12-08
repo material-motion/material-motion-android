@@ -44,7 +44,7 @@ import static com.google.android.material.motion.streams.MotionObservable.AT_RES
 public class MainActivity extends AppCompatActivity {
 
   private static final String[] values = new String[]{
-    "foo", "bar", "baz", "qux"
+    "foo", "skip", "bar", "baz", "qux"
   };
 
   private MotionObserver<String> callback;
@@ -77,32 +77,40 @@ public class MainActivity extends AppCompatActivity {
         }
       });
 
-    final Subscription subscription = observable.operator(new Operation<String, CharSequence>() {
+    final Subscription subscription = observable
+      .filter(new MotionObservable.Predicate<String>() {
 
-      @Override
-      public void next(MotionObserver<CharSequence> observer, String value) {
-        CharSequence charSequence = italicizeAndCapitalize(value);
-        observer.next(charSequence);
-      }
-    }).subscribe(new MotionObserver<CharSequence>() {
-
-      @Override
-      public void next(CharSequence value) {
-        text.setText(value);
-      }
-
-      @Override
-      public void state(@MotionState int state) {
-        switch (state) {
-          case AT_REST:
-            text.setTextColor(Color.BLACK);
-            break;
-          case ACTIVE:
-            text.setTextColor(Color.RED);
-            break;
+        @Override
+        public boolean evaluate(String value) {
+          return value != "skip";
         }
-      }
-    });
+      })
+      .operator(new Operation<String, CharSequence>() {
+
+        @Override
+        public void next(MotionObserver<CharSequence> observer, String value) {
+          CharSequence charSequence = italicizeAndCapitalize(value);
+          observer.next(charSequence);
+        }
+      }).subscribe(new MotionObserver<CharSequence>() {
+
+        @Override
+        public void next(CharSequence value) {
+          text.setText(value);
+        }
+
+        @Override
+        public void state(@MotionState int state) {
+          switch (state) {
+            case AT_REST:
+              text.setTextColor(Color.BLACK);
+              break;
+            case ACTIVE:
+              text.setTextColor(Color.RED);
+              break;
+          }
+        }
+      });
 
     nextButton.setOnClickListener(new View.OnClickListener() {
       @Override

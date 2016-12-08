@@ -98,6 +98,17 @@ public class MotionObservable<T> extends IndefiniteObservable<MotionObserver<T>>
   }
 
   /**
+   * A predicate evaluates whether to pass a value downstream.
+   */
+  public interface Predicate<T> {
+
+    /**
+     * Evaluates whether to pass the value downstream.
+     */
+    boolean evaluate(T value);
+  }
+
+  /**
    * A light-weight operator builder.
    * <p>
    * This is the preferred method for building new operators. This builder can be used to create
@@ -132,6 +143,24 @@ public class MotionObservable<T> extends IndefiniteObservable<MotionObserver<T>>
             subscription.unsubscribe();
           }
         };
+      }
+    });
+  }
+
+  /**
+   * Only emit those values from an Observable that satisfy a predicate.
+   *
+   * @see <a href="https://material-motion.github.io/material-motion/starmap/specifications/streams/operators/$._filter">The
+   * filter() specification</a>
+   */
+  public MotionObservable<T> filter(final Predicate<T> predicate) {
+    return operator(new Operation<T, T>() {
+
+      @Override
+      public void next(MotionObserver<T> observer, T value) {
+        if (predicate.evaluate(value)) {
+          observer.next(value);
+        }
       }
     });
   }
