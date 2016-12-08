@@ -69,7 +69,7 @@ public class MotionObservable<T> extends IndefiniteObservable<MotionObserver<T>>
   /**
    * An observer with an additional {@link #state(int)} method.
    */
-  public static abstract class MotionObserver<T> implements Observer<T> {
+  public static abstract class MotionObserver<T> extends Observer<T> {
 
     @Override
     public abstract void next(T value);
