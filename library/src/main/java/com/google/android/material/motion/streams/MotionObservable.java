@@ -74,27 +74,40 @@ public class MotionObservable<T> extends IndefiniteObservable<MotionObserver<T>>
     void next(T value);
 
     /**
-     * A method to handle new state values from upstream.
+     * A method to handle new incoming state values.
      */
     void state(@MotionState int state);
   }
 
   /**
    * An operation is able to transform incoming values before choosing whether or not to pass them
-   * downstream.
+   * to the observer.
    *
    * @param <T> The incoming value type.
-   * @param <U> The downstream value type.
+   * @param <U> The observer value type.
    */
   public interface Operation<T, U> {
 
     /**
-     * Modifies the given value before passing it downstream, or blocks the value.
+     * Transforms the incoming value before passing it to the observer, or blocks the value.
      *
-     * @param observer Downstream.
-     * @param value The value from upstream.
+     * @param value The incoming value.
      */
     void next(MotionObserver<U> observer, T value);
+  }
+
+  /**
+   * A transformation transforms incoming values before they are passed downstream.
+   *
+   * @param <T> The incoming value type.
+   * @param <U> The downstream value type.
+   */
+  public interface Transformation<T, U> {
+
+    /**
+     * Transforms the given value.
+     */
+    U transform(T value);
   }
 
   /**
@@ -103,7 +116,7 @@ public class MotionObservable<T> extends IndefiniteObservable<MotionObserver<T>>
   public interface Predicate<T> {
 
     /**
-     * Evaluates whether to pass the value downstream.
+     * Evaluates whether to pass the value.
      */
     boolean evaluate(T value);
   }
@@ -148,6 +161,21 @@ public class MotionObservable<T> extends IndefiniteObservable<MotionObserver<T>>
   }
 
   /**
+   * Transform the items emitted by an Observable by applying a function to each item.
+   *
+   * @see <a href="https://material-motion.github.io/material-motion/starmap/specifications/streams/operators/$._map">The
+   * filter() specification</a>
+   */
+  public <U> MotionObservable<U> map(final Transformation<T, U> transformation) {
+    return operator(new Operation<T, U>() {
+      @Override
+      public void next(MotionObserver<U> observer, T value) {
+        observer.next(transformation.transform(value));
+      }
+    });
+  }
+
+  /**
    * Only emit those values from an Observable that satisfy a predicate.
    *
    * @see <a href="https://material-motion.github.io/material-motion/starmap/specifications/streams/operators/$._filter">The
@@ -155,7 +183,6 @@ public class MotionObservable<T> extends IndefiniteObservable<MotionObserver<T>>
    */
   public MotionObservable<T> filter(final Predicate<T> predicate) {
     return operator(new Operation<T, T>() {
-
       @Override
       public void next(MotionObserver<T> observer, T value) {
         if (predicate.evaluate(value)) {

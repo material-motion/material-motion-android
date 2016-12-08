@@ -33,7 +33,6 @@ import com.google.android.material.motion.observable.IndefiniteObservable.Unsubs
 import com.google.android.material.motion.streams.MotionObservable;
 import com.google.android.material.motion.streams.MotionObservable.MotionObserver;
 import com.google.android.material.motion.streams.MotionObservable.MotionState;
-import com.google.android.material.motion.streams.MotionObservable.Operation;
 
 import static com.google.android.material.motion.streams.MotionObservable.ACTIVE;
 import static com.google.android.material.motion.streams.MotionObservable.AT_REST;
@@ -85,14 +84,14 @@ public class MainActivity extends AppCompatActivity {
           return value != "skip";
         }
       })
-      .operator(new Operation<String, CharSequence>() {
+      .map(new MotionObservable.Transformation<String, CharSequence>() {
 
         @Override
-        public void next(MotionObserver<CharSequence> observer, String value) {
-          CharSequence charSequence = italicizeAndCapitalize(value);
-          observer.next(charSequence);
+        public CharSequence transform(String value) {
+          return italicizeAndCapitalize(value);
         }
-      }).subscribe(new MotionObserver<CharSequence>() {
+      })
+      .subscribe(new MotionObserver<CharSequence>() {
 
         @Override
         public void next(CharSequence value) {
