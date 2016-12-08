@@ -31,9 +31,6 @@ import java.lang.annotation.RetentionPolicy;
  * that specializes in motion systems that can be either active or at rest.
  * <p>
  * Throughout this documentation we will treat the words "observable" and "stream" as synonyms.
- *
- * @see <a href="https://material-motion.github.io/material-motion/starmap/specifications/streams/MotionObservable">The
- * motion observable specification</a>
  */
 public class MotionObservable<T> extends IndefiniteObservable<MotionObserver<T>> {
 
@@ -150,9 +147,6 @@ public class MotionObservable<T> extends IndefiniteObservable<MotionObserver<T>>
    * This is the preferred method for building new operators. This builder can be used to create
    * any operator that only needs to modify or block values. All state events are forwarded
    * along.
-   *
-   * @see <a href="https://material-motion.github.io/material-motion/starmap/specifications/streams/operators/$._operator">The
-   * operator() specification</a>
    */
   public <U> MotionObservable<U> operator(final Operation<T, U> operation) {
     final MotionObservable<T> upstream = MotionObservable.this;
@@ -185,9 +179,6 @@ public class MotionObservable<T> extends IndefiniteObservable<MotionObserver<T>>
 
   /**
    * Transforms the items emitted by an Observable by applying a function to each item.
-   *
-   * @see <a href="https://material-motion.github.io/material-motion/starmap/specifications/streams/operators/$._map">The
-   * filter() specification</a>
    */
   public <U> MotionObservable<U> map(final Transformation<T, U> transformation) {
     return operator(new Operation<T, U>() {
@@ -200,9 +191,6 @@ public class MotionObservable<T> extends IndefiniteObservable<MotionObserver<T>>
 
   /**
    * Only emits those values from an Observable that satisfy a predicate.
-   *
-   * @see <a href="https://material-motion.github.io/material-motion/starmap/specifications/streams/operators/$._filter">The
-   * filter() specification</a>
    */
   public MotionObservable<T> filter(final Predicate<T> predicate) {
     return operator(new Operation<T, T>() {
@@ -217,9 +205,6 @@ public class MotionObservable<T> extends IndefiniteObservable<MotionObserver<T>>
 
   /**
    * Writes the values from an Observable onto the given unscoped property.
-   *
-   * @see <a href="https://material-motion.github.io/material-motion/starmap/specifications/streams/operators/$.write">The
-   * write() specification</a>
    */
   public <O> MotionObservable<T> write(final O target, final Property<O, T> property) {
     return operator(new Operation<T, T>() {
@@ -233,9 +218,6 @@ public class MotionObservable<T> extends IndefiniteObservable<MotionObserver<T>>
 
   /**
    * Writes the values from an Observable onto the given inline property.
-   *
-   * @see <a href="https://material-motion.github.io/material-motion/starmap/specifications/streams/operators/$.write">The
-   * write() specification</a>
    */
   public <O> MotionObservable<T> write(final InlineWritable<T> property) {
     return operator(new Operation<T, T>() {
