@@ -134,7 +134,7 @@ public class MotionObservableTests {
   }
 
   @Test
-  public void writeInlineProperty() {
+  public void writeScopedProperty() {
     observable.write(new MotionObservable.ScopedWritable<Float>() {
       @Override
       public void write(Float value) {
@@ -152,8 +152,38 @@ public class MotionObservableTests {
   }
 
   @Test
-  public void readInlineProperty() {
+  public void readScopedProperty() {
     MotionObservable.ScopedReadable<Float> reader = new MotionObservable.ScopedReadable<Float>() {
+      @Override
+      public Float read() {
+        return 6f;
+      }
+    };
+
+    assertThat(reader.read()).isWithin(E).of(6f);
+  }
+
+  @Test
+  public void writeInlineProperty() {
+    observable.write(new MotionObservable.InlineWritable<Float>() {
+      @Override
+      public void write(Float value) {
+        assertThat(value).isWithin(E).of(5f);
+      }
+    }).subscribe(new MotionObserver<Float>() {
+      @Override
+      public void next(Float value) {
+      }
+
+      @Override
+      public void state(@MotionObservable.MotionState int state) {
+      }
+    }).unsubscribe();
+  }
+
+  @Test
+  public void readInlineProperty() {
+    MotionObservable.ScopedReadable<Float> reader = new MotionObservable.InlineReadable<Float>() {
       @Override
       public Float read() {
         return 6f;
