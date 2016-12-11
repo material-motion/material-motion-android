@@ -28,12 +28,16 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.google.android.material.motion.gestures.DragGestureRecognizer;
 import com.google.android.material.motion.observable.IndefiniteObservable.Subscriber;
 import com.google.android.material.motion.observable.IndefiniteObservable.Subscription;
 import com.google.android.material.motion.observable.IndefiniteObservable.Unsubscriber;
 import com.google.android.material.motion.streams.MotionObservable;
 import com.google.android.material.motion.streams.MotionObservable.MotionObserver;
 import com.google.android.material.motion.streams.MotionObservable.MotionState;
+import com.google.android.material.motion.streams.gestures.GestureSource;
+
+import java.util.Locale;
 
 import static com.google.android.material.motion.streams.MotionObservable.ACTIVE;
 import static com.google.android.material.motion.streams.MotionObservable.AT_REST;
@@ -47,6 +51,12 @@ public class MainActivity extends AppCompatActivity {
     "foo", "skip", "bar", "baz", "qux"
   };
 
+  private TextView text;
+  private Button nextButton;
+  private Button unsubscribeButton;
+
+  private View dragTarget;
+
   private MotionObserver<String> callback;
   private int index = 0;
 
@@ -56,10 +66,44 @@ public class MainActivity extends AppCompatActivity {
 
     setContentView(R.layout.main_activity);
 
-    final TextView text = (TextView) findViewById(R.id.text);
-    Button nextButton = (Button) findViewById(R.id.next_button);
-    Button unsubscribeButton = (Button) findViewById(R.id.unsubscribe_button);
+    text = (TextView) findViewById(R.id.text);
+    nextButton = (Button) findViewById(R.id.next_button);
+    unsubscribeButton = (Button) findViewById(R.id.unsubscribe_button);
 
+    dragTarget = findViewById(R.id.drag_target);
+
+    runDemo1();
+    runDemo2();
+  }
+
+  private void runDemo2() {
+    DragGestureRecognizer gesture = new DragGestureRecognizer();
+    dragTarget.setOnTouchListener(gesture);
+
+    MotionObservable<DragGestureRecognizer> observable = GestureSource.gestureSource(gesture);
+
+    observable
+      .write(new MotionObservable.ScopedWritable<DragGestureRecognizer>() {
+        @Override
+        public void write(DragGestureRecognizer value) {
+          text.setText(String.format(
+            Locale.getDefault(), "[%f, %f]", value.getTranslationX(), value.getTranslationY()));
+        }
+      })
+      .subscribe(new MotionObserver<DragGestureRecognizer>() {
+        @Override
+        public void next(DragGestureRecognizer value) {
+
+        }
+
+        @Override
+        public void state(@MotionState int state) {
+
+        }
+      });
+  }
+
+  private void runDemo1() {
     final MotionObservable<String> observable = new MotionObservable<>(
       new Subscriber<MotionObserver<String>>() {
 
