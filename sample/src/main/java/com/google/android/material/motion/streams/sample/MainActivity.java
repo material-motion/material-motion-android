@@ -80,27 +80,17 @@ public class MainActivity extends AppCompatActivity {
     DragGestureRecognizer gesture = new DragGestureRecognizer();
     dragTarget.setOnTouchListener(gesture);
 
-    MotionObservable<DragGestureRecognizer> observable = GestureSource.of(gesture);
-
-    observable
-      .write(new MotionObservable.ScopedWritable<DragGestureRecognizer>() {
-        @Override
-        public void write(DragGestureRecognizer value) {
-          text.setText(String.format(
-            Locale.getDefault(), "[%f, %f]", value.getTranslationX(), value.getTranslationY()));
-        }
-      })
-      .subscribe(new MotionObserver<DragGestureRecognizer>() {
-        @Override
-        public void next(DragGestureRecognizer value) {
-
-        }
-
-        @Override
-        public void state(@MotionState int state) {
-
-        }
-      });
+    MotionObservable<DragGestureRecognizer> observable =
+      GestureSource
+        .of(gesture)
+        .write(new MotionObservable.ScopedWritable<DragGestureRecognizer>() {
+          @Override
+          public void write(DragGestureRecognizer value) {
+            text.setText(String.format(
+              Locale.getDefault(), "[%f, %f]", value.getTranslationX(), value.getTranslationY()));
+          }
+        });
+    observable.subscribe();
   }
 
   private void runDemo1() {

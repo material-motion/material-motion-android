@@ -49,6 +49,23 @@ public class MotionObservable<T> extends IndefiniteObservable<MotionObserver<T>>
   }
 
   /**
+   * Subscribes to the IndefiniteObservable and ignores all incoming values.
+   *
+   * @see {@link #subscribe(Observer)}
+   */
+  public Subscription subscribe() {
+    return super.subscribe(new MotionObserver<T>() {
+      @Override
+      public void next(T value) {
+      }
+
+      @Override
+      public void state(@MotionState int state) {
+      }
+    });
+  }
+
+  /**
    * The possible states that a stream can be in.
    * <p>
    * What "active" means is stream-dependant. The stream is active if you can answer yes to any of
