@@ -79,23 +79,6 @@ public class MainActivity extends AppCompatActivity {
     runDemo2();
   }
 
-  private void runDemo2() {
-    DragGestureRecognizer gesture = new DragGestureRecognizer();
-    dragTarget.setOnTouchListener(gesture);
-
-    MotionObservable<PointF> observable =
-      GestureSource
-        .of(gesture)
-        .extend(centroid())
-        .write(new ScopedWritable<PointF>() {
-          @Override
-          public void write(PointF value) {
-            text.setText(String.format(Locale.getDefault(), "[%f, %f]", value.x, value.y));
-          }
-        });
-    observable.subscribe();
-  }
-
   private void runDemo1() {
     final MotionObservable<String> observable = new MotionObservable<>(
       new Subscriber<MotionObserver<String>>() {
@@ -177,6 +160,23 @@ public class MainActivity extends AppCompatActivity {
         subscription.unsubscribe();
       }
     });
+  }
+
+  private void runDemo2() {
+    DragGestureRecognizer gesture = new DragGestureRecognizer();
+    dragTarget.setOnTouchListener(gesture);
+
+    MotionObservable<PointF> observable =
+      GestureSource
+        .of(gesture)
+        .extend(centroid())
+        .write(new ScopedWritable<PointF>() {
+          @Override
+          public void write(PointF value) {
+            text.setText(String.format(Locale.getDefault(), "[%f, %f]", value.x, value.y));
+          }
+        });
+    observable.subscribe();
   }
 
   private CharSequence italicizeAndCapitalize(String value) {
