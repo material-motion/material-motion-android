@@ -117,45 +117,68 @@ public class MotionObservable<T> extends IndefiniteObservable<MotionObserver<T>>
    * @param <T> The incoming value type.
    * @param <U> The downstream value type.
    */
-  public static abstract class Transformation<T, U> {
+  public static abstract class Transformation<T, U> extends Operation<T, U> {
 
     /**
      * Transforms the given value.
      */
     public abstract U transform(T value);
+
+    @Override
+    public final void next(MotionObserver<U> observer, T value) {
+      observer.next(transform(value));
+    }
   }
 
   /**
    * A predicate evaluates whether to pass a value downstream.
    */
-  public static abstract class Predicate<T> {
+  public static abstract class Predicate<T> extends Operation<T, T> {
 
     /**
      * Evaluates whether to pass the value.
      */
     public abstract boolean evaluate(T value);
+
+    @Override
+    public void next(MotionObserver<T> observer, T value) {
+      if (evaluate(value)) {
+        observer.next(value);
+      }
+    }
   }
 
   /**
    * A property that can be read into a MotionObservable stream.
    */
-  public static abstract class ScopedReadable<T> {
+  public static abstract class ScopedReadable<T> extends Operation<T, T> {
 
     /**
      * Reads the property's value.
      */
     public abstract T read();
+
+    @Override
+    public void next(MotionObserver<T> observer, T value) {
+      observer.next(read());
+    }
   }
 
   /**
    * A property that can be written from a MotionObservable stream.
    */
-  public static abstract class ScopedWritable<T> {
+  public static abstract class ScopedWritable<T> extends Operation<T, T> {
 
     /**
      * Writes the property with the given value.
      */
     public abstract void write(T value);
+
+    @Override
+    public void next(MotionObserver<T> observer, T value) {
+      write(value);
+      observer.next(value);
+    }
   }
 
   /**
@@ -177,13 +200,21 @@ public class MotionObservable<T> extends IndefiniteObservable<MotionObserver<T>>
   }
 
   /**
-   * A light-weight operator builder.
+   * @deprecated in #develop. Use {@link #apply(Operation)} for building operators instead.
+   */
+  @Deprecated
+  public <U> MotionObservable<U> operator(final Operation<T, U> operation) {
+    return apply(operation);
+  }
+
+  /**
+   * A light-weight operator builder. Applies the given operation to the incoming stream.
    * <p>
    * This is the preferred method for building new operators. This builder can be used to create
    * any operator that only needs to modify or block values. All state events are forwarded
    * along.
    */
-  public <U> MotionObservable<U> operator(final Operation<T, U> operation) {
+  private <U> MotionObservable<U> apply(final Operation<T, U> operation) {
     final MotionObservable<T> upstream = MotionObservable.this;
 
     return new MotionObservable<>(new Subscriber<MotionObserver<U>>() {
@@ -216,37 +247,24 @@ public class MotionObservable<T> extends IndefiniteObservable<MotionObserver<T>>
    * Transforms the items emitted by an Observable by applying a function to each item.
    */
   public <U> MotionObservable<U> map(final Transformation<T, U> transformation) {
-    return operator(new Operation<T, U>() {
-      @Override
-      public void next(MotionObserver<U> observer, T value) {
-        observer.next(transformation.transform(value));
-      }
-    });
+    return apply(transformation);
   }
 
   /**
    * Only emits those values from an Observable that satisfy a predicate.
    */
   public MotionObservable<T> filter(final Predicate<T> predicate) {
-    return operator(new Operation<T, T>() {
-      @Override
-      public void next(MotionObserver<T> observer, T value) {
-        if (predicate.evaluate(value)) {
-          observer.next(value);
-        }
-      }
-    });
+    return apply(predicate);
   }
 
   /**
    * Writes the values from an Observable onto the given unscoped property.
    */
   public <O> MotionObservable<T> write(final O target, final Property<O, T> property) {
-    return operator(new Operation<T, T>() {
+    return apply(new ScopedWritable<T>() {
       @Override
-      public void next(MotionObserver<T> observer, T value) {
+      public void write(T value) {
         property.set(target, value);
-        observer.next(value);
       }
     });
   }
@@ -254,13 +272,7 @@ public class MotionObservable<T> extends IndefiniteObservable<MotionObserver<T>>
   /**
    * Writes the values from an Observable onto the given inline property.
    */
-  public <O> MotionObservable<T> write(final ScopedWritable<T> property) {
-    return operator(new Operation<T, T>() {
-      @Override
-      public void next(MotionObserver<T> observer, T value) {
-        property.write(value);
-        observer.next(value);
-      }
-    });
+  public MotionObservable<T> write(final ScopedWritable<T> property) {
+    return apply(property);
   }
 }

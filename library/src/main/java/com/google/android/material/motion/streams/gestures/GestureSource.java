@@ -27,7 +27,7 @@ import com.google.android.material.motion.streams.MotionObservable.MotionObserve
 /**
  * A source for gestures.
  */
-public class GestureSource {
+public final class GestureSource {
 
   /**
    * Creates a gesture source that will connect to the provided gesture recognizer.
