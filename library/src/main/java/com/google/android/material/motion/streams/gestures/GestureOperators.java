@@ -28,7 +28,7 @@ import com.google.android.material.motion.streams.MotionObservable.Transformatio
 /**
  * Extended operators for gestures.
  *
- * @see MotionObservable#operator(Operation)
+ * @see MotionObservable#extend(Operation)
  */
 public final class GestureOperators {
 
@@ -38,15 +38,37 @@ public final class GestureOperators {
   }
 
   /**
-   * Extract centroid from the incoming gesture recognizer stream.
-   *
-   * @see MotionObservable#extend(Operation)
+   * Extract the centroid from the incoming gesture recognizer stream.
    */
   public static <T extends GestureRecognizer> Operation<T, PointF> centroid() {
     return new Transformation<T, PointF>() {
       @Override
       public PointF transform(T value) {
         return new PointF(value.getCentroidX(), value.getCentroidY());
+      }
+    };
+  }
+
+  /**
+   * Extract the centroidX from the incoming gesture recognizer stream.
+   */
+  public static <T extends GestureRecognizer> Operation<T, Float> centroidX() {
+    return new Transformation<T, Float>() {
+      @Override
+      public Float transform(T value) {
+        return value.getCentroidX();
+      }
+    };
+  }
+
+  /**
+   * Extract the centroidY from the incoming gesture recognizer stream.
+   */
+  public static <T extends GestureRecognizer> Operation<T, Float> centroidY() {
+    return new Transformation<T, Float>() {
+      @Override
+      public Float transform(T value) {
+        return value.getCentroidY();
       }
     };
   }

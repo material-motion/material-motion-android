@@ -75,6 +75,34 @@ public class GestureOperatorsTests {
   }
 
   @Test
+  public void extractsCentroidX() {
+    TrackingMotionObserver<Float> tracker = new TrackingMotionObserver<>();
+
+    GestureSource
+      .of(gesture)
+      .extend(GestureOperators.centroidX())
+      .subscribe(tracker);
+
+    gesture.setCentroid(5f, 10f);
+
+    assertThat(tracker.values).isEqualTo(Arrays.asList(0f, 5f));
+  }
+
+  @Test
+  public void extractsCentroidY() {
+    TrackingMotionObserver<Float> tracker = new TrackingMotionObserver<>();
+
+    GestureSource
+      .of(gesture)
+      .extend(GestureOperators.centroidY())
+      .subscribe(tracker);
+
+    gesture.setCentroid(5f, 10f);
+
+    assertThat(tracker.values).isEqualTo(Arrays.asList(0f, 10f));
+  }
+
+  @Test
   public void forwardsOnState() {
     TrackingMotionObserver<Integer> tracker = new TrackingMotionObserver<>();
 
