@@ -20,7 +20,9 @@ import android.graphics.PointF;
 import android.view.View;
 
 import com.google.android.material.motion.gestures.BuildConfig;
+import com.google.android.material.motion.gestures.GestureRecognizer;
 import com.google.android.material.motion.gestures.testing.SimulatedGestureRecognizer;
+import com.google.android.material.motion.streams.MotionObservable;
 import com.google.android.material.motion.streams.testing.TrackingMotionObserver;
 
 import org.junit.Before;
@@ -32,6 +34,9 @@ import org.robolectric.annotation.Config;
 
 import java.util.Arrays;
 
+import static com.google.android.material.motion.gestures.GestureRecognizer.BEGAN;
+import static com.google.android.material.motion.gestures.GestureRecognizer.CHANGED;
+import static com.google.android.material.motion.gestures.GestureRecognizer.RECOGNIZED;
 import static com.google.android.material.motion.streams.MotionObservable.ACTIVE;
 import static com.google.android.material.motion.streams.MotionObservable.AT_REST;
 import static com.google.common.truth.Truth.assertThat;
@@ -49,6 +54,11 @@ public class GestureOperatorsTests {
     view.setOnTouchListener(gesture);
   }
 
+  @Test(expected = UnsupportedOperationException.class)
+  public void constructorIsDisabled() {
+    new GestureOperators();
+  }
+
   @Test
   public void extractsCentroid() {
     TrackingMotionObserver<PointF> tracker = new TrackingMotionObserver<>();
@@ -64,8 +74,47 @@ public class GestureOperatorsTests {
     assertThat(tracker.states).isEqualTo(Arrays.asList(AT_REST, ACTIVE));
   }
 
-  @Test(expected = UnsupportedOperationException.class)
-  public void constructorIsDisabled() {
-    new GestureOperators();
+  @Test
+  public void forwardsOnState() {
+    TrackingMotionObserver<Integer> tracker = new TrackingMotionObserver<>();
+
+    GestureSource
+      .of(gesture)
+      .extend(GestureOperators.onRecognitionState(BEGAN))
+      .map(new MotionObservable.Transformation<GestureRecognizer, Integer>() {
+        @Override
+        public Integer transform(GestureRecognizer value) {
+          return value.getState();
+        }
+      })
+      .subscribe(tracker);
+
+    gesture.setState(BEGAN);
+    gesture.setState(CHANGED);
+    gesture.setState(RECOGNIZED);
+
+    assertThat(tracker.values).isEqualTo(Arrays.asList(BEGAN));
+  }
+
+  @Test
+  public void forwardsOnStates() {
+    TrackingMotionObserver<Integer> tracker = new TrackingMotionObserver<>();
+
+    GestureSource
+      .of(gesture)
+      .extend(GestureOperators.onRecognitionState(BEGAN, RECOGNIZED))
+      .map(new MotionObservable.Transformation<GestureRecognizer, Integer>() {
+        @Override
+        public Integer transform(GestureRecognizer value) {
+          return value.getState();
+        }
+      })
+      .subscribe(tracker);
+
+    gesture.setState(BEGAN);
+    gesture.setState(CHANGED);
+    gesture.setState(RECOGNIZED);
+
+    assertThat(tracker.values).isEqualTo(Arrays.asList(BEGAN, RECOGNIZED));
   }
 }
