@@ -168,7 +168,7 @@ public class MainActivity extends AppCompatActivity {
 
     MotionObservable<PointF> observable =
       GestureSource
-        .of(gesture)
+        .from(gesture)
         .extend(centroid())
         .write(new ScopedWritable<PointF>() {
           @Override

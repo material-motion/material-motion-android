@@ -56,7 +56,7 @@ public class GestureSourceTests {
   @Test
   public void createSource() {
     GestureSource
-      .of(gesture)
+      .from(gesture)
       .subscribe()
       .unsubscribe();
   }
@@ -66,7 +66,7 @@ public class GestureSourceTests {
     TrackingMotionObserver<SimulatedGestureRecognizer> tracker = new TrackingMotionObserver<>();
 
     GestureSource
-      .of(gesture)
+      .from(gesture)
       .subscribe(tracker);
 
     assertThat(tracker.states).isEqualTo(Arrays.asList(POSSIBLE));
@@ -77,7 +77,7 @@ public class GestureSourceTests {
     TrackingMotionObserver<Integer> tracker = new TrackingMotionObserver<>();
 
     GestureSource
-      .of(gesture)
+      .from(gesture)
       .map(new MotionObservable.Transformation<SimulatedGestureRecognizer, Integer>() {
         @Override
         public Integer transform(SimulatedGestureRecognizer value) {
@@ -101,7 +101,7 @@ public class GestureSourceTests {
     TrackingMotionObserver<SimulatedGestureRecognizer> tracker = new TrackingMotionObserver<>();
 
     GestureSource
-      .of(gesture)
+      .from(gesture)
       .subscribe(tracker);
 
     assertThat(tracker.states).isEqualTo(Arrays.asList(AT_REST));

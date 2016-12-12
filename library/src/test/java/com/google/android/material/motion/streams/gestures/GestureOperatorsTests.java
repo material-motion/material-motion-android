@@ -64,7 +64,7 @@ public class GestureOperatorsTests {
     TrackingMotionObserver<PointF> tracker = new TrackingMotionObserver<>();
 
     GestureSource
-      .of(gesture)
+      .from(gesture)
       .extend(GestureOperators.centroid())
       .subscribe(tracker);
 
@@ -79,7 +79,7 @@ public class GestureOperatorsTests {
     TrackingMotionObserver<Float> tracker = new TrackingMotionObserver<>();
 
     GestureSource
-      .of(gesture)
+      .from(gesture)
       .extend(GestureOperators.centroidX())
       .subscribe(tracker);
 
@@ -93,7 +93,7 @@ public class GestureOperatorsTests {
     TrackingMotionObserver<Float> tracker = new TrackingMotionObserver<>();
 
     GestureSource
-      .of(gesture)
+      .from(gesture)
       .extend(GestureOperators.centroidY())
       .subscribe(tracker);
 
@@ -107,7 +107,7 @@ public class GestureOperatorsTests {
     TrackingMotionObserver<Integer> tracker = new TrackingMotionObserver<>();
 
     GestureSource
-      .of(gesture)
+      .from(gesture)
       .extend(GestureOperators.onRecognitionState(BEGAN))
       .map(new MotionObservable.Transformation<GestureRecognizer, Integer>() {
         @Override
@@ -129,7 +129,7 @@ public class GestureOperatorsTests {
     TrackingMotionObserver<Integer> tracker = new TrackingMotionObserver<>();
 
     GestureSource
-      .of(gesture)
+      .from(gesture)
       .extend(GestureOperators.onRecognitionState(BEGAN, RECOGNIZED))
       .map(new MotionObservable.Transformation<GestureRecognizer, Integer>() {
         @Override
