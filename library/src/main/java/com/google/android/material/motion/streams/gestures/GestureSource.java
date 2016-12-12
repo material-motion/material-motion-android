@@ -16,6 +16,7 @@
 package com.google.android.material.motion.streams.gestures;
 
 import android.support.annotation.Nullable;
+import android.support.annotation.VisibleForTesting;
 
 import com.google.android.material.motion.gestures.GestureRecognizer;
 import com.google.android.material.motion.gestures.GestureRecognizer.GestureStateChangeListener;
@@ -28,6 +29,11 @@ import com.google.android.material.motion.streams.MotionObservable.MotionObserve
  * A source for gestures.
  */
 public final class GestureSource {
+
+  @VisibleForTesting
+  GestureSource() {
+    throw new UnsupportedOperationException();
+  }
 
   /**
    * Creates a gesture source that will connect to the provided gesture recognizer.

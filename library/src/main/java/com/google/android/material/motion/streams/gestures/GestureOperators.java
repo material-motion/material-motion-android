@@ -16,6 +16,7 @@
 package com.google.android.material.motion.streams.gestures;
 
 import android.graphics.PointF;
+import android.support.annotation.VisibleForTesting;
 
 import com.google.android.material.motion.gestures.GestureRecognizer;
 import com.google.android.material.motion.streams.MotionObservable;
@@ -28,6 +29,11 @@ import com.google.android.material.motion.streams.MotionObservable.Transformatio
  * @see MotionObservable#operator(Operation)
  */
 public final class GestureOperators {
+
+  @VisibleForTesting
+  GestureOperators() {
+    throw new UnsupportedOperationException();
+  }
 
   /**
    * Extract centroid from the incoming gesture recognizer stream.

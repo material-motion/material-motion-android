@@ -29,6 +29,8 @@ import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 
+import static android.R.attr.value;
+import static com.google.android.material.motion.streams.MotionObservable.ACTIVE;
 import static com.google.common.truth.Truth.assertThat;
 
 @RunWith(RobolectricTestRunner.class)
@@ -47,7 +49,7 @@ public class MotionObservableTests {
         @Override
         public IndefiniteObservable.Unsubscriber subscribe(MotionObserver<Float> observer) {
           observer.next(5f);
-          observer.state(MotionObservable.ACTIVE);
+          observer.state(ACTIVE);
           return null;
         }
       });
@@ -68,7 +70,7 @@ public class MotionObservableTests {
 
       @Override
       public void state(@MotionObservable.MotionState int state) {
-        assertThat(state).isEqualTo(MotionObservable.ACTIVE);
+        assertThat(state).isEqualTo(ACTIVE);
       }
     });
   }
@@ -88,7 +90,7 @@ public class MotionObservableTests {
 
       @Override
       public void state(@MotionObservable.MotionState int state) {
-        assertThat(state).isEqualTo(MotionObservable.ACTIVE);
+        assertThat(state).isEqualTo(ACTIVE);
       }
     }).unsubscribe();
   }
@@ -108,7 +110,7 @@ public class MotionObservableTests {
 
       @Override
       public void state(@MotionObservable.MotionState int state) {
-        assertThat(state).isEqualTo(MotionObservable.ACTIVE);
+        assertThat(state).isEqualTo(ACTIVE);
       }
     }).unsubscribe();
     ;
@@ -119,16 +121,7 @@ public class MotionObservableTests {
     View target = new View(Robolectric.setupActivity(Activity.class));
     target.setTranslationX(0);
 
-    observable.write(target, View.TRANSLATION_X).subscribe(new MotionObserver<Float>() {
-      @Override
-      public void next(Float value) {
-      }
-
-      @Override
-      public void state(@MotionObservable.MotionState int state) {
-      }
-    }).unsubscribe();
-    ;
+    observable.write(target, View.TRANSLATION_X).subscribe().unsubscribe();
 
     assertThat(target.getTranslationX()).isWithin(E).of(5f);
   }
@@ -140,15 +133,7 @@ public class MotionObservableTests {
       public void write(Float value) {
         assertThat(value).isWithin(E).of(5f);
       }
-    }).subscribe(new MotionObserver<Float>() {
-      @Override
-      public void next(Float value) {
-      }
-
-      @Override
-      public void state(@MotionObservable.MotionState int state) {
-      }
-    }).unsubscribe();
+    }).subscribe().unsubscribe();
   }
 
   @Test
@@ -164,21 +149,33 @@ public class MotionObservableTests {
   }
 
   @Test
+  public void readScopedPropertyInObservable() {
+    observable.extend(new MotionObservable.ScopedReadable<Float>() {
+      @Override
+      public Float read() {
+        return 50f;
+      }
+    }).subscribe(new MotionObserver<Float>() {
+      @Override
+      public void next(Float value) {
+        assertThat(value).isWithin(E).of(50f);
+      }
+
+      @Override
+      public void state(@MotionObservable.MotionState int state) {
+        assertThat(state).isEqualTo(ACTIVE);
+      }
+    });
+  }
+
+  @Test
   public void writeInlineProperty() {
     observable.write(new MotionObservable.InlineWritable<Float>() {
       @Override
       public void write(Float value) {
         assertThat(value).isWithin(E).of(5f);
       }
-    }).subscribe(new MotionObserver<Float>() {
-      @Override
-      public void next(Float value) {
-      }
-
-      @Override
-      public void state(@MotionObservable.MotionState int state) {
-      }
-    }).unsubscribe();
+    }).subscribe().unsubscribe();
   }
 
   @Test
@@ -191,5 +188,25 @@ public class MotionObservableTests {
     };
 
     assertThat(reader.read()).isWithin(E).of(6f);
+  }
+
+  @Test
+  public void deprecatedOperator() {
+    observable.operator(new MotionObservable.Transformation<Float, Float>() {
+      @Override
+      public Float transform(Float value) {
+        return value * 2f;
+      }
+    }).subscribe(new MotionObserver<Float>() {
+      @Override
+      public void next(Float value) {
+        assertThat(value).isWithin(E).of(10f);
+      }
+
+      @Override
+      public void state(@MotionObservable.MotionState int state) {
+        assertThat(state).isEqualTo(ACTIVE);
+      }
+    });
   }
 }
