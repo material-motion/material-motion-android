@@ -18,6 +18,8 @@ package com.google.android.material.motion.streams;
 import android.support.annotation.IntDef;
 import android.support.annotation.Nullable;
 import android.util.Property;
+import android.view.View;
+import android.widget.TextView;
 
 import com.google.android.material.motion.observable.IndefiniteObservable;
 import com.google.android.material.motion.observable.Observer;
@@ -200,10 +202,10 @@ public class MotionObservable<T> extends IndefiniteObservable<MotionObserver<T>>
   }
 
   /**
-   * @deprecated in #develop. Use {@link #apply(Operation)} for building operators instead.
+   * @deprecated in #develop. Use {@link #extend(Operation)} for extended operators instead.
    */
   @Deprecated
-  public <U> MotionObservable<U> operator(final Operation<T, U> operation) {
+  public <U> MotionObservable<U> operator(final Operation<? super T, U> operation) {
     return apply(operation);
   }
 
@@ -213,8 +215,14 @@ public class MotionObservable<T> extends IndefiniteObservable<MotionObserver<T>>
    * This is the preferred method for building new operators. This builder can be used to create
    * any operator that only needs to modify or block values. All state events are forwarded
    * along.
+   *
+   * @param operation An operation to apply to each incoming value. The operation must handle
+   * values of type {@link T} or more general types. For example, an operation that handles {@link
+   * View}s can be applied to a stream of {@link TextView}s.
+   * @param <U> The returned stream contains values of this type. The operation must output values
+   * of this type.
    */
-  private <U> MotionObservable<U> apply(final Operation<T, U> operation) {
+  private <U> MotionObservable<U> apply(final Operation<? super T, U> operation) {
     final MotionObservable<T> upstream = MotionObservable.this;
 
     return new MotionObservable<>(new Subscriber<MotionObserver<U>>() {
@@ -274,5 +282,12 @@ public class MotionObservable<T> extends IndefiniteObservable<MotionObserver<T>>
    */
   public MotionObservable<T> write(final ScopedWritable<T> property) {
     return apply(property);
+  }
+
+  /**
+   * Supports extended operators. Pass in an extended operator to execute it.
+   */
+  public <U> MotionObservable<U> extend(final Operation<? super T, U> operation) {
+    return apply(operation);
   }
 }

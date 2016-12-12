@@ -16,6 +16,7 @@
 package com.google.android.material.motion.streams.sample;
 
 import android.graphics.Color;
+import android.graphics.PointF;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -35,12 +36,14 @@ import com.google.android.material.motion.observable.IndefiniteObservable.Unsubs
 import com.google.android.material.motion.streams.MotionObservable;
 import com.google.android.material.motion.streams.MotionObservable.MotionObserver;
 import com.google.android.material.motion.streams.MotionObservable.MotionState;
+import com.google.android.material.motion.streams.MotionObservable.ScopedWritable;
 import com.google.android.material.motion.streams.gestures.GestureSource;
 
 import java.util.Locale;
 
 import static com.google.android.material.motion.streams.MotionObservable.ACTIVE;
 import static com.google.android.material.motion.streams.MotionObservable.AT_REST;
+import static com.google.android.material.motion.streams.gestures.GestureOperators.centroid;
 
 /**
  * Streams for Android sample Activity.
@@ -80,14 +83,14 @@ public class MainActivity extends AppCompatActivity {
     DragGestureRecognizer gesture = new DragGestureRecognizer();
     dragTarget.setOnTouchListener(gesture);
 
-    MotionObservable<DragGestureRecognizer> observable =
+    MotionObservable<PointF> observable =
       GestureSource
         .of(gesture)
-        .write(new MotionObservable.ScopedWritable<DragGestureRecognizer>() {
+        .extend(centroid())
+        .write(new ScopedWritable<PointF>() {
           @Override
-          public void write(DragGestureRecognizer value) {
-            text.setText(String.format(
-              Locale.getDefault(), "[%f, %f]", value.getTranslationX(), value.getTranslationY()));
+          public void write(PointF value) {
+            text.setText(String.format(Locale.getDefault(), "[%f, %f]", value.x, value.y));
           }
         });
     observable.subscribe();
