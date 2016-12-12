@@ -29,7 +29,6 @@ import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 
-import static android.R.attr.value;
 import static com.google.android.material.motion.streams.MotionObservable.ACTIVE;
 import static com.google.common.truth.Truth.assertThat;
 
@@ -150,7 +149,7 @@ public class MotionObservableTests {
 
   @Test
   public void readScopedPropertyInObservable() {
-    observable.extend(new MotionObservable.ScopedReadable<Float>() {
+    observable.compose(new MotionObservable.ScopedReadable<Float>() {
       @Override
       public Float read() {
         return 50f;

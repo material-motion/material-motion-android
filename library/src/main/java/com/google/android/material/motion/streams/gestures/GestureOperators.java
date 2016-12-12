@@ -28,7 +28,7 @@ import com.google.android.material.motion.streams.MotionObservable.Transformatio
 /**
  * Extended operators for gestures.
  *
- * @see MotionObservable#extend(Operation)
+ * @see MotionObservable#compose(Operation)
  */
 public final class GestureOperators {
 

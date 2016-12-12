@@ -202,11 +202,11 @@ public class MotionObservable<T> extends IndefiniteObservable<MotionObserver<T>>
   }
 
   /**
-   * @deprecated in #develop. Use {@link #extend(Operation)} for extended operators instead.
+   * @deprecated in #develop. Use {@link #compose(Operation)} instead.
    */
   @Deprecated
   public <U> MotionObservable<U> operator(final Operation<? super T, U> operation) {
-    return apply(operation);
+    return compose(operation);
   }
 
   /**
@@ -222,7 +222,7 @@ public class MotionObservable<T> extends IndefiniteObservable<MotionObserver<T>>
    * @param <U> The returned stream contains values of this type. The operation must output values
    * of this type.
    */
-  private <U> MotionObservable<U> apply(final Operation<? super T, U> operation) {
+  public <U> MotionObservable<U> compose(final Operation<? super T, U> operation) {
     final MotionObservable<T> upstream = MotionObservable.this;
 
     return new MotionObservable<>(new Subscriber<MotionObserver<U>>() {
@@ -255,21 +255,21 @@ public class MotionObservable<T> extends IndefiniteObservable<MotionObserver<T>>
    * Transforms the items emitted by an Observable by applying a function to each item.
    */
   public <U> MotionObservable<U> map(final Transformation<T, U> transformation) {
-    return apply(transformation);
+    return compose(transformation);
   }
 
   /**
    * Only emits those values from an Observable that satisfy a predicate.
    */
   public MotionObservable<T> filter(final Predicate<T> predicate) {
-    return apply(predicate);
+    return compose(predicate);
   }
 
   /**
    * Writes the values from an Observable onto the given unscoped property.
    */
   public <O> MotionObservable<T> write(final O target, final Property<O, T> property) {
-    return apply(new ScopedWritable<T>() {
+    return compose(new ScopedWritable<T>() {
       @Override
       public void write(T value) {
         property.set(target, value);
@@ -281,13 +281,6 @@ public class MotionObservable<T> extends IndefiniteObservable<MotionObserver<T>>
    * Writes the values from an Observable onto the given inline property.
    */
   public MotionObservable<T> write(final ScopedWritable<T> property) {
-    return apply(property);
-  }
-
-  /**
-   * Supports extended operators. Pass in an extended operator to execute it.
-   */
-  public <U> MotionObservable<U> extend(final Operation<? super T, U> operation) {
-    return apply(operation);
+    return compose(property);
   }
 }

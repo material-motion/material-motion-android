@@ -65,7 +65,7 @@ public class GestureOperatorsTests {
 
     GestureSource
       .from(gesture)
-      .extend(GestureOperators.centroid())
+      .compose(GestureOperators.centroid())
       .subscribe(tracker);
 
     gesture.setCentroid(5f, 5f);
@@ -80,7 +80,7 @@ public class GestureOperatorsTests {
 
     GestureSource
       .from(gesture)
-      .extend(GestureOperators.centroidX())
+      .compose(GestureOperators.centroidX())
       .subscribe(tracker);
 
     gesture.setCentroid(5f, 10f);
@@ -94,7 +94,7 @@ public class GestureOperatorsTests {
 
     GestureSource
       .from(gesture)
-      .extend(GestureOperators.centroidY())
+      .compose(GestureOperators.centroidY())
       .subscribe(tracker);
 
     gesture.setCentroid(5f, 10f);
@@ -108,7 +108,7 @@ public class GestureOperatorsTests {
 
     GestureSource
       .from(gesture)
-      .extend(GestureOperators.onRecognitionState(BEGAN))
+      .compose(GestureOperators.onRecognitionState(BEGAN))
       .map(new MotionObservable.Transformation<GestureRecognizer, Integer>() {
         @Override
         public Integer transform(GestureRecognizer value) {
@@ -130,7 +130,7 @@ public class GestureOperatorsTests {
 
     GestureSource
       .from(gesture)
-      .extend(GestureOperators.onRecognitionState(BEGAN, RECOGNIZED))
+      .compose(GestureOperators.onRecognitionState(BEGAN, RECOGNIZED))
       .map(new MotionObservable.Transformation<GestureRecognizer, Integer>() {
         @Override
         public Integer transform(GestureRecognizer value) {

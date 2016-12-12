@@ -25,7 +25,7 @@ import com.google.android.material.motion.streams.MotionObservable.Transformatio
 /**
  * Extended operators for PointF.
  *
- * @see MotionObservable#extend(Operation)
+ * @see MotionObservable#compose(Operation)
  */
 public final class PointFOperators {
 

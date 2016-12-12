@@ -47,7 +47,7 @@ public class PointFOperatorsTests {
     TrackingMotionObserver<Float> tracker = new TrackingMotionObserver<>();
 
     pointFSource()
-      .extend(PointFOperators.x())
+      .compose(PointFOperators.x())
       .subscribe(tracker);
 
     assertThat(tracker.values).isEqualTo(Arrays.asList(1f, 3f, 5f));
@@ -58,7 +58,7 @@ public class PointFOperatorsTests {
     TrackingMotionObserver<Float> tracker = new TrackingMotionObserver<>();
 
     pointFSource()
-      .extend(PointFOperators.y())
+      .compose(PointFOperators.y())
       .subscribe(tracker);
 
     assertThat(tracker.values).isEqualTo(Arrays.asList(2f, 4f, 6f));
