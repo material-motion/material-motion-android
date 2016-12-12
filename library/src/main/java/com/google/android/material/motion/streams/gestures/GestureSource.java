@@ -32,7 +32,7 @@ public class GestureSource {
   /**
    * Creates a gesture source that will connect to the provided gesture recognizer.
    */
-  public static <T extends GestureRecognizer> MotionObservable<T> gestureSource(final T gesture) {
+  public static <T extends GestureRecognizer> MotionObservable<T> of(final T gesture) {
     return new MotionObservable<>(new Subscriber<MotionObserver<T>>() {
       @Nullable
       @Override

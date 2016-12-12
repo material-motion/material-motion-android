@@ -80,7 +80,7 @@ public class MainActivity extends AppCompatActivity {
     DragGestureRecognizer gesture = new DragGestureRecognizer();
     dragTarget.setOnTouchListener(gesture);
 
-    MotionObservable<DragGestureRecognizer> observable = GestureSource.gestureSource(gesture);
+    MotionObservable<DragGestureRecognizer> observable = GestureSource.of(gesture);
 
     observable
       .write(new MotionObservable.ScopedWritable<DragGestureRecognizer>() {
