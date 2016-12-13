@@ -19,8 +19,8 @@ import android.graphics.PointF;
 import android.support.annotation.VisibleForTesting;
 
 import com.google.android.material.motion.streams.MotionObservable;
+import com.google.android.material.motion.streams.MotionObservable.MapOperation;
 import com.google.android.material.motion.streams.MotionObservable.Operation;
-import com.google.android.material.motion.streams.MotionObservable.Transformation;
 
 /**
  * Extended operators for PointF.
@@ -38,7 +38,7 @@ public final class PointFOperators {
    * Extract the x value from the incoming PointF stream.
    */
   public static Operation<PointF, Float> x() {
-    return new Transformation<PointF, Float>() {
+    return new MapOperation<PointF, Float>() {
       @Override
       public Float transform(PointF value) {
         return value.x;
@@ -50,7 +50,7 @@ public final class PointFOperators {
    * Extract the y value from the incoming PointF stream.
    */
   public static Operation<PointF, Float> y() {
-    return new Transformation<PointF, Float>() {
+    return new MapOperation<PointF, Float>() {
       @Override
       public Float transform(PointF value) {
         return value.y;

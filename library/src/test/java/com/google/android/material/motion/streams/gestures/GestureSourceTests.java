@@ -78,7 +78,7 @@ public class GestureSourceTests {
 
     GestureSource
       .from(gesture)
-      .map(new MotionObservable.Transformation<SimulatedGestureRecognizer, Integer>() {
+      .compose(new MotionObservable.MapOperation<SimulatedGestureRecognizer, Integer>() {
         @Override
         public Integer transform(SimulatedGestureRecognizer value) {
           return value.getState();

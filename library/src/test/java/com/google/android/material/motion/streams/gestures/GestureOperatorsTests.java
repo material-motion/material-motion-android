@@ -109,7 +109,7 @@ public class GestureOperatorsTests {
     GestureSource
       .from(gesture)
       .compose(GestureOperators.onRecognitionState(BEGAN))
-      .map(new MotionObservable.Transformation<GestureRecognizer, Integer>() {
+      .compose(new MotionObservable.MapOperation<GestureRecognizer, Integer>() {
         @Override
         public Integer transform(GestureRecognizer value) {
           return value.getState();
@@ -131,7 +131,7 @@ public class GestureOperatorsTests {
     GestureSource
       .from(gesture)
       .compose(GestureOperators.onRecognitionState(BEGAN, RECOGNIZED))
-      .map(new MotionObservable.Transformation<GestureRecognizer, Integer>() {
+      .compose(new MotionObservable.MapOperation<GestureRecognizer, Integer>() {
         @Override
         public Integer transform(GestureRecognizer value) {
           return value.getState();

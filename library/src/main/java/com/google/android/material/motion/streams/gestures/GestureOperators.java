@@ -21,9 +21,9 @@ import android.support.annotation.VisibleForTesting;
 import com.google.android.material.motion.gestures.GestureRecognizer;
 import com.google.android.material.motion.gestures.GestureRecognizer.GestureRecognizerState;
 import com.google.android.material.motion.streams.MotionObservable;
+import com.google.android.material.motion.streams.MotionObservable.MapOperation;
 import com.google.android.material.motion.streams.MotionObservable.Operation;
-import com.google.android.material.motion.streams.MotionObservable.Predicate;
-import com.google.android.material.motion.streams.MotionObservable.Transformation;
+import com.google.android.material.motion.streams.MotionObservable.FilterOperation;
 
 /**
  * Extended operators for gestures.
@@ -41,7 +41,7 @@ public final class GestureOperators {
    * Extract the centroid from the incoming gesture recognizer stream.
    */
   public static <T extends GestureRecognizer> Operation<T, PointF> centroid() {
-    return new Transformation<T, PointF>() {
+    return new MapOperation<T, PointF>() {
       @Override
       public PointF transform(T value) {
         return new PointF(value.getCentroidX(), value.getCentroidY());
@@ -53,7 +53,7 @@ public final class GestureOperators {
    * Extract the centroidX from the incoming gesture recognizer stream.
    */
   public static <T extends GestureRecognizer> Operation<T, Float> centroidX() {
-    return new Transformation<T, Float>() {
+    return new MapOperation<T, Float>() {
       @Override
       public Float transform(T value) {
         return value.getCentroidX();
@@ -65,7 +65,7 @@ public final class GestureOperators {
    * Extract the centroidY from the incoming gesture recognizer stream.
    */
   public static <T extends GestureRecognizer> Operation<T, Float> centroidY() {
-    return new Transformation<T, Float>() {
+    return new MapOperation<T, Float>() {
       @Override
       public Float transform(T value) {
         return value.getCentroidY();
@@ -78,9 +78,9 @@ public final class GestureOperators {
    */
   public static <T extends GestureRecognizer> Operation<T, T> onRecognitionState(
     @GestureRecognizerState final int state) {
-    return new Predicate<T>() {
+    return new FilterOperation<T>() {
       @Override
-      public boolean evaluate(T value) {
+      public boolean filter(T value) {
         return value.getState() == state;
       }
     };
@@ -91,9 +91,9 @@ public final class GestureOperators {
    */
   public static <T extends GestureRecognizer> Operation<T, T> onRecognitionState(
     @GestureRecognizerState final int... states) {
-    return new Predicate<T>() {
+    return new FilterOperation<T>() {
       @Override
-      public boolean evaluate(T value) {
+      public boolean filter(T value) {
         int s = value.getState();
         for (@GestureRecognizerState int state : states) {
           if (state == s) {

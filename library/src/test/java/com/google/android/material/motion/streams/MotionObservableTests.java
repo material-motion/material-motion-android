@@ -56,7 +56,7 @@ public class MotionObservableTests {
 
   @Test
   public void mapByHalf() {
-    observable.map(new MotionObservable.Transformation<Float, Float>() {
+    observable.compose(new MotionObservable.MapOperation<Float, Float>() {
       @Override
       public Float transform(Float value) {
         return value / 2f; // Half.
@@ -76,9 +76,9 @@ public class MotionObservableTests {
 
   @Test
   public void filterAll() {
-    observable.filter(new MotionObservable.Predicate<Float>() {
+    observable.compose(new MotionObservable.FilterOperation<Float>() {
       @Override
-      public boolean evaluate(Float value) {
+      public boolean filter(Float value) {
         return false; // All are filtered.
       }
     }).subscribe(new MotionObserver<Float>() {
@@ -96,9 +96,9 @@ public class MotionObservableTests {
 
   @Test
   public void filterNone() {
-    observable.filter(new MotionObservable.Predicate<Float>() {
+    observable.compose(new MotionObservable.FilterOperation<Float>() {
       @Override
-      public boolean evaluate(Float value) {
+      public boolean filter(Float value) {
         return true; // None are filtered.
       }
     }).subscribe(new MotionObserver<Float>() {
@@ -191,7 +191,7 @@ public class MotionObservableTests {
 
   @Test
   public void deprecatedOperator() {
-    observable.operator(new MotionObservable.Transformation<Float, Float>() {
+    observable.operator(new MotionObservable.MapOperation<Float, Float>() {
       @Override
       public Float transform(Float value) {
         return value * 2f;
@@ -200,6 +200,46 @@ public class MotionObservableTests {
       @Override
       public void next(Float value) {
         assertThat(value).isWithin(E).of(10f);
+      }
+
+      @Override
+      public void state(@MotionObservable.MotionState int state) {
+        assertThat(state).isEqualTo(ACTIVE);
+      }
+    });
+  }
+
+  @Test
+  public void deprecatedMap() {
+    observable.map(new MotionObservable.MapOperation<Float, Float>() {
+      @Override
+      public Float transform(Float value) {
+        return value * 2f;
+      }
+    }).subscribe(new MotionObserver<Float>() {
+      @Override
+      public void next(Float value) {
+        assertThat(value).isWithin(E).of(10f);
+      }
+
+      @Override
+      public void state(@MotionObservable.MotionState int state) {
+        assertThat(state).isEqualTo(ACTIVE);
+      }
+    });
+  }
+
+  @Test
+  public void deprecatedFilter() {
+    observable.filter(new MotionObservable.FilterOperation<Float>() {
+      @Override
+      public boolean filter(Float value) {
+        return true;
+      }
+    }).subscribe(new MotionObserver<Float>() {
+      @Override
+      public void next(Float value) {
+        assertThat(value).isWithin(E).of(5f);
       }
 
       @Override

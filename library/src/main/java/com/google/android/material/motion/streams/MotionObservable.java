@@ -114,15 +114,15 @@ public class MotionObservable<T> extends IndefiniteObservable<MotionObserver<T>>
   }
 
   /**
-   * A transformation transforms incoming values before they are passed downstream.
+   * A map operation transforms incoming values before they are passed downstream.
    *
    * @param <T> The incoming value type.
    * @param <U> The downstream value type.
    */
-  public static abstract class Transformation<T, U> extends Operation<T, U> {
+  public static abstract class MapOperation<T, U> extends Operation<T, U> {
 
     /**
-     * Transforms the given value.
+     * Transforms the given value to another value.
      */
     public abstract U transform(T value);
 
@@ -133,18 +133,18 @@ public class MotionObservable<T> extends IndefiniteObservable<MotionObserver<T>>
   }
 
   /**
-   * A predicate evaluates whether to pass a value downstream.
+   * A filter operation evaluates whether to pass a value downstream.
    */
-  public static abstract class Predicate<T> extends Operation<T, T> {
+  public static abstract class FilterOperation<T> extends Operation<T, T> {
 
     /**
-     * Evaluates whether to pass the value.
+     * Returns whether to pass the value.
      */
-    public abstract boolean evaluate(T value);
+    public abstract boolean filter(T value);
 
     @Override
     public void next(MotionObserver<T> observer, T value) {
-      if (evaluate(value)) {
+      if (filter(value)) {
         observer.next(value);
       }
     }
@@ -253,16 +253,24 @@ public class MotionObservable<T> extends IndefiniteObservable<MotionObserver<T>>
 
   /**
    * Transforms the items emitted by an Observable by applying a function to each item.
+   *
+   * @deprecated in #develop#. Instead, use {@link #compose(Operation)} and pass in a {@link
+   * MapOperation}.
    */
-  public <U> MotionObservable<U> map(final Transformation<T, U> transformation) {
-    return compose(transformation);
+  @Deprecated
+  public <U> MotionObservable<U> map(MapOperation<T, U> map) {
+    return compose(map);
   }
 
   /**
-   * Only emits those values from an Observable that satisfy a predicate.
+   * Only emits those values from an Observable that satisfy a filter.
+   *
+   * @deprecated in #develop#. Instead, use {@link #compose(Operation)} and pass in a {@link
+   * FilterOperation}.
    */
-  public MotionObservable<T> filter(final Predicate<T> predicate) {
-    return compose(predicate);
+  @Deprecated
+  public MotionObservable<T> filter(FilterOperation<T> filter) {
+    return compose(filter);
   }
 
   /**
@@ -280,7 +288,7 @@ public class MotionObservable<T> extends IndefiniteObservable<MotionObserver<T>>
   /**
    * Writes the values from an Observable onto the given inline property.
    */
-  public MotionObservable<T> write(final ScopedWritable<T> property) {
+  public MotionObservable<T> write(ScopedWritable<T> property) {
     return compose(property);
   }
 }

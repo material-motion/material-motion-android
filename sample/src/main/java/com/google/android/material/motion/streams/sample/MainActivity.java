@@ -33,6 +33,8 @@ import com.google.android.material.motion.gestures.DragGestureRecognizer;
 import com.google.android.material.motion.observable.IndefiniteObservable;
 import com.google.android.material.motion.observable.IndefiniteObservable.Subscription;
 import com.google.android.material.motion.streams.MotionObservable;
+import com.google.android.material.motion.streams.MotionObservable.FilterOperation;
+import com.google.android.material.motion.streams.MotionObservable.MapOperation;
 import com.google.android.material.motion.streams.MotionObservable.MotionObserver;
 import com.google.android.material.motion.streams.MotionObservable.MotionState;
 import com.google.android.material.motion.streams.MotionObservable.ScopedWritable;
@@ -97,14 +99,14 @@ public class MainActivity extends AppCompatActivity {
       });
 
     MotionObservable<CharSequence> stream = observable
-      .filter(new MotionObservable.Predicate<String>() {
+      .compose(new FilterOperation<String>() {
 
         @Override
-        public boolean evaluate(String value) {
+        public boolean filter(String value) {
           return !"skip".equals(value);
         }
       })
-      .map(new MotionObservable.Transformation<String, CharSequence>() {
+      .compose(new MapOperation<String, CharSequence>() {
 
         @Override
         public CharSequence transform(String value) {
