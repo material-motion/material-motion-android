@@ -110,7 +110,7 @@ public class MotionObservable<T> extends IndefiniteObservable<MotionObserver<T>>
      *
      * @param value The incoming value.
      */
-    public abstract void next(MotionObserver<U> observer, T value);
+    public abstract void next(Observer<U> observer, T value);
   }
 
   /**
@@ -127,7 +127,7 @@ public class MotionObservable<T> extends IndefiniteObservable<MotionObserver<T>>
     public abstract U transform(T value);
 
     @Override
-    public final void next(MotionObserver<U> observer, T value) {
+    public final void next(Observer<U> observer, T value) {
       observer.next(transform(value));
     }
   }
@@ -143,7 +143,7 @@ public class MotionObservable<T> extends IndefiniteObservable<MotionObserver<T>>
     public abstract boolean filter(T value);
 
     @Override
-    public void next(MotionObserver<T> observer, T value) {
+    public void next(Observer<T> observer, T value) {
       if (filter(value)) {
         observer.next(value);
       }
@@ -161,7 +161,7 @@ public class MotionObservable<T> extends IndefiniteObservable<MotionObserver<T>>
     public abstract T read();
 
     @Override
-    public void next(MotionObserver<T> observer, T value) {
+    public void next(Observer<T> observer, T value) {
       observer.next(read());
     }
   }
@@ -177,7 +177,7 @@ public class MotionObservable<T> extends IndefiniteObservable<MotionObserver<T>>
     public abstract void write(T value);
 
     @Override
-    public void next(MotionObserver<T> observer, T value) {
+    public void next(Observer<T> observer, T value) {
       write(value);
       observer.next(value);
     }
