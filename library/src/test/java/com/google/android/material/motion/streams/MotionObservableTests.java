@@ -16,7 +16,7 @@
 package com.google.android.material.motion.streams;
 
 import android.app.Activity;
-import android.support.annotation.Nullable;
+import android.support.annotation.NonNull;
 import android.view.View;
 
 import com.google.android.material.motion.observable.IndefiniteObservable;
@@ -43,13 +43,13 @@ public class MotionObservableTests {
   @Before
   public void setUp() {
     observable = new MotionObservable<>(
-      new IndefiniteObservable.Subscriber<MotionObserver<Float>>() {
-        @Nullable
+      new IndefiniteObservable.Connector<MotionObserver<Float>>() {
+        @NonNull
         @Override
-        public IndefiniteObservable.Unsubscriber subscribe(MotionObserver<Float> observer) {
+        public IndefiniteObservable.Disconnector connect(MotionObserver<Float> observer) {
           observer.next(5f);
           observer.state(ACTIVE);
-          return null;
+          return IndefiniteObservable.Disconnector.NO_OP;
         }
       });
   }

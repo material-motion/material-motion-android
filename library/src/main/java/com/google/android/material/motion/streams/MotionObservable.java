@@ -16,7 +16,7 @@
 package com.google.android.material.motion.streams;
 
 import android.support.annotation.IntDef;
-import android.support.annotation.Nullable;
+import android.support.annotation.NonNull;
 import android.util.Property;
 import android.view.View;
 import android.widget.TextView;
@@ -46,8 +46,8 @@ public class MotionObservable<T> extends IndefiniteObservable<MotionObserver<T>>
    */
   public static final int ACTIVE = 1;
 
-  public MotionObservable(Subscriber<MotionObserver<T>> subscriber) {
-    super(subscriber);
+  public MotionObservable(Connector<MotionObserver<T>> connector) {
+    super(connector);
   }
 
   /**
@@ -225,10 +225,10 @@ public class MotionObservable<T> extends IndefiniteObservable<MotionObserver<T>>
   public <U> MotionObservable<U> compose(final Operation<? super T, U> operation) {
     final MotionObservable<T> upstream = MotionObservable.this;
 
-    return new MotionObservable<>(new Subscriber<MotionObserver<U>>() {
-      @Nullable
+    return new MotionObservable<>(new Connector<MotionObserver<U>>() {
+      @NonNull
       @Override
-      public Unsubscriber subscribe(final MotionObserver<U> observer) {
+      public Disconnector connect(final MotionObserver<U> observer) {
         final Subscription subscription = upstream.subscribe(new MotionObserver<T>() {
           @Override
           public void next(T value) {
@@ -241,9 +241,9 @@ public class MotionObservable<T> extends IndefiniteObservable<MotionObserver<T>>
           }
         });
 
-        return new Unsubscriber() {
+        return new Disconnector() {
           @Override
-          public void unsubscribe() {
+          public void disconnect() {
             subscription.unsubscribe();
           }
         };

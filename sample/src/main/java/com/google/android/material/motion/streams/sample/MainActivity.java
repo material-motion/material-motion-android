@@ -19,7 +19,7 @@ import android.graphics.Color;
 import android.graphics.PointF;
 import android.graphics.Typeface;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Spannable;
 import android.text.SpannableString;
@@ -30,9 +30,8 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.google.android.material.motion.gestures.DragGestureRecognizer;
-import com.google.android.material.motion.observable.IndefiniteObservable.Subscriber;
+import com.google.android.material.motion.observable.IndefiniteObservable;
 import com.google.android.material.motion.observable.IndefiniteObservable.Subscription;
-import com.google.android.material.motion.observable.IndefiniteObservable.Unsubscriber;
 import com.google.android.material.motion.streams.MotionObservable;
 import com.google.android.material.motion.streams.MotionObservable.MotionObserver;
 import com.google.android.material.motion.streams.MotionObservable.MotionState;
@@ -81,16 +80,16 @@ public class MainActivity extends AppCompatActivity {
 
   private void runDemo1() {
     final MotionObservable<String> observable = new MotionObservable<>(
-      new Subscriber<MotionObserver<String>>() {
+      new IndefiniteObservable.Connector<MotionObserver<String>>() {
 
-        @Nullable
+        @NonNull
         @Override
-        public Unsubscriber subscribe(MotionObserver<String> observer) {
+        public IndefiniteObservable.Disconnector connect(MotionObserver<String> observer) {
           registerButtonCallback(observer);
-          return new Unsubscriber() {
+          return new IndefiniteObservable.Disconnector() {
 
             @Override
-            public void unsubscribe() {
+            public void disconnect() {
               unregisterButtonCallback();
             }
           };
@@ -102,7 +101,7 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public boolean evaluate(String value) {
-          return value != "skip";
+          return !"skip".equals(value);
         }
       })
       .map(new MotionObservable.Transformation<String, CharSequence>() {

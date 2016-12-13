@@ -17,7 +17,6 @@ package com.google.android.material.motion.streams.gestures;
 
 import android.graphics.PointF;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 
 import com.google.android.material.motion.gestures.BuildConfig;
 import com.google.android.material.motion.observable.IndefiniteObservable;
@@ -66,14 +65,14 @@ public class PointFOperatorsTests {
 
   @NonNull
   private MotionObservable<PointF> pointFSource() {
-    return new MotionObservable<>(new IndefiniteObservable.Subscriber<MotionObservable.MotionObserver<PointF>>() {
-      @Nullable
+    return new MotionObservable<>(new IndefiniteObservable.Connector<MotionObservable.MotionObserver<PointF>>() {
+      @NonNull
       @Override
-      public IndefiniteObservable.Unsubscriber subscribe(MotionObservable.MotionObserver<PointF> observer) {
+      public IndefiniteObservable.Disconnector connect(MotionObservable.MotionObserver<PointF> observer) {
         observer.next(new PointF(1f, 2f));
         observer.next(new PointF(3f, 4f));
         observer.next(new PointF(5f, 6f));
-        return null;
+        return IndefiniteObservable.Disconnector.NO_OP;
       }
     });
   }

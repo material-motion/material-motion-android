@@ -15,13 +15,13 @@
  */
 package com.google.android.material.motion.streams.gestures;
 
-import android.support.annotation.Nullable;
+import android.support.annotation.NonNull;
 import android.support.annotation.VisibleForTesting;
 
 import com.google.android.material.motion.gestures.GestureRecognizer;
 import com.google.android.material.motion.gestures.GestureRecognizer.GestureStateChangeListener;
-import com.google.android.material.motion.observable.IndefiniteObservable.Subscriber;
-import com.google.android.material.motion.observable.IndefiniteObservable.Unsubscriber;
+import com.google.android.material.motion.observable.IndefiniteObservable.Connector;
+import com.google.android.material.motion.observable.IndefiniteObservable.Disconnector;
 import com.google.android.material.motion.streams.MotionObservable;
 import com.google.android.material.motion.streams.MotionObservable.MotionObserver;
 
@@ -39,14 +39,14 @@ public final class GestureSource {
    * Creates a gesture source that will compose to the provided gesture recognizer.
    */
   public static <T extends GestureRecognizer> MotionObservable<T> from(final T gesture) {
-    return new MotionObservable<>(new Subscriber<MotionObserver<T>>() {
-      @Nullable
+    return new MotionObservable<>(new Connector<MotionObserver<T>>() {
+      @NonNull
       @Override
-      public Unsubscriber subscribe(MotionObserver<T> observer) {
-        final GestureConnection connection = new GestureConnection(gesture, observer);
-        return new Unsubscriber() {
+      public Disconnector connect(MotionObserver<T> observer) {
+        final GestureConnection connection = new GestureConnection<>(gesture, observer);
+        return new Disconnector() {
           @Override
-          public void unsubscribe() {
+          public void disconnect() {
             connection.disconnect();
           }
         };
@@ -59,7 +59,7 @@ public final class GestureSource {
     private final T gesture;
     private final MotionObserver<T> observer;
 
-    public GestureConnection(
+    private GestureConnection(
       T gesture, MotionObserver<T> observer) {
       this.gesture = gesture;
       this.observer = observer;
@@ -69,7 +69,7 @@ public final class GestureSource {
       propagate();
     }
 
-    public void disconnect() {
+    private void disconnect() {
       gesture.removeStateChangeListener(gestureStateChangeListener);
     }
 
