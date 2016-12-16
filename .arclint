@@ -19,6 +19,7 @@
         "(^CHANGELOG.md)"
       ],
       "severity": {
+        "consistency.spacing": "disabled",
         "typography.symbols.curly_quotes": "disabled",
         "typography.symbols.ellipsis": "disabled",
         "leonard.exclamation.30ppm": "disabled",

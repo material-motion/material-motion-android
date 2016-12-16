@@ -3,14 +3,14 @@ language: android
 jdk: oraclejdk8
 env:
   matrix:
-    - ANDROID_TARGET=android-24
+    - ANDROID_TARGET=android-25
 
 android:
   components:
     - platform-tools
     - tools
-    - android-24
-    - build-tools-24.0.3
+    - android-25
+    - build-tools-25.0.0
 
 licenses:
   - 'android-sdk-license-.+'
