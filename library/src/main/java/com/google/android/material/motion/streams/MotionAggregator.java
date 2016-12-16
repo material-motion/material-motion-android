@@ -38,7 +38,12 @@ public final class MotionAggregator {
   private final List<Subscription> subscriptions = new ArrayList<>();
   private final Set<MotionObserver<?>> activeObservers = new HashSet<>();
   @MotionState
-  private int aggregateState;
+  private int aggregateState = AT_REST;
+
+  @MotionState
+  public int getAggregateState() {
+    return aggregateState;
+  }
 
   /**
    * Subscribes to the stream, writes its output to the given property, and observes its state.
@@ -77,15 +82,11 @@ public final class MotionAggregator {
   }
 
   private void onObserverStateChange(MotionObserver<?> observer, @MotionState int state) {
-    boolean changed = false;
-
-    switch (state) {
-      case ACTIVE:
-        changed = activeObservers.add(observer);
-        break;
-      case AT_REST:
-        changed = activeObservers.remove(observer);
-        break;
+    boolean changed;
+    if (state == ACTIVE) {
+      changed = activeObservers.add(observer);
+    } else {
+      changed = activeObservers.remove(observer);
     }
 
     if (changed) {
