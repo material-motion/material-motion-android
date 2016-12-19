@@ -13,12 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.google.android.material.motion.streams.gestures;
+package com.google.android.material.motion.streams.sources;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.VisibleForTesting;
 
 import com.google.android.material.motion.gestures.GestureRecognizer;
+import com.google.android.material.motion.gestures.GestureRecognizer.GestureRecognizerState;
 import com.google.android.material.motion.gestures.GestureRecognizer.GestureStateChangeListener;
 import com.google.android.material.motion.observable.IndefiniteObservable.Connector;
 import com.google.android.material.motion.observable.IndefiniteObservable.Disconnector;
@@ -36,7 +37,7 @@ public final class GestureSource {
   }
 
   /**
-   * Creates a gesture source that will compose to the provided gesture recognizer.
+   * Creates a gesture source that will connect to the provided gesture recognizer.
    */
   public static <T extends GestureRecognizer> MotionObservable<T> from(final T gesture) {
     return new MotionObservable<>(new Connector<MotionObserver<T>>() {
@@ -74,7 +75,7 @@ public final class GestureSource {
     }
 
     private void propagate() {
-      int state = gesture.getState();
+      @GestureRecognizerState int state = gesture.getState();
       boolean isActive = state == GestureRecognizer.BEGAN || state == GestureRecognizer.CHANGED;
 
       if (isActive) {

@@ -38,13 +38,13 @@ import com.google.android.material.motion.streams.MotionObservable.MapOperation;
 import com.google.android.material.motion.streams.MotionObservable.MotionObserver;
 import com.google.android.material.motion.streams.MotionObservable.MotionState;
 import com.google.android.material.motion.streams.MotionObservable.ScopedWritable;
-import com.google.android.material.motion.streams.gestures.GestureSource;
+import com.google.android.material.motion.streams.sources.GestureSource;
 
 import java.util.Locale;
 
 import static com.google.android.material.motion.streams.MotionObservable.ACTIVE;
 import static com.google.android.material.motion.streams.MotionObservable.AT_REST;
-import static com.google.android.material.motion.streams.gestures.GestureOperators.centroid;
+import static com.google.android.material.motion.streams.operators.GestureOperators.centroid;
 
 /**
  * Streams for Android sample Activity.
