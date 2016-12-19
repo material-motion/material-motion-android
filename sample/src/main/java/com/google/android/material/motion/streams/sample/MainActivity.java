@@ -15,20 +15,26 @@
  */
 package com.google.android.material.motion.streams.sample;
 
+import android.animation.ArgbEvaluator;
 import android.graphics.Color;
 import android.graphics.PointF;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v4.view.MotionEventCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.style.StyleSpan;
 import android.util.Property;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.facebook.rebound.Spring;
+import com.facebook.rebound.SpringConfig;
+import com.facebook.rebound.SpringSystem;
 import com.google.android.material.motion.gestures.DragGestureRecognizer;
 import com.google.android.material.motion.observable.IndefiniteObservable;
 import com.google.android.material.motion.observable.IndefiniteObservable.Subscription;
@@ -39,6 +45,7 @@ import com.google.android.material.motion.streams.MotionObservable.MotionObserve
 import com.google.android.material.motion.streams.MotionObservable.MotionState;
 import com.google.android.material.motion.streams.MotionObservable.ScopedWritable;
 import com.google.android.material.motion.streams.sources.GestureSource;
+import com.google.android.material.motion.streams.sources.ReboundSpringSource;
 
 import java.util.Locale;
 
@@ -55,11 +62,15 @@ public class MainActivity extends AppCompatActivity {
     "foo", "skip", "bar", "baz", "qux"
   };
 
+  private final SpringSystem springSystem = SpringSystem.create();
+
   private TextView text;
   private Button nextButton;
   private Button unsubscribeButton;
 
   private View dragTarget;
+
+  private View springTarget;
 
   private MotionObserver<String> callback;
   private int index = 0;
@@ -76,8 +87,10 @@ public class MainActivity extends AppCompatActivity {
 
     dragTarget = findViewById(R.id.drag_target);
 
+    springTarget = findViewById(R.id.spring_target);
     runDemo1();
     runDemo2();
+    runDemo3();
   }
 
   private void runDemo1() {
@@ -175,6 +188,50 @@ public class MainActivity extends AppCompatActivity {
           @Override
           public void write(PointF value) {
             text.setText(String.format(Locale.getDefault(), "[%f, %f]", value.x, value.y));
+          }
+        });
+    observable.subscribe();
+  }
+
+  private void runDemo3() {
+    final Spring spring = springSystem.createSpring();
+    spring.setSpringConfig(SpringConfig.fromOrigamiTensionAndFriction(1, 5));
+
+    springTarget.setOnTouchListener(new View.OnTouchListener() {
+      @Override
+      public boolean onTouch(View view, MotionEvent motionEvent) {
+        int action = MotionEventCompat.getActionMasked(motionEvent);
+
+        switch (action) {
+          case MotionEvent.ACTION_DOWN:
+            spring.setEndValue(1f);
+            break;
+          case MotionEvent.ACTION_UP:
+            spring.setEndValue(0f);
+            break;
+        }
+
+        return true;
+      }
+    });
+
+    final ArgbEvaluator evaluator = new ArgbEvaluator();
+
+    MotionObservable<Integer> observable =
+      ReboundSpringSource
+        .from(spring)
+        .compose(new MapOperation<Double, Integer>() {
+          @Override
+          public Integer transform(Double value) {
+            value = Math.max(0, Math.min(1, value));
+            int color = (int) evaluator.evaluate(value.floatValue(), Color.RED, Color.GREEN);
+            return color;
+          }
+        })
+        .write(new ScopedWritable<Integer>() {
+          @Override
+          public void write(Integer value) {
+            springTarget.setBackgroundColor(value);
           }
         });
     observable.subscribe();

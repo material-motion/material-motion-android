@@ -41,5 +41,13 @@
     android:id="@+id/drag_target"
     android:layout_width="200dp"
     android:layout_height="200dp"
+    android:layout_margin="5dp"
+    android:background="#ff0000"/>
+
+  <View
+    android:id="@+id/spring_target"
+    android:layout_width="200dp"
+    android:layout_height="200dp"
+    android:layout_margin="5dp"
     android:background="#ff0000"/>
 </LinearLayout>
