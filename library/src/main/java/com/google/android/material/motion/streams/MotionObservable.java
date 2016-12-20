@@ -153,34 +153,23 @@ public class MotionObservable<T> extends IndefiniteObservable<MotionObserver<T>>
   /**
    * A property that can be read into a MotionObservable stream.
    */
-  public static abstract class ScopedReadable<T> extends Operation<T, T> {
+  public interface ScopedReadable<T> {
 
     /**
      * Reads the property's value.
      */
-    public abstract T read();
-
-    @Override
-    public void next(Observer<T> observer, T value) {
-      observer.next(read());
-    }
+    T read();
   }
 
   /**
    * A property that can be written from a MotionObservable stream.
    */
-  public static abstract class ScopedWritable<T> extends Operation<T, T> {
+  public interface ScopedWritable<T> {
 
     /**
      * Writes the property with the given value.
      */
-    public abstract void write(T value);
-
-    @Override
-    public void next(Observer<T> observer, T value) {
-      write(value);
-      observer.next(value);
-    }
+    void write(T value);
   }
 
   /**
@@ -189,7 +178,7 @@ public class MotionObservable<T> extends IndefiniteObservable<MotionObserver<T>>
    * @deprecated in #develop#. Use {@link ScopedReadable} instead.
    */
   @Deprecated
-  public static abstract class InlineReadable<T> extends ScopedReadable<T> {
+  public interface InlineReadable<T> extends ScopedReadable<T> {
   }
 
   /**
@@ -198,7 +187,7 @@ public class MotionObservable<T> extends IndefiniteObservable<MotionObserver<T>>
    * @deprecated in #develop#. Use {@link ScopedWritable} instead.
    */
   @Deprecated
-  public static abstract class InlineWritable<T> extends ScopedWritable<T> {
+  public interface InlineWritable<T> extends ScopedWritable<T> {
   }
 
   /**
@@ -277,10 +266,11 @@ public class MotionObservable<T> extends IndefiniteObservable<MotionObserver<T>>
    * Writes the values from an Observable onto the given unscoped property.
    */
   public <O> MotionObservable<T> write(final O target, final Property<O, T> property) {
-    return compose(new ScopedWritable<T>() {
+    return compose(new Operation<T, T>() {
       @Override
-      public void write(T value) {
+      public void next(Observer<T> observer, T value) {
         property.set(target, value);
+        observer.next(value);
       }
     });
   }
@@ -288,7 +278,13 @@ public class MotionObservable<T> extends IndefiniteObservable<MotionObserver<T>>
   /**
    * Writes the values from an Observable onto the given inline property.
    */
-  public MotionObservable<T> write(ScopedWritable<T> property) {
-    return compose(property);
+  public MotionObservable<T> write(final ScopedWritable<T> property) {
+    return compose(new Operation<T, T>() {
+      @Override
+      public void next(Observer<T> observer, T value) {
+        property.write(value);
+        observer.next(value);
+      }
+    });
   }
 }
