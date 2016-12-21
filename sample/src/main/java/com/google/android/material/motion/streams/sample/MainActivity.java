@@ -207,6 +207,7 @@ public class MainActivity extends AppCompatActivity {
             spring.setEndValue(1f);
             break;
           case MotionEvent.ACTION_UP:
+          case MotionEvent.ACTION_CANCEL:
             spring.setEndValue(0f);
             break;
         }
