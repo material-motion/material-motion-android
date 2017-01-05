@@ -31,18 +31,18 @@ import static com.google.android.material.motion.streams.MotionObservable.ACTIVE
 import static com.google.android.material.motion.streams.MotionObservable.AT_REST;
 
 /**
- * A MotionAggregator writes the output of streams to properties and observes their overall state.
+ * A MotionRuntime writes the output of streams to properties and observes their overall state.
  */
-public final class MotionAggregator {
+public final class MotionRuntime {
 
   private final List<Subscription> subscriptions = new ArrayList<>();
   private final Set<MotionObserver<?>> activeObservers = new HashSet<>();
   @MotionState
-  private int aggregateState = AT_REST;
+  private int state = AT_REST;
 
   @MotionState
-  public int getAggregateState() {
-    return aggregateState;
+  public int getState() {
+    return state;
   }
 
   /**
@@ -90,13 +90,13 @@ public final class MotionAggregator {
     }
 
     if (changed) {
-      onAggregateStateChange(activeObservers.isEmpty() ? AT_REST : ACTIVE);
+      onStateChange(activeObservers.isEmpty() ? AT_REST : ACTIVE);
     }
   }
 
-  private void onAggregateStateChange(@MotionState int aggregateState) {
-    if (this.aggregateState != aggregateState) {
-      this.aggregateState = aggregateState;
+  private void onStateChange(@MotionState int state) {
+    if (this.state != state) {
+      this.state = state;
     }
   }
 }

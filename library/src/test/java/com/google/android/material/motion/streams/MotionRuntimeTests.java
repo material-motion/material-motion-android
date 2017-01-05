@@ -33,20 +33,20 @@ import static com.google.common.truth.Truth.assertThat;
 
 @RunWith(RobolectricTestRunner.class)
 @Config(constants = BuildConfig.class, sdk = 21)
-public class MotionAggregatorTests {
+public class MotionRuntimeTests {
 
   private static final float E = 0.0001f;
 
-  private MotionAggregator aggregator;
+  private MotionRuntime runtime;
 
   @Before
   public void setUp() {
-    aggregator = new MotionAggregator();
+    runtime = new MotionRuntime();
   }
 
   @Test
   public void defaultStateAtRest() {
-    assertThat(aggregator.getAggregateState()).isEqualTo(AT_REST);
+    assertThat(runtime.getState()).isEqualTo(AT_REST);
   }
 
   @Test
@@ -54,7 +54,7 @@ public class MotionAggregatorTests {
     SimulatedMotionSource<Float> source = new SimulatedMotionSource<>();
     MotionObservable<Float> stream = source.getObservable();
 
-    aggregator.write(stream, new MotionObservable.ScopedWritable<Float>() {
+    runtime.write(stream, new MotionObservable.ScopedWritable<Float>() {
       @Override
       public void write(Float value) {
         assertThat(value).isWithin(E).of(5f);
@@ -70,7 +70,7 @@ public class MotionAggregatorTests {
 
     View target = new View(Robolectric.setupActivity(Activity.class));
 
-    aggregator.write(stream, target, View.TRANSLATION_X);
+    runtime.write(stream, target, View.TRANSLATION_X);
     source.next(5f);
     assertThat(target.getTranslationX()).isWithin(E).of(5f);
   }
@@ -80,15 +80,15 @@ public class MotionAggregatorTests {
     SimulatedMotionSource<Float> source = new SimulatedMotionSource<>();
     MotionObservable<Float> stream = source.getObservable();
 
-    aggregator.write(stream, new MotionObservable.ScopedWritable<Float>() {
+    runtime.write(stream, new MotionObservable.ScopedWritable<Float>() {
       @Override
       public void write(Float value) {
       }
     });
 
-    assertThat(aggregator.getAggregateState()).isEqualTo(AT_REST);
+    assertThat(runtime.getState()).isEqualTo(AT_REST);
     source.state(MotionObservable.ACTIVE);
-    assertThat(aggregator.getAggregateState()).isEqualTo(ACTIVE);
+    assertThat(runtime.getState()).isEqualTo(ACTIVE);
   }
 
   @Test
@@ -96,13 +96,13 @@ public class MotionAggregatorTests {
     SimulatedMotionSource<Float> source = new SimulatedMotionSource<>();
     MotionObservable<Float> stream = source.getObservable();
 
-    aggregator.write(stream, null, null);
+    runtime.write(stream, null, null);
 
-    assertThat(aggregator.getAggregateState()).isEqualTo(AT_REST);
+    assertThat(runtime.getState()).isEqualTo(AT_REST);
     source.state(MotionObservable.ACTIVE);
-    assertThat(aggregator.getAggregateState()).isEqualTo(ACTIVE);
+    assertThat(runtime.getState()).isEqualTo(ACTIVE);
     source.state(MotionObservable.AT_REST);
-    assertThat(aggregator.getAggregateState()).isEqualTo(AT_REST);
+    assertThat(runtime.getState()).isEqualTo(AT_REST);
   }
 
   @Test
@@ -110,14 +110,14 @@ public class MotionAggregatorTests {
     SimulatedMotionSource<Float> source = new SimulatedMotionSource<>();
     MotionObservable<Float> stream = source.getObservable();
 
-    aggregator.write(stream, null, null);
+    runtime.write(stream, null, null);
 
-    assertThat(aggregator.getAggregateState()).isEqualTo(AT_REST);
+    assertThat(runtime.getState()).isEqualTo(AT_REST);
     source.state(MotionObservable.ACTIVE);
     source.state(MotionObservable.ACTIVE);
-    assertThat(aggregator.getAggregateState()).isEqualTo(ACTIVE);
+    assertThat(runtime.getState()).isEqualTo(ACTIVE);
     source.state(MotionObservable.AT_REST);
-    assertThat(aggregator.getAggregateState()).isEqualTo(AT_REST);
+    assertThat(runtime.getState()).isEqualTo(AT_REST);
   }
 
   @Test
@@ -125,14 +125,14 @@ public class MotionAggregatorTests {
     SimulatedMotionSource<Float> source = new SimulatedMotionSource<>();
     MotionObservable<Float> stream = source.getObservable();
 
-    aggregator.write(stream, null, null);
+    runtime.write(stream, null, null);
 
-    assertThat(aggregator.getAggregateState()).isEqualTo(AT_REST);
+    assertThat(runtime.getState()).isEqualTo(AT_REST);
     source.state(MotionObservable.ACTIVE);
-    assertThat(aggregator.getAggregateState()).isEqualTo(ACTIVE);
+    assertThat(runtime.getState()).isEqualTo(ACTIVE);
     source.state(MotionObservable.AT_REST);
     source.state(MotionObservable.AT_REST);
-    assertThat(aggregator.getAggregateState()).isEqualTo(AT_REST);
+    assertThat(runtime.getState()).isEqualTo(AT_REST);
   }
 
   @Test
@@ -140,19 +140,19 @@ public class MotionAggregatorTests {
     SimulatedMotionSource<Float> source1 = new SimulatedMotionSource<>();
     SimulatedMotionSource<Float> source2 = new SimulatedMotionSource<>();
 
-    aggregator.write(source1.getObservable(), null, null);
-    aggregator.write(source2.getObservable(), null, null);
+    runtime.write(source1.getObservable(), null, null);
+    runtime.write(source2.getObservable(), null, null);
 
-    assertThat(aggregator.getAggregateState()).isEqualTo(AT_REST);
+    assertThat(runtime.getState()).isEqualTo(AT_REST);
 
     source1.state(MotionObservable.ACTIVE);
-    assertThat(aggregator.getAggregateState()).isEqualTo(ACTIVE);
+    assertThat(runtime.getState()).isEqualTo(ACTIVE);
     source2.state(MotionObservable.ACTIVE);
-    assertThat(aggregator.getAggregateState()).isEqualTo(ACTIVE);
+    assertThat(runtime.getState()).isEqualTo(ACTIVE);
 
     source1.state(MotionObservable.AT_REST);
-    assertThat(aggregator.getAggregateState()).isEqualTo(ACTIVE);
+    assertThat(runtime.getState()).isEqualTo(ACTIVE);
     source2.state(MotionObservable.AT_REST);
-    assertThat(aggregator.getAggregateState()).isEqualTo(AT_REST);
+    assertThat(runtime.getState()).isEqualTo(AT_REST);
   }
 }
