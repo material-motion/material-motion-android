@@ -28,7 +28,7 @@ import com.google.android.material.motion.streams.MotionObservable.MotionObserve
 /**
  * A source for rebound springs.
  */
-public final class ReboundSpringSource {
+public final class ReboundSpringSource extends SpringSource {
 
   private static final ReboundSpringSource SPRING_SOURCE = new ReboundSpringSource();
 
