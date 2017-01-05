@@ -115,9 +115,4 @@ public class GestureSourceTests {
     gesture.setState(RECOGNIZED);
     assertThat(tracker.states).isEqualTo(Arrays.asList(AT_REST, ACTIVE, ACTIVE, AT_REST, AT_REST));
   }
-
-  @Test(expected = UnsupportedOperationException.class)
-  public void constructorIsDisabled() {
-    new GestureSource();
-  }
 }

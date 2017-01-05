@@ -16,7 +16,6 @@
 package com.google.android.material.motion.streams.sources;
 
 import android.support.annotation.NonNull;
-import android.support.annotation.VisibleForTesting;
 
 import com.facebook.rebound.SimpleSpringListener;
 import com.facebook.rebound.Spring;
@@ -31,15 +30,19 @@ import com.google.android.material.motion.streams.MotionObservable.MotionObserve
  */
 public final class ReboundSpringSource {
 
-  @VisibleForTesting
-  ReboundSpringSource() {
-    throw new UnsupportedOperationException();
-  }
+  private static final ReboundSpringSource SPRING_SOURCE = new ReboundSpringSource();
 
   /**
    * Creates a spring source that will connect to the provided rebound spring.
    */
   public static MotionObservable<Double> from(final Spring spring) {
+    return SPRING_SOURCE.create(spring);
+  }
+
+  /**
+   * Creates a spring source that will connect to the provided rebound spring.
+   */
+  public MotionObservable<Double> create(final Spring spring) {
     return new MotionObservable<>(new Connector<MotionObserver<Double>>() {
       @NonNull
       @Override

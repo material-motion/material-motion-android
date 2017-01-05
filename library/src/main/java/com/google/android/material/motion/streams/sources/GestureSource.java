@@ -16,7 +16,6 @@
 package com.google.android.material.motion.streams.sources;
 
 import android.support.annotation.NonNull;
-import android.support.annotation.VisibleForTesting;
 
 import com.google.android.material.motion.gestures.GestureRecognizer;
 import com.google.android.material.motion.gestures.GestureRecognizer.GestureRecognizerState;
@@ -31,15 +30,19 @@ import com.google.android.material.motion.streams.MotionObservable.MotionObserve
  */
 public final class GestureSource {
 
-  @VisibleForTesting
-  GestureSource() {
-    throw new UnsupportedOperationException();
+  private static final GestureSource GESTURE_SOURCE = new GestureSource();
+
+  /**
+   * Creates a gesture source that will connect to the provided gesture recognizer.
+   */
+  public static <T extends GestureRecognizer> MotionObservable<T> from(T gesture) {
+    return GESTURE_SOURCE.create(gesture);
   }
 
   /**
    * Creates a gesture source that will connect to the provided gesture recognizer.
    */
-  public static <T extends GestureRecognizer> MotionObservable<T> from(final T gesture) {
+  public <T extends GestureRecognizer> MotionObservable<T> create(final T gesture) {
     return new MotionObservable<>(new Connector<MotionObserver<T>>() {
       @NonNull
       @Override
