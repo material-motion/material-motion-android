@@ -19,11 +19,14 @@ import android.support.annotation.NonNull;
 
 import com.facebook.rebound.SimpleSpringListener;
 import com.facebook.rebound.Spring;
+import com.facebook.rebound.SpringConfig;
 import com.facebook.rebound.SpringListener;
+import com.facebook.rebound.SpringSystem;
 import com.google.android.material.motion.observable.IndefiniteObservable;
 import com.google.android.material.motion.observable.IndefiniteObservable.Connector;
 import com.google.android.material.motion.streams.MotionObservable;
 import com.google.android.material.motion.streams.MotionObservable.MotionObserver;
+import com.google.android.material.motion.streams.MotionObservable.SimpleMotionObserver;
 
 /**
  * A source for rebound springs.
@@ -31,23 +34,41 @@ import com.google.android.material.motion.streams.MotionObservable.MotionObserve
 public final class ReboundSpringSource extends SpringSource {
 
   private static final ReboundSpringSource SPRING_SOURCE = new ReboundSpringSource();
+  private final SpringSystem springSystem = SpringSystem.create();
 
   /**
-   * Creates a spring source that will connect to the provided rebound spring.
+   * Creates a spring source for a float spring.
    */
-  public static MotionObservable<Double> from(final Spring spring) {
+  public static MotionObservable<Float> from(MaterialSpring<Float> spring) {
     return SPRING_SOURCE.create(spring);
   }
 
-  /**
-   * Creates a spring source that will connect to the provided rebound spring.
-   */
-  public MotionObservable<Double> create(final Spring spring) {
-    return new MotionObservable<>(new Connector<MotionObserver<Double>>() {
+  @Override
+  public MotionObservable<Float> create(final MaterialSpring<Float> spring) {
+    return new MotionObservable<>(new Connector<MotionObserver<Float>>() {
       @NonNull
       @Override
-      public IndefiniteObservable.Disconnector connect(MotionObserver<Double> observer) {
-        final SpringConnection connection = new SpringConnection(spring, observer);
+      public IndefiniteObservable.Disconnector connect(MotionObserver<Float> observer) {
+        final Spring reboundSpring = springSystem.createSpring();
+
+        reboundSpring.setCurrentValue(spring.initialValue.read());
+
+        spring.destination.subscribe(new SimpleMotionObserver<Float>() {
+          @Override
+          public void next(Float value) {
+            reboundSpring.setEndValue(value);
+          }
+        });
+
+        spring.configuration.subscribe(new SimpleMotionObserver<SpringConfiguration>() {
+          @Override
+          public void next(SpringConfiguration config) {
+            reboundSpring.setSpringConfig(
+              SpringConfig.fromOrigamiTensionAndFriction(config.tension, config.friction));
+          }
+        });
+
+        final SpringConnection connection = new SpringConnection(reboundSpring, observer);
         return new IndefiniteObservable.Disconnector() {
           @Override
           public void disconnect() {
@@ -61,9 +82,9 @@ public final class ReboundSpringSource extends SpringSource {
   private static class SpringConnection {
 
     private final Spring spring;
-    private final MotionObserver<Double> observer;
+    private final MotionObserver<Float> observer;
 
-    private SpringConnection(Spring spring, MotionObserver<Double> observer) {
+    private SpringConnection(Spring spring, MotionObserver<Float> observer) {
       this.spring = spring;
       this.observer = observer;
 
@@ -83,7 +104,7 @@ public final class ReboundSpringSource extends SpringSource {
         observer.state(MotionObservable.ACTIVE);
       }
 
-      observer.next(spring.getCurrentValue());
+      observer.next((float) spring.getCurrentValue());
 
       if (!isActive) {
         observer.state(MotionObservable.AT_REST);

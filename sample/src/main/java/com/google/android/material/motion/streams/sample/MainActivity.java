@@ -32,9 +32,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
-import com.facebook.rebound.Spring;
-import com.facebook.rebound.SpringConfig;
-import com.facebook.rebound.SpringSystem;
 import com.google.android.material.motion.gestures.DragGestureRecognizer;
 import com.google.android.material.motion.observable.IndefiniteObservable;
 import com.google.android.material.motion.observable.IndefiniteObservable.Subscription;
@@ -43,9 +40,15 @@ import com.google.android.material.motion.streams.MotionObservable.FilterOperati
 import com.google.android.material.motion.streams.MotionObservable.MapOperation;
 import com.google.android.material.motion.streams.MotionObservable.MotionObserver;
 import com.google.android.material.motion.streams.MotionObservable.MotionState;
+import com.google.android.material.motion.streams.MotionObservable.ScopedReadable;
 import com.google.android.material.motion.streams.MotionObservable.ScopedWritable;
+import com.google.android.material.motion.streams.MotionObservable.ConstantProperty;
+import com.google.android.material.motion.streams.ReactiveProperty;
+import com.google.android.material.motion.streams.ReactiveProperty.ValueReactiveProperty;
 import com.google.android.material.motion.streams.sources.GestureSource;
 import com.google.android.material.motion.streams.sources.ReboundSpringSource;
+import com.google.android.material.motion.streams.sources.SpringSource.MaterialSpring;
+import com.google.android.material.motion.streams.sources.SpringSource.SpringConfiguration;
 
 import java.util.Locale;
 
@@ -61,8 +64,6 @@ public class MainActivity extends AppCompatActivity {
   private static final String[] values = new String[]{
     "foo", "skip", "bar", "baz", "qux"
   };
-
-  private final SpringSystem springSystem = SpringSystem.create();
 
   private TextView text;
   private Button nextButton;
@@ -194,8 +195,12 @@ public class MainActivity extends AppCompatActivity {
   }
 
   private void runDemo3() {
-    final Spring spring = springSystem.createSpring();
-    spring.setSpringConfig(SpringConfig.fromOrigamiTensionAndFriction(1, 5));
+    final ReactiveProperty<Float> destination = new ValueReactiveProperty<>(0f);
+    ScopedReadable<Float> initialValue = new ConstantProperty<>(0f);
+    ScopedReadable<Float> initialVelocity = new ConstantProperty<>(0f);
+    ScopedReadable<Float> threshold = new ConstantProperty<>(0.01f);
+    ReactiveProperty<SpringConfiguration> configuration =
+      new ValueReactiveProperty<>(new SpringConfiguration(1, 5));
 
     springTarget.setOnTouchListener(new View.OnTouchListener() {
       @Override
@@ -204,17 +209,20 @@ public class MainActivity extends AppCompatActivity {
 
         switch (action) {
           case MotionEvent.ACTION_DOWN:
-            spring.setEndValue(1f);
+            destination.write(1f);
             break;
           case MotionEvent.ACTION_UP:
           case MotionEvent.ACTION_CANCEL:
-            spring.setEndValue(0f);
+            destination.write(0f);
             break;
         }
 
         return true;
       }
     });
+
+    MaterialSpring<Float> spring =
+      new MaterialSpring<>(destination, initialValue, initialVelocity, threshold, configuration);
 
     final ArgbEvaluator evaluator = new ArgbEvaluator();
 

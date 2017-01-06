@@ -15,6 +15,9 @@
  */
 package com.google.android.material.motion.streams.sources;
 
+import com.google.android.material.motion.streams.MotionObservable;
+import com.google.android.material.motion.streams.MotionObservable.ScopedReadable;
+import com.google.android.material.motion.streams.MotionObservable.ConstantProperty;
 import com.google.android.material.motion.streams.ReactiveProperty;
 import com.google.android.material.motion.streams.ReactiveProperty.ValueReactiveProperty;
 
@@ -37,19 +40,19 @@ public abstract class SpringSource {
     public final ReactiveProperty<T> destination;
 
     /**
-     * The initial value of the spring represented as a property.
+     * The initial value of the spring represented as a readable.
      */
-    public final ReactiveProperty<T> initialValue;
+    public final ScopedReadable<T> initialValue;
 
     /**
-     * The initial velocity of the spring represented as a property.
+     * The initial velocity of the spring represented as a readable.
      */
-    public final ReactiveProperty<T> initialVelocity;
+    public final ScopedReadable<T> initialVelocity;
 
     /**
      * The value used when determining completion of the spring simulation.
      */
-    public final ReactiveProperty<Float> threshold;
+    public final ScopedReadable<Float> threshold;
 
     /**
      * The configuration of the spring represented as a property.
@@ -66,9 +69,9 @@ public abstract class SpringSource {
       float threshold,
       SpringConfiguration configuration) {
       this.destination = new ValueReactiveProperty<>(destination);
-      this.initialValue = new ValueReactiveProperty<>(initialValue);
-      this.initialVelocity = new ValueReactiveProperty<>(initialVelocity);
-      this.threshold = new ValueReactiveProperty<>(threshold);
+      this.initialValue = new ConstantProperty<>(initialValue);
+      this.initialVelocity = new ConstantProperty<>(initialVelocity);
+      this.threshold = new ConstantProperty<>(threshold);
       this.configuration = new ValueReactiveProperty<>(configuration);
     }
 
@@ -77,9 +80,9 @@ public abstract class SpringSource {
      */
     public MaterialSpring(
       ReactiveProperty<T> destination,
-      ReactiveProperty<T> initialValue,
-      ReactiveProperty<T> initialVelocity,
-      ReactiveProperty<Float> threshold,
+      ScopedReadable<T> initialValue,
+      ScopedReadable<T> initialVelocity,
+      ScopedReadable<Float> threshold,
       ReactiveProperty<SpringConfiguration> configuration) {
       this.destination = destination;
       this.initialValue = initialValue;
@@ -118,4 +121,9 @@ public abstract class SpringSource {
       this.friction = friction;
     }
   }
+
+  /**
+   * Creates a spring source for a float spring.
+   */
+  public abstract MotionObservable<Float> create(MaterialSpring<Float> spring);
 }

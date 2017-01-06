@@ -97,6 +97,16 @@ public class MotionObservable<T> extends IndefiniteObservable<MotionObserver<T>>
   }
 
   /**
+   * A simple observer for when you only want to implement {@link #next(Object)}.
+   */
+  public static abstract class SimpleMotionObserver<T> extends MotionObserver<T> {
+
+    public void state(@MotionState int state) {
+      // No-op.
+    }
+  }
+
+  /**
    * An operation is able to transform incoming values before choosing whether or not to pass them
    * downstream.
    *
@@ -159,6 +169,23 @@ public class MotionObservable<T> extends IndefiniteObservable<MotionObserver<T>>
      * Reads the property's value.
      */
     T read();
+  }
+
+  /**
+   * A simple scoped readable that holds a single value.
+   */
+  public static class ConstantProperty<T> implements ScopedReadable<T> {
+
+    private T value;
+
+    public ConstantProperty(T value) {
+      this.value = value;
+    }
+
+    @Override
+    public T read() {
+      return value;
+    }
   }
 
   /**
