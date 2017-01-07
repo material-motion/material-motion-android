@@ -39,6 +39,7 @@ dependencies {
   compile 'com.github.material-motion:indefinite-observable-android:develop-SNAPSHOT'
   compile 'com.github.material-motion:gestures-android:develop-SNAPSHOT'
   compile 'com.github.material-motion:family-rebound-android:1.1.0'
+  compile 'com.android.support:support-core-utils:25.1.0'
 
   testCompile 'com.google.truth:truth:0.28'
   testCompile 'junit:junit:4.12'

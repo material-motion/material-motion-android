@@ -15,7 +15,6 @@
  */
 package com.google.android.material.motion.streams.sample;
 
-import android.animation.ArgbEvaluator;
 import android.graphics.Color;
 import android.graphics.PointF;
 import android.graphics.Typeface;
@@ -47,7 +46,9 @@ import com.google.android.material.motion.streams.ReactiveProperty;
 import com.google.android.material.motion.streams.ReactiveProperty.ValueReactiveProperty;
 import com.google.android.material.motion.streams.sources.GestureSource;
 import com.google.android.material.motion.streams.sources.ReboundSpringSource;
-import com.google.android.material.motion.streams.sources.SpringSource.MaterialSpring;
+import com.google.android.material.motion.streams.springs.LabVectorizer;
+import com.google.android.material.motion.streams.springs.MaterialSpring;
+import com.google.android.material.motion.streams.springs.RgbVectorizer;
 
 import java.util.Locale;
 
@@ -194,9 +195,9 @@ public class MainActivity extends AppCompatActivity {
   }
 
   private void runDemo3() {
-    final ReactiveProperty<Float> destination = new ValueReactiveProperty<>(0f);
-    ScopedReadable<Float> initialValue = new ConstantProperty<>(0f);
-    ScopedReadable<Float> initialVelocity = new ConstantProperty<>(0f);
+    final ReactiveProperty<Integer> destination = new ValueReactiveProperty<>(Color.RED);
+    ScopedReadable<Integer> initialValue = new ConstantProperty<>(Color.RED);
+    ScopedReadable<Integer> initialVelocity = new ConstantProperty<>(0);
     ScopedReadable<Float> threshold = new ConstantProperty<>(0.01f);
 
     springTarget.setOnTouchListener(new View.OnTouchListener() {
@@ -206,11 +207,11 @@ public class MainActivity extends AppCompatActivity {
 
         switch (action) {
           case MotionEvent.ACTION_DOWN:
-            destination.write(1f);
+            destination.write(Color.GREEN);
             break;
           case MotionEvent.ACTION_UP:
           case MotionEvent.ACTION_CANCEL:
-            destination.write(0f);
+            destination.write(Color.RED);
             break;
         }
 
@@ -218,35 +219,32 @@ public class MainActivity extends AppCompatActivity {
       }
     });
 
-    MaterialSpring<Float> spring =
+    MaterialSpring<Integer> spring =
       new MaterialSpring<>(
         destination,
         initialValue,
         initialVelocity,
         threshold,
         new ValueReactiveProperty<>(1f),
-        new ValueReactiveProperty<>(5f));
+        new ValueReactiveProperty<>(10f));
 
-    final ArgbEvaluator evaluator = new ArgbEvaluator();
+    ReboundSpringSource
+      .from(spring, new RgbVectorizer())
+      .write(new ScopedWritable<Integer>() {
+        @Override
+        public void write(Integer value) {
+          springTarget.setBackgroundColor(value);
+        }
+      }).subscribe();
 
-    MotionObservable<Integer> observable =
-      ReboundSpringSource
-        .from(spring)
-        .compose(new MapOperation<Float, Integer>() {
-          @Override
-          public Integer transform(Float value) {
-            value = Math.max(0, Math.min(1, value));
-            int color = (int) evaluator.evaluate(value, Color.RED, Color.GREEN);
-            return color;
-          }
-        })
-        .write(new ScopedWritable<Integer>() {
-          @Override
-          public void write(Integer value) {
-            springTarget.setBackgroundColor(value);
-          }
-        });
-    observable.subscribe();
+    ReboundSpringSource
+      .from(spring, new LabVectorizer())
+      .write(new ScopedWritable<Integer>() {
+        @Override
+        public void write(Integer value) {
+          dragTarget.setBackgroundColor(value);
+        }
+      }).subscribe();
   }
 
   private CharSequence italicizeAndCapitalize(String value) {

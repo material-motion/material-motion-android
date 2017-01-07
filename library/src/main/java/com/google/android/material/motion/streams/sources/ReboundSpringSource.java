@@ -18,19 +18,25 @@ package com.google.android.material.motion.streams.sources;
 import android.support.annotation.NonNull;
 
 import com.facebook.rebound.OrigamiValueConverter;
-import com.facebook.rebound.SimpleSpringListener;
 import com.facebook.rebound.Spring;
 import com.facebook.rebound.SpringConfig;
-import com.facebook.rebound.SpringListener;
 import com.facebook.rebound.SpringSystem;
 import com.google.android.material.motion.observable.IndefiniteObservable;
 import com.google.android.material.motion.observable.IndefiniteObservable.Connector;
 import com.google.android.material.motion.streams.MotionObservable;
 import com.google.android.material.motion.streams.MotionObservable.MotionObserver;
 import com.google.android.material.motion.streams.MotionObservable.SimpleMotionObserver;
+import com.google.android.material.motion.streams.springs.MaterialSpring;
+import com.google.android.material.motion.streams.springs.MetaSpring;
+import com.google.android.material.motion.streams.springs.MetaSpring.MetaSpringListener;
+import com.google.android.material.motion.streams.springs.TypeVectorizer;
 
 /**
  * A source for rebound springs.
+ * <p>
+ * Rebound springs only support animating between float values. This class supports arbitrary T
+ * values by vectorizing the value into floats, and animating them individually using separate
+ * rebound springs.
  */
 public final class ReboundSpringSource extends SpringSource {
 
@@ -39,45 +45,71 @@ public final class ReboundSpringSource extends SpringSource {
 
   /**
    * Creates a spring source for a float spring.
+   * <p>
+   * The properties on the <code>spring</code> param may be changed to dynamically modify the
+   * behavior of this source.
    */
   public static MotionObservable<Float> from(MaterialSpring<Float> spring) {
     return SPRING_SOURCE.create(spring);
   }
 
+  /**
+   * Creates a spring source for a T valued spring.
+   * <p>
+   * The properties on the <code>spring</code> param may be changed to dynamically modify the
+   * behavior of this source.
+   */
+  public static <T> MotionObservable<T> from(MaterialSpring<T> spring, TypeVectorizer<T> vectorizer) {
+    return SPRING_SOURCE.create(spring, vectorizer);
+  }
+
   @Override
-  public MotionObservable<Float> create(final MaterialSpring<Float> spring) {
-    return new MotionObservable<>(new Connector<MotionObserver<Float>>() {
+  public <T> MotionObservable<T> create(
+    final MaterialSpring<T> spring, final TypeVectorizer<T> vectorizer) {
+    return new MotionObservable<>(new Connector<MotionObserver<T>>() {
       @NonNull
       @Override
-      public IndefiniteObservable.Disconnector connect(MotionObserver<Float> observer) {
-        final Spring reboundSpring = springSystem.createSpring();
-        reboundSpring.setSpringConfig(new SpringConfig(0, 0));
-
-        reboundSpring.setCurrentValue(spring.initialValue.read());
-
-        spring.destination.subscribe(new SimpleMotionObserver<Float>() {
-          @Override
-          public void next(Float value) {
-            reboundSpring.setEndValue(value);
-          }
-        });
+      public IndefiniteObservable.Disconnector connect(MotionObserver<T> observer) {
+        final SpringConfig springConfig = new SpringConfig(0, 0);
 
         spring.tension.subscribe(new SimpleMotionObserver<Float>() {
           @Override
           public void next(Float value) {
-            reboundSpring.getSpringConfig().tension =
-              OrigamiValueConverter.tensionFromOrigamiValue(value);
-          }
-        });
-        spring.friction.subscribe(new SimpleMotionObserver<Float>() {
-          @Override
-          public void next(Float value) {
-            reboundSpring.getSpringConfig().friction =
-              OrigamiValueConverter.frictionFromOrigamiValue(value);
+            springConfig.tension = OrigamiValueConverter.tensionFromOrigamiValue(value);
           }
         });
 
-        final SpringConnection connection = new SpringConnection(reboundSpring, observer);
+        spring.friction.subscribe(new SimpleMotionObserver<Float>() {
+          @Override
+          public void next(Float value) {
+            springConfig.friction = OrigamiValueConverter.frictionFromOrigamiValue(value);
+          }
+        });
+
+        final int count = vectorizer.getVectorLength();
+
+        final Spring[] reboundSprings = new Spring[count];
+        float[] initialValues = vectorizer.vectorize(spring.initialValue.read());
+
+        for (int i = 0; i < count; i++) {
+          reboundSprings[i] = springSystem.createSpring();
+          reboundSprings[i].setSpringConfig(springConfig);
+          reboundSprings[i].setCurrentValue(initialValues[i]);
+        }
+
+        spring.destination.subscribe(new SimpleMotionObserver<T>() {
+          @Override
+          public void next(T value) {
+            float[] endValues = vectorizer.vectorize(value);
+
+            for (int i = 0; i < count; i++) {
+              reboundSprings[i].setEndValue(endValues[i]);
+            }
+          }
+        });
+
+        final SpringConnection<T> connection =
+          new SpringConnection<>(reboundSprings, vectorizer, observer);
         return new IndefiniteObservable.Disconnector() {
           @Override
           public void disconnect() {
@@ -88,53 +120,40 @@ public final class ReboundSpringSource extends SpringSource {
     });
   }
 
-  private static class SpringConnection {
+  private static class SpringConnection<T> {
 
-    private final Spring spring;
-    private final MotionObserver<Float> observer;
+    private final MetaSpring spring;
+    private final TypeVectorizer<T> vectorizer;
+    private final MotionObserver<T> observer;
 
-    private SpringConnection(Spring spring, MotionObserver<Float> observer) {
-      this.spring = spring;
+    private SpringConnection(
+      Spring[] springs, TypeVectorizer<T> vectorizer, MotionObserver<T> observer) {
+      this.spring = new MetaSpring(springs);
+      this.vectorizer = vectorizer;
       this.observer = observer;
 
-      spring.addListener(springListener);
-
-      propagate();
+      this.spring.addListener(springListener);
     }
 
     private void disconnect() {
       spring.removeListener(springListener);
     }
 
-    private void propagate() {
-      boolean isActive = !spring.isAtRest();
-
-      if (isActive) {
+    private final MetaSpringListener springListener = new MetaSpringListener() {
+      @Override
+      public void onMetaSpringActivate() {
         observer.state(MotionObservable.ACTIVE);
       }
 
-      observer.next((float) spring.getCurrentValue());
+      @Override
+      public void onMetaSpringUpdate(float[] values) {
+        T value = vectorizer.compose(values);
+        observer.next(value);
+      }
 
-      if (!isActive) {
+      @Override
+      public void onMetaSpringAtRest() {
         observer.state(MotionObservable.AT_REST);
-      }
-    }
-
-    private final SpringListener springListener = new SimpleSpringListener() {
-
-      @Override
-      public void onSpringActivate(Spring spring) {
-        propagate();
-      }
-
-      @Override
-      public void onSpringUpdate(Spring spring) {
-        propagate();
-      }
-
-      @Override
-      public void onSpringAtRest(Spring spring) {
-        propagate();
       }
     };
   }

@@ -16,10 +16,9 @@
 package com.google.android.material.motion.streams.sources;
 
 import com.google.android.material.motion.streams.MotionObservable;
-import com.google.android.material.motion.streams.MotionObservable.ConstantProperty;
-import com.google.android.material.motion.streams.MotionObservable.ScopedReadable;
-import com.google.android.material.motion.streams.ReactiveProperty;
-import com.google.android.material.motion.streams.ReactiveProperty.ValueReactiveProperty;
+import com.google.android.material.motion.streams.springs.FloatVectorizer;
+import com.google.android.material.motion.streams.springs.MaterialSpring;
+import com.google.android.material.motion.streams.springs.TypeVectorizer;
 
 /**
  * The abstract base class for all spring sources.
@@ -27,112 +26,21 @@ import com.google.android.material.motion.streams.ReactiveProperty.ValueReactive
 public abstract class SpringSource {
 
   /**
-   * A spring can pull a value from an initial position to a destination using a physical
-   * simulation.
+   * Creates a spring source for a float spring.
    * <p>
-   * This class defines the spring type for use in creating a spring source.
+   * The properties on the <code>spring</code> param may be changed to dynamically modify the
+   * behavior of this source.
    */
-  public static class MaterialSpring<T> {
-
-    /**
-     * The default spring tension coefficient.
-     * <p>
-     * Default extracted from a POP spring with speed = 12 and bounciness = 4.
-     */
-    public static final float DEFAULT_TENSION = 342f;
-
-    /**
-     * The default spring friction coefficient.
-     * <p>
-     * Default extracted from a POP spring with speed = 12 and bounciness = 4.
-     */
-    public static final float DEFAULT_FRICTION = 30f;
-
-    /**
-     * The default spring tension coefficient. Represents {@link #DEFAULT_TENSION}.
-     * <p>
-     * Default extracted from a POP spring with speed = 12 and bounciness = 4.
-     */
-    public static final ReactiveProperty<Float> DEFAULT_TENSION_PROPERTY = null;
-
-    /**
-     * The default spring friction coefficient. Represents {@link #DEFAULT_FRICTION}.
-     * <p>
-     * Default extracted from a POP spring with speed = 12 and bounciness = 4.
-     */
-    public static final ReactiveProperty<Float> DEFAULT_FRICTION_PROPERTY = null;
-
-    /**
-     * The destination value of the spring represented as a property.
-     */
-    public final ReactiveProperty<T> destination;
-
-    /**
-     * The initial value of the spring represented as a readable.
-     */
-    public final ScopedReadable<T> initialValue;
-
-    /**
-     * The initial velocity of the spring represented as a readable.
-     */
-    public final ScopedReadable<T> initialVelocity;
-
-    /**
-     * The value used when determining completion of the spring simulation.
-     */
-    public final ScopedReadable<Float> threshold;
-
-    /**
-     * The tension coefficient of the spring represented as a property.
-     */
-    public final ReactiveProperty<Float> tension;
-
-    /**
-     * The friction coefficient of the spring represented as a property.
-     */
-    public final ReactiveProperty<Float> friction;
-
-    /**
-     * Creates a spring with the provided values.
-     */
-    public MaterialSpring(
-      T destination,
-      T initialValue,
-      T initialVelocity,
-      float threshold,
-      float tension,
-      float friction) {
-      this.destination = new ValueReactiveProperty<>(destination);
-      this.initialValue = new ConstantProperty<>(initialValue);
-      this.initialVelocity = new ConstantProperty<>(initialVelocity);
-      this.threshold = new ConstantProperty<>(threshold);
-      this.tension = new ValueReactiveProperty<>(tension);
-      this.friction = new ValueReactiveProperty<>(friction);
-    }
-
-    /**
-     * Creates a spring with the provided properties.
-     */
-    public MaterialSpring(
-      ReactiveProperty<T> destination,
-      ScopedReadable<T> initialValue,
-      ScopedReadable<T> initialVelocity,
-      ScopedReadable<Float> threshold,
-      ReactiveProperty<Float> tension,
-      ReactiveProperty<Float> friction) {
-      this.destination = destination;
-      this.initialValue = initialValue;
-      this.initialVelocity = initialVelocity;
-      this.threshold = threshold;
-      this.tension = tension == DEFAULT_TENSION_PROPERTY
-        ? new ValueReactiveProperty<>(DEFAULT_TENSION) : tension;
-      this.friction = friction == DEFAULT_FRICTION_PROPERTY
-        ? new ValueReactiveProperty<>(DEFAULT_FRICTION) : friction;
-    }
+  public final MotionObservable<Float> create(MaterialSpring<Float> spring) {
+    return create(spring, new FloatVectorizer());
   }
 
   /**
-   * Creates a spring source for a float spring.
+   * Creates a spring source for a T valued spring.
+   * <p>
+   * The properties on the <code>spring</code> param may be changed to dynamically modify the
+   * behavior of this source.
    */
-  public abstract MotionObservable<Float> create(MaterialSpring<Float> spring);
+  public abstract <T> MotionObservable<T> create(
+    MaterialSpring<T> spring, TypeVectorizer<T> vectorizer);
 }
