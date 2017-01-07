@@ -36,19 +36,18 @@ import com.google.android.material.motion.gestures.DragGestureRecognizer;
 import com.google.android.material.motion.observable.IndefiniteObservable;
 import com.google.android.material.motion.observable.IndefiniteObservable.Subscription;
 import com.google.android.material.motion.streams.MotionObservable;
+import com.google.android.material.motion.streams.MotionObservable.ConstantProperty;
 import com.google.android.material.motion.streams.MotionObservable.FilterOperation;
 import com.google.android.material.motion.streams.MotionObservable.MapOperation;
 import com.google.android.material.motion.streams.MotionObservable.MotionObserver;
 import com.google.android.material.motion.streams.MotionObservable.MotionState;
 import com.google.android.material.motion.streams.MotionObservable.ScopedReadable;
 import com.google.android.material.motion.streams.MotionObservable.ScopedWritable;
-import com.google.android.material.motion.streams.MotionObservable.ConstantProperty;
 import com.google.android.material.motion.streams.ReactiveProperty;
 import com.google.android.material.motion.streams.ReactiveProperty.ValueReactiveProperty;
 import com.google.android.material.motion.streams.sources.GestureSource;
 import com.google.android.material.motion.streams.sources.ReboundSpringSource;
 import com.google.android.material.motion.streams.sources.SpringSource.MaterialSpring;
-import com.google.android.material.motion.streams.sources.SpringSource.SpringConfiguration;
 
 import java.util.Locale;
 
@@ -199,8 +198,6 @@ public class MainActivity extends AppCompatActivity {
     ScopedReadable<Float> initialValue = new ConstantProperty<>(0f);
     ScopedReadable<Float> initialVelocity = new ConstantProperty<>(0f);
     ScopedReadable<Float> threshold = new ConstantProperty<>(0.01f);
-    ReactiveProperty<SpringConfiguration> configuration =
-      new ValueReactiveProperty<>(new SpringConfiguration(1, 5));
 
     springTarget.setOnTouchListener(new View.OnTouchListener() {
       @Override
@@ -222,18 +219,24 @@ public class MainActivity extends AppCompatActivity {
     });
 
     MaterialSpring<Float> spring =
-      new MaterialSpring<>(destination, initialValue, initialVelocity, threshold, configuration);
+      new MaterialSpring<>(
+        destination,
+        initialValue,
+        initialVelocity,
+        threshold,
+        new ValueReactiveProperty<>(1f),
+        new ValueReactiveProperty<>(5f));
 
     final ArgbEvaluator evaluator = new ArgbEvaluator();
 
     MotionObservable<Integer> observable =
       ReboundSpringSource
         .from(spring)
-        .compose(new MapOperation<Double, Integer>() {
+        .compose(new MapOperation<Float, Integer>() {
           @Override
-          public Integer transform(Double value) {
+          public Integer transform(Float value) {
             value = Math.max(0, Math.min(1, value));
-            int color = (int) evaluator.evaluate(value.floatValue(), Color.RED, Color.GREEN);
+            int color = (int) evaluator.evaluate(value, Color.RED, Color.GREEN);
             return color;
           }
         })

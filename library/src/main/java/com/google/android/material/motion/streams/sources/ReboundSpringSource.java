@@ -17,6 +17,7 @@ package com.google.android.material.motion.streams.sources;
 
 import android.support.annotation.NonNull;
 
+import com.facebook.rebound.OrigamiValueConverter;
 import com.facebook.rebound.SimpleSpringListener;
 import com.facebook.rebound.Spring;
 import com.facebook.rebound.SpringConfig;
@@ -50,6 +51,7 @@ public final class ReboundSpringSource extends SpringSource {
       @Override
       public IndefiniteObservable.Disconnector connect(MotionObserver<Float> observer) {
         final Spring reboundSpring = springSystem.createSpring();
+        reboundSpring.setSpringConfig(new SpringConfig(0, 0));
 
         reboundSpring.setCurrentValue(spring.initialValue.read());
 
@@ -60,11 +62,18 @@ public final class ReboundSpringSource extends SpringSource {
           }
         });
 
-        spring.configuration.subscribe(new SimpleMotionObserver<SpringConfiguration>() {
+        spring.tension.subscribe(new SimpleMotionObserver<Float>() {
           @Override
-          public void next(SpringConfiguration config) {
-            reboundSpring.setSpringConfig(
-              SpringConfig.fromOrigamiTensionAndFriction(config.tension, config.friction));
+          public void next(Float value) {
+            reboundSpring.getSpringConfig().tension =
+              OrigamiValueConverter.tensionFromOrigamiValue(value);
+          }
+        });
+        spring.friction.subscribe(new SimpleMotionObserver<Float>() {
+          @Override
+          public void next(Float value) {
+            reboundSpring.getSpringConfig().friction =
+              OrigamiValueConverter.frictionFromOrigamiValue(value);
           }
         });
 
