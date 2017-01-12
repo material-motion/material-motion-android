@@ -26,29 +26,29 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
- * A meta spring is made of multiple rebound springs. The meta spring manages the aggregate state of
- * each individual spring, and reports aggregate state changes to its listeners.
+ * A composite spring is made of multiple rebound springs. The composite spring manages the
+ * aggregate state of each individual spring, and reports aggregate state changes to its listeners.
  */
-public final class MetaSpring {
+public final class CompositeReboundSpring {
 
   private final Spring[] springs;
   private final SpringTracker tracker;
 
-  private final List<MetaSpringListener> listeners = new CopyOnWriteArrayList<>();
+  private final List<CompositeSpringListener> listeners = new CopyOnWriteArrayList<>();
 
   /**
-   * Create a new meta spring to track the given individual springs.
+   * Create a new composite spring to track the given individual springs.
    */
-  public MetaSpring(Spring[] springs) {
+  public CompositeReboundSpring(Spring[] springs) {
     this.springs = springs;
     this.tracker = new SpringTracker(this);
   }
 
   /**
-   * Adds a listener to the meta spring. The first listener to be added will add a private
+   * Adds a listener to the composite spring. The first listener to be added will add a private
    * listener to each individual spring.
    */
-  public void addListener(MetaSpringListener listener) {
+  public void addListener(CompositeSpringListener listener) {
     if (listeners.isEmpty()) {
       tracker.start();
     }
@@ -59,10 +59,10 @@ public final class MetaSpring {
   }
 
   /**
-   * Removes a listener from the meta spring. The last listener to be removed will remove the
+   * Removes a listener from the composite spring. The last listener to be removed will remove the
    * private listener to each individual spring.
    */
-  public void removeListener(MetaSpringListener listener) {
+  public void removeListener(CompositeSpringListener listener) {
     listeners.remove(listener);
 
     if (listeners.isEmpty()) {
@@ -71,7 +71,7 @@ public final class MetaSpring {
   }
 
   /**
-   * Returns whether the aggregate state of the meta spring is at rest.
+   * Returns whether the aggregate state of the composite spring is at rest.
    */
   public boolean isAtRest() {
     return tracker.isAtRest();
@@ -85,21 +85,21 @@ public final class MetaSpring {
     return tracker.currentValues;
   }
 
-  private void onMetaSpringActivate() {
-    for (MetaSpringListener listener : listeners) {
-      listener.onMetaSpringActivate();
+  private void onCompositeSpringActivate() {
+    for (CompositeSpringListener listener : listeners) {
+      listener.onCompositeSpringActivate();
     }
   }
 
-  private void onMetaSpringUpdate() {
-    for (MetaSpringListener listener : listeners) {
-      listener.onMetaSpringUpdate(tracker.currentValues);
+  private void onCompositeSpringUpdate() {
+    for (CompositeSpringListener listener : listeners) {
+      listener.onCompositeSpringUpdate(tracker.currentValues);
     }
   }
 
-  private void onSpringAtRest() {
-    for (MetaSpringListener listener : listeners) {
-      listener.onMetaSpringAtRest();
+  private void onCompositeSpringAtRest() {
+    for (CompositeSpringListener listener : listeners) {
+      listener.onCompositeSpringAtRest();
     }
   }
 
@@ -118,7 +118,7 @@ public final class MetaSpring {
    */
   private static class SpringTracker {
 
-    private final MetaSpring metaSpring;
+    private final CompositeReboundSpring compositeReboundSpring;
 
     private boolean wasAtRest;
 
@@ -130,19 +130,19 @@ public final class MetaSpring {
 
     private final Handler handler = new Handler();
 
-    public SpringTracker(MetaSpring metaSpring) {
-      this.metaSpring = metaSpring;
+    public SpringTracker(CompositeReboundSpring compositeReboundSpring) {
+      this.compositeReboundSpring = compositeReboundSpring;
 
-      this.currentValues = new float[metaSpring.springs.length];
-      this.currentAtRestStates = new boolean[metaSpring.springs.length];
+      this.currentValues = new float[compositeReboundSpring.springs.length];
+      this.currentAtRestStates = new boolean[compositeReboundSpring.springs.length];
     }
 
     /**
      * Adds the listener to each individual spring.
      */
     private void start() {
-      for (int i = 0, count = metaSpring.springs.length; i < count; i++) {
-        Spring spring = metaSpring.springs[i];
+      for (int i = 0, count = compositeReboundSpring.springs.length; i < count; i++) {
+        Spring spring = compositeReboundSpring.springs[i];
 
         currentValues[i] = (float) spring.getCurrentValue();
         currentAtRestStates[i] = spring.isAtRest();
@@ -158,8 +158,8 @@ public final class MetaSpring {
      * Removes the listener from each individual spring.
      */
     private void stop() {
-      for (int i = 0, count = metaSpring.springs.length; i < count; i++) {
-        Spring spring = metaSpring.springs[i];
+      for (int i = 0, count = compositeReboundSpring.springs.length; i < count; i++) {
+        Spring spring = compositeReboundSpring.springs[i];
         spring.removeListener(listener);
       }
       handler.removeCallbacks(processBatch);
@@ -208,15 +208,15 @@ public final class MetaSpring {
         boolean isAtRest = isAtRest();
 
         if (!isAtRest && wasAtRest) {
-          metaSpring.onMetaSpringActivate();
+          compositeReboundSpring.onCompositeSpringActivate();
         }
 
         if (!updatedValues.isEmpty()) {
-          metaSpring.onMetaSpringUpdate();
+          compositeReboundSpring.onCompositeSpringUpdate();
         }
 
         if (isAtRest && !wasAtRest) {
-          metaSpring.onSpringAtRest();
+          compositeReboundSpring.onCompositeSpringAtRest();
         }
 
         wasAtRest = isAtRest;
@@ -226,8 +226,8 @@ public final class MetaSpring {
     };
 
     private void processUpdates() {
-      for (int i = 0, count = metaSpring.springs.length; i < count; i++) {
-        Spring spring = metaSpring.springs[i];
+      for (int i = 0, count = compositeReboundSpring.springs.length; i < count; i++) {
+        Spring spring = compositeReboundSpring.springs[i];
 
         if (updatedValues.containsKey(spring)) {
           currentValues[i] = updatedValues.get(spring);
@@ -241,23 +241,23 @@ public final class MetaSpring {
   }
 
   /**
-   * A listener for the meta spring.
+   * A listener for the composite spring.
    */
-  public interface MetaSpringListener {
+  public interface CompositeSpringListener {
 
     /**
      * All individual springs were at rest, and now some are active.
      */
-    void onMetaSpringActivate();
+    void onCompositeSpringActivate();
 
     /**
      * Some individual springs have updated.
      */
-    void onMetaSpringUpdate(float[] values);
+    void onCompositeSpringUpdate(float[] values);
 
     /**
      * Some individual springs were active, and now all are at rest.
      */
-    void onMetaSpringAtRest();
+    void onCompositeSpringAtRest();
   }
 }

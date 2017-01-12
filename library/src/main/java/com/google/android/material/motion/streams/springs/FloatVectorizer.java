@@ -16,7 +16,7 @@
 package com.google.android.material.motion.streams.springs;
 
 /**
- * A simple no-op vectorizer for float.
+ * A vectorizer for single floating point values.
  */
 public class FloatVectorizer extends TypeVectorizer<Float> {
 

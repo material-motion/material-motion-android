@@ -27,8 +27,8 @@ import com.google.android.material.motion.streams.MotionObservable;
 import com.google.android.material.motion.streams.MotionObservable.MotionObserver;
 import com.google.android.material.motion.streams.MotionObservable.SimpleMotionObserver;
 import com.google.android.material.motion.streams.springs.MaterialSpring;
-import com.google.android.material.motion.streams.springs.MetaSpring;
-import com.google.android.material.motion.streams.springs.MetaSpring.MetaSpringListener;
+import com.google.android.material.motion.streams.springs.CompositeReboundSpring;
+import com.google.android.material.motion.streams.springs.CompositeReboundSpring.CompositeSpringListener;
 import com.google.android.material.motion.streams.springs.TypeVectorizer;
 
 /**
@@ -122,13 +122,13 @@ public final class ReboundSpringSource extends SpringSource {
 
   private static class SpringConnection<T> {
 
-    private final MetaSpring spring;
+    private final CompositeReboundSpring spring;
     private final TypeVectorizer<T> vectorizer;
     private final MotionObserver<T> observer;
 
     private SpringConnection(
       Spring[] springs, TypeVectorizer<T> vectorizer, MotionObserver<T> observer) {
-      this.spring = new MetaSpring(springs);
+      this.spring = new CompositeReboundSpring(springs);
       this.vectorizer = vectorizer;
       this.observer = observer;
 
@@ -139,20 +139,20 @@ public final class ReboundSpringSource extends SpringSource {
       spring.removeListener(springListener);
     }
 
-    private final MetaSpringListener springListener = new MetaSpringListener() {
+    private final CompositeSpringListener springListener = new CompositeSpringListener() {
       @Override
-      public void onMetaSpringActivate() {
+      public void onCompositeSpringActivate() {
         observer.state(MotionObservable.ACTIVE);
       }
 
       @Override
-      public void onMetaSpringUpdate(float[] values) {
+      public void onCompositeSpringUpdate(float[] values) {
         T value = vectorizer.compose(values);
         observer.next(value);
       }
 
       @Override
-      public void onMetaSpringAtRest() {
+      public void onCompositeSpringAtRest() {
         observer.state(MotionObservable.AT_REST);
       }
     };
