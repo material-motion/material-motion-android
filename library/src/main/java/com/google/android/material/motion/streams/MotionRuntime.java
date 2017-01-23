@@ -81,6 +81,10 @@ public final class MotionRuntime {
     }));
   }
 
+  public <T> void addInteraction(Interaction<T> interaction, T target) {
+    interaction.apply(target);
+  }
+
   private void onObserverStateChange(MotionObserver<?> observer, @MotionState int state) {
     boolean changed;
     if (state == ACTIVE) {
