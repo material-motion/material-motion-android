@@ -62,6 +62,7 @@ public final class GestureSource {
 
     private final T gesture;
     private final MotionObserver<T> observer;
+    private boolean propagatedState = false;
 
     private GestureConnection(
       T gesture, MotionObserver<T> observer) {
@@ -79,16 +80,17 @@ public final class GestureSource {
 
     private void propagate() {
       @GestureRecognizerState int state = gesture.getState();
-      boolean isActive = state == GestureRecognizer.BEGAN || state == GestureRecognizer.CHANGED;
 
-      if (isActive) {
+      if (state == GestureRecognizer.BEGAN || (state == GestureRecognizer.CHANGED && !propagatedState)) {
         observer.state(MotionObservable.ACTIVE);
+        propagatedState = true;
       }
 
       observer.next(gesture);
 
-      if (!isActive) {
+      if (state == GestureRecognizer.CANCELLED || state == GestureRecognizer.RECOGNIZED) {
         observer.state(MotionObservable.AT_REST);
+        propagatedState = true;
       }
     }
 
