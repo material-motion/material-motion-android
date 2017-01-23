@@ -16,4 +16,5 @@
 -->
 <resources>
   <string name="app_name">Streams for Android Sample</string>
+  <string name="title_activity_main">MainActivity</string>
 </resources>
