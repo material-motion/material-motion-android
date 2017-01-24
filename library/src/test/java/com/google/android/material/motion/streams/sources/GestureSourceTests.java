@@ -109,10 +109,10 @@ public class GestureSourceTests {
     gesture.setState(BEGAN);
     assertThat(tracker.states).isEqualTo(Arrays.asList(AT_REST, ACTIVE));
 
-    gesture.setState(CHANGED);
-    assertThat(tracker.states).isEqualTo(Arrays.asList(AT_REST, ACTIVE, ACTIVE));
+    gesture.setState(CHANGED); // Should no-op.
+    assertThat(tracker.states).isEqualTo(Arrays.asList(AT_REST, ACTIVE));
 
     gesture.setState(RECOGNIZED);
-    assertThat(tracker.states).isEqualTo(Arrays.asList(AT_REST, ACTIVE, ACTIVE, AT_REST, AT_REST));
+    assertThat(tracker.states).isEqualTo(Arrays.asList(AT_REST, ACTIVE, AT_REST));
   }
 }

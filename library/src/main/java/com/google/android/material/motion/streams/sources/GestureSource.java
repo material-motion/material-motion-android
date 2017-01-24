@@ -16,6 +16,7 @@
 package com.google.android.material.motion.streams.sources;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import com.google.android.material.motion.gestures.GestureRecognizer;
 import com.google.android.material.motion.gestures.GestureRecognizer.GestureRecognizerState;
@@ -24,6 +25,7 @@ import com.google.android.material.motion.observable.IndefiniteObservable.Connec
 import com.google.android.material.motion.observable.IndefiniteObservable.Disconnector;
 import com.google.android.material.motion.streams.MotionObservable;
 import com.google.android.material.motion.streams.MotionObservable.MotionObserver;
+import com.google.android.material.motion.streams.MotionObservable.MotionState;
 
 /**
  * A source for gestures.
@@ -62,7 +64,9 @@ public final class GestureSource {
 
     private final T gesture;
     private final MotionObserver<T> observer;
-    private boolean propagatedState = false;
+    @Nullable
+    @MotionState
+    private Integer lastPropagatedState = null;
 
     private GestureConnection(
       T gesture, MotionObserver<T> observer) {
@@ -80,17 +84,22 @@ public final class GestureSource {
 
     private void propagate() {
       @GestureRecognizerState int state = gesture.getState();
+      boolean isActive = state == GestureRecognizer.BEGAN || state == GestureRecognizer.CHANGED;
+      boolean wasActive =
+        lastPropagatedState != null && lastPropagatedState == MotionObservable.ACTIVE;
+      boolean wasAtRest =
+        lastPropagatedState != null && lastPropagatedState == MotionObservable.AT_REST;
 
-      if (state == GestureRecognizer.BEGAN || (state == GestureRecognizer.CHANGED && !propagatedState)) {
+      if (isActive && !wasActive) {
         observer.state(MotionObservable.ACTIVE);
-        propagatedState = true;
+        lastPropagatedState = MotionObservable.ACTIVE;
       }
 
       observer.next(gesture);
 
-      if (state == GestureRecognizer.CANCELLED || state == GestureRecognizer.RECOGNIZED) {
+      if (!isActive && !wasAtRest) {
         observer.state(MotionObservable.AT_REST);
-        propagatedState = true;
+        lastPropagatedState = MotionObservable.AT_REST;
       }
     }
 
