@@ -1,0 +1,4 @@
+# From http://codereview.cc/harbormaster/step/edit/6/
+notify:
+  webhooks:
+    - url: http://codereview.cc/harbormaster/hook/circleci/
