@@ -23,25 +23,25 @@ import android.view.View.OnTouchListener;
 import com.google.android.material.motion.gestures.GestureRecognizer;
 import com.google.android.material.motion.streams.Interaction;
 import com.google.android.material.motion.streams.MotionObservable;
-import com.google.android.material.motion.streams.MotionObservable.MotionObserver;
+import com.google.android.material.motion.streams.MotionRuntime;
 import com.google.android.material.motion.streams.R;
 import com.google.android.material.motion.streams.sources.GestureSource;
 
 /**
  * Abstract base class for all gesture interactions.
  */
-public abstract class GestureInteraction extends Interaction<View> {
+public abstract class GestureInteraction<T extends GestureRecognizer> extends Interaction<View> {
 
-  private final GestureRecognizer gestureRecognizer;
-  private final MotionObservable<GestureRecognizer> stream;
+  private final T gestureRecognizer;
+  private final MotionObservable<T> stream;
 
-  protected GestureInteraction(GestureRecognizer gestureRecognizer) {
+  protected GestureInteraction(T gestureRecognizer) {
     this.gestureRecognizer = gestureRecognizer;
     this.stream = GestureSource.from(gestureRecognizer);
   }
 
   @Override
-  public final void apply(View target) {
+  public final void apply(MotionRuntime runtime, View target) {
     // View.getOnTouchListener() does not exist, so we store the listener in a tag.
     GestureListener gestureListener = (GestureListener) target.getTag(R.id.gesture_listener_tag);
     if (gestureListener == null) {
@@ -52,13 +52,13 @@ public abstract class GestureInteraction extends Interaction<View> {
 
     gestureListener.gestureRecognizers.put(gestureRecognizer.getClass(), gestureRecognizer);
 
-    stream.subscribe(handle(target));
+    apply(runtime, stream, target);
   }
 
   /**
-   * Returns an observer that is subscribed to the gesture recognizer's stream.
+   * Applies the values of the gesture recognizer stream to the target view.
    */
-  protected abstract MotionObserver<GestureRecognizer> handle(View target);
+  protected abstract void apply(MotionRuntime runtime, MotionObservable<T> stream, View target);
 
   private static class GestureListener implements OnTouchListener {
     private final SimpleArrayMap<Class<? extends GestureRecognizer>, GestureRecognizer> gestureRecognizers =

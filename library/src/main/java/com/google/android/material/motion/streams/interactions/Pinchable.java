@@ -17,15 +17,17 @@ package com.google.android.material.motion.streams.interactions;
 
 import android.view.View;
 
-import com.google.android.material.motion.gestures.GestureRecognizer;
 import com.google.android.material.motion.gestures.ScaleGestureRecognizer;
-import com.google.android.material.motion.streams.MotionObservable.MotionObserver;
-import com.google.android.material.motion.streams.MotionObservable.SimpleMotionObserver;
+import com.google.android.material.motion.streams.MotionObservable;
+import com.google.android.material.motion.streams.MotionObservable.ScopedWritable;
+import com.google.android.material.motion.streams.MotionRuntime;
+
+import static com.google.android.material.motion.streams.operators.GestureOperators.scaled;
 
 /**
  * A pinchable interaction.
  */
-public class Pinchable extends GestureInteraction {
+public class Pinchable extends GestureInteraction<ScaleGestureRecognizer> {
 
   public Pinchable() {
     this(new ScaleGestureRecognizer());
@@ -36,27 +38,15 @@ public class Pinchable extends GestureInteraction {
   }
 
   @Override
-  public MotionObserver<GestureRecognizer> handle(final View target) {
-    return new SimpleMotionObserver<GestureRecognizer>() {
+  protected void apply(final MotionRuntime runtime, MotionObservable<ScaleGestureRecognizer> stream, final View target) {
+    MotionObservable<Float[]> scaledStream = stream.compose(scaled(target));
 
-      private float initialScaleX;
-      private float initialScaleY;
-
+    runtime.write(scaledStream, new ScopedWritable<Float[]>() {
       @Override
-      public void next(GestureRecognizer gestureRecognizer) {
-        switch (gestureRecognizer.getState()) {
-          case GestureRecognizer.BEGAN:
-            initialScaleX = target.getScaleX();
-            initialScaleY = target.getScaleY();
-            break;
-          case GestureRecognizer.CHANGED:
-            float scale = ((ScaleGestureRecognizer) gestureRecognizer).getScale();
-
-            target.setScaleX(initialScaleX * scale);
-            target.setScaleY(initialScaleY * scale);
-            break;
-        }
+      public void write(Float[] value) {
+        target.setScaleX(value[0]);
+        target.setScaleY(value[1]);
       }
-    };
+    });
   }
 }
