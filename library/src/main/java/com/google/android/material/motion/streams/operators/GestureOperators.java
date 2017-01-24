@@ -17,9 +17,14 @@ package com.google.android.material.motion.streams.operators;
 
 import android.graphics.PointF;
 import android.support.annotation.VisibleForTesting;
+import android.view.View;
 
+import com.google.android.material.motion.gestures.DragGestureRecognizer;
 import com.google.android.material.motion.gestures.GestureRecognizer;
 import com.google.android.material.motion.gestures.GestureRecognizer.GestureRecognizerState;
+import com.google.android.material.motion.gestures.RotateGestureRecognizer;
+import com.google.android.material.motion.gestures.ScaleGestureRecognizer;
+import com.google.android.material.motion.observable.Observer;
 import com.google.android.material.motion.streams.MotionObservable;
 import com.google.android.material.motion.streams.MotionObservable.MapOperation;
 import com.google.android.material.motion.streams.MotionObservable.Operation;
@@ -101,6 +106,87 @@ public final class GestureOperators {
           }
         }
         return false;
+      }
+    };
+  }
+
+  /**
+   * Adds the current translation to the initial translation of the given view and emits the
+   * result while the gesture recognizer is active.
+   */
+  public static <T extends DragGestureRecognizer> Operation<T, Float[]> translated(final View view) {
+    return new Operation<T, Float[]>() {
+
+      private float initialTranslationX;
+      private float initialTranslationY;
+
+      @Override
+      public void next(Observer<Float[]> observer, T gestureRecognizer) {
+        switch (gestureRecognizer.getState()) {
+          case GestureRecognizer.BEGAN:
+            initialTranslationX = view.getTranslationX();
+            initialTranslationY = view.getTranslationY();
+            break;
+          case GestureRecognizer.CHANGED:
+            float translationX = gestureRecognizer.getTranslationX();
+            float translationY = gestureRecognizer.getTranslationY();
+
+            observer.next(
+              new Float[]{initialTranslationX + translationX, initialTranslationY + translationY});
+            break;
+        }
+      }
+    };
+  }
+
+  /**
+   * Adds the current rotation to the initial rotation of the given view and emits the result
+   * while the gesture recognizer is active.
+   */
+  public static <T extends RotateGestureRecognizer> Operation<T, Float> rotated(final View view) {
+    return new Operation<T, Float>() {
+
+      private float initialRotation;
+
+      @Override
+      public void next(Observer<Float> observer, T gestureRecognizer) {
+        switch (gestureRecognizer.getState()) {
+          case GestureRecognizer.BEGAN:
+            initialRotation = view.getRotation();
+            break;
+          case GestureRecognizer.CHANGED:
+            float rotation = gestureRecognizer.getRotation();
+
+            observer.next((float) (initialRotation + rotation * (180 / Math.PI)));
+            break;
+        }
+      }
+    };
+  }
+
+  /**
+   * Multiplies the current scale onto the initial scale of the given view and emits the result
+   * while the gesture recognizer is active.
+   */
+  public static <T extends ScaleGestureRecognizer> Operation<T, Float[]> scaled(final View view) {
+    return new Operation<T, Float[]>() {
+
+      private float initialScaleX;
+      private float initialScaleY;
+
+      @Override
+      public void next(Observer<Float[]> observer, T gestureRecognizer) {
+        switch (gestureRecognizer.getState()) {
+          case GestureRecognizer.BEGAN:
+            initialScaleX = view.getScaleX();
+            initialScaleY = view.getScaleY();
+            break;
+          case GestureRecognizer.CHANGED:
+            float scale = gestureRecognizer.getScale();
+
+            observer.next(new Float[]{initialScaleX * scale, initialScaleY * scale});
+            break;
+        }
       }
     };
   }

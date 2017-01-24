@@ -18,14 +18,15 @@ package com.google.android.material.motion.streams.interactions;
 import android.view.View;
 
 import com.google.android.material.motion.gestures.DragGestureRecognizer;
-import com.google.android.material.motion.gestures.GestureRecognizer;
-import com.google.android.material.motion.streams.MotionObservable.MotionObserver;
-import com.google.android.material.motion.streams.MotionObservable.SimpleMotionObserver;
+import com.google.android.material.motion.streams.MotionObservable;
+import com.google.android.material.motion.streams.MotionRuntime;
+
+import static com.google.android.material.motion.streams.operators.GestureOperators.translated;
 
 /**
  * A draggable interaction.
  */
-public class Draggable extends GestureInteraction {
+public class Draggable extends GestureInteraction<DragGestureRecognizer> {
 
   public Draggable() {
     this(new DragGestureRecognizer());
@@ -36,28 +37,15 @@ public class Draggable extends GestureInteraction {
   }
 
   @Override
-  public MotionObserver<GestureRecognizer> handle(final View target) {
-    return new SimpleMotionObserver<GestureRecognizer>() {
+  protected void apply(MotionRuntime runtime, MotionObservable<DragGestureRecognizer> stream, final View target) {
+    MotionObservable<Float[]> translatedStream = stream.compose(translated(target));
 
-      private float initialTranslationX;
-      private float initialTranslationY;
-
+    runtime.write(translatedStream, new MotionObservable.ScopedWritable<Float[]>() {
       @Override
-      public void next(GestureRecognizer gestureRecognizer) {
-        switch (gestureRecognizer.getState()) {
-          case GestureRecognizer.BEGAN:
-            initialTranslationX = target.getTranslationX();
-            initialTranslationY = target.getTranslationY();
-            break;
-          case GestureRecognizer.CHANGED:
-            float translationX = ((DragGestureRecognizer) gestureRecognizer).getTranslationX();
-            float translationY = ((DragGestureRecognizer) gestureRecognizer).getTranslationY();
-
-            target.setTranslationX(initialTranslationX + translationX);
-            target.setTranslationY(initialTranslationY + translationY);
-            break;
-        }
+      public void write(Float[] value) {
+        target.setTranslationX(value[0]);
+        target.setTranslationY(value[1]);
       }
-    };
+    });
   }
 }

@@ -16,5 +16,5 @@
 package com.google.android.material.motion.streams;
 
 public abstract class Interaction<T> {
-  public abstract void apply(T target);
+  public abstract void apply(MotionRuntime runtime, T target);
 }

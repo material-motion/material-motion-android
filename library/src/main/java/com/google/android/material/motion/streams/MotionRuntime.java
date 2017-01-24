@@ -82,7 +82,7 @@ public final class MotionRuntime {
   }
 
   public <T> void addInteraction(Interaction<T> interaction, T target) {
-    interaction.apply(target);
+    interaction.apply(this, target);
   }
 
   private void onObserverStateChange(MotionObserver<?> observer, @MotionState int state) {
