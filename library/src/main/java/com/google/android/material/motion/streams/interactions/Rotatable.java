@@ -17,15 +17,16 @@ package com.google.android.material.motion.streams.interactions;
 
 import android.view.View;
 
-import com.google.android.material.motion.gestures.GestureRecognizer;
 import com.google.android.material.motion.gestures.RotateGestureRecognizer;
-import com.google.android.material.motion.streams.MotionObservable.MotionObserver;
+import com.google.android.material.motion.streams.MotionObservable;
 import com.google.android.material.motion.streams.MotionObservable.SimpleMotionObserver;
+
+import static com.google.android.material.motion.streams.operators.GestureRecognizerOperators.rotated;
 
 /**
  * A rotatable interaction.
  */
-public class Rotatable extends GestureInteraction {
+public class Rotatable extends GestureInteraction<RotateGestureRecognizer> {
 
   public Rotatable() {
     this(new RotateGestureRecognizer());
@@ -36,24 +37,12 @@ public class Rotatable extends GestureInteraction {
   }
 
   @Override
-  public MotionObserver<GestureRecognizer> handle(final View target) {
-    return new SimpleMotionObserver<GestureRecognizer>() {
-
-      private float initialRotation;
-
+  protected void apply(MotionObservable<RotateGestureRecognizer> stream, final View target) {
+    stream.compose(rotated(target)).subscribe(new SimpleMotionObserver<Float>() {
       @Override
-      public void next(GestureRecognizer gestureRecognizer) {
-        switch (gestureRecognizer.getState()) {
-          case GestureRecognizer.BEGAN:
-            initialRotation = target.getRotation();
-            break;
-          case GestureRecognizer.CHANGED:
-            float rotation = ((RotateGestureRecognizer) gestureRecognizer).getRotation();
-
-            target.setRotation((float) (initialRotation + rotation * (180 / Math.PI)));
-            break;
-        }
+      public void next(Float value) {
+        target.setRotation((float) (value * (180 / Math.PI)));
       }
-    };
+    });
   }
 }
