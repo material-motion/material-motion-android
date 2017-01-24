@@ -17,15 +17,16 @@ package com.google.android.material.motion.streams.interactions;
 
 import android.view.View;
 
-import com.google.android.material.motion.gestures.GestureRecognizer;
 import com.google.android.material.motion.gestures.ScaleGestureRecognizer;
-import com.google.android.material.motion.streams.MotionObservable.MotionObserver;
+import com.google.android.material.motion.streams.MotionObservable;
 import com.google.android.material.motion.streams.MotionObservable.SimpleMotionObserver;
+
+import static com.google.android.material.motion.streams.operators.GestureRecognizerOperators.scaled;
 
 /**
  * A pinchable interaction.
  */
-public class Pinchable extends GestureInteraction {
+public class Pinchable extends GestureInteraction<ScaleGestureRecognizer> {
 
   public Pinchable() {
     this(new ScaleGestureRecognizer());
@@ -36,27 +37,13 @@ public class Pinchable extends GestureInteraction {
   }
 
   @Override
-  public MotionObserver<GestureRecognizer> handle(final View target) {
-    return new SimpleMotionObserver<GestureRecognizer>() {
-
-      private float initialScaleX;
-      private float initialScaleY;
-
+  protected void apply(MotionObservable<ScaleGestureRecognizer> stream, final View target) {
+    stream.compose(scaled(target)).subscribe(new SimpleMotionObserver<Float[]>() {
       @Override
-      public void next(GestureRecognizer gestureRecognizer) {
-        switch (gestureRecognizer.getState()) {
-          case GestureRecognizer.BEGAN:
-            initialScaleX = target.getScaleX();
-            initialScaleY = target.getScaleY();
-            break;
-          case GestureRecognizer.CHANGED:
-            float scale = ((ScaleGestureRecognizer) gestureRecognizer).getScale();
-
-            target.setScaleX(initialScaleX * scale);
-            target.setScaleY(initialScaleY * scale);
-            break;
-        }
+      public void next(Float[] value) {
+        target.setScaleX(value[0]);
+        target.setScaleY(value[1]);
       }
-    };
+    });
   }
 }
