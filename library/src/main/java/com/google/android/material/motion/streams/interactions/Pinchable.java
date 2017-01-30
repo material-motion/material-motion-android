@@ -27,7 +27,7 @@ import static com.google.android.material.motion.streams.operators.GestureOperat
 /**
  * A pinchable interaction.
  */
-public class Pinchable extends GestureInteraction<ScaleGestureRecognizer> {
+public class Pinchable extends GestureInteraction<ScaleGestureRecognizer, Float[]> {
 
   public Pinchable() {
     this(new ScaleGestureRecognizer());
@@ -40,6 +40,7 @@ public class Pinchable extends GestureInteraction<ScaleGestureRecognizer> {
   @Override
   protected void apply(final MotionRuntime runtime, MotionObservable<ScaleGestureRecognizer> stream, final View target) {
     MotionObservable<Float[]> scaledStream = stream.compose(scaled(target));
+    scaledStream = flatten(scaledStream);
 
     runtime.write(scaledStream, new ScopedWritable<Float[]>() {
       @Override

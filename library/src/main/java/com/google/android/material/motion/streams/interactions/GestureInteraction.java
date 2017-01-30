@@ -30,12 +30,13 @@ import com.google.android.material.motion.streams.sources.GestureSource;
 /**
  * Abstract base class for all gesture interactions.
  */
-public abstract class GestureInteraction<T extends GestureRecognizer> extends Interaction<View> {
+public abstract class GestureInteraction<GR extends GestureRecognizer, T>
+  extends Interaction<T, View> {
 
-  private final T gestureRecognizer;
-  private final MotionObservable<T> stream;
+  private final GR gestureRecognizer;
+  private final MotionObservable<GR> stream;
 
-  protected GestureInteraction(T gestureRecognizer) {
+  protected GestureInteraction(GR gestureRecognizer) {
     this.gestureRecognizer = gestureRecognizer;
     this.stream = GestureSource.from(gestureRecognizer);
   }
@@ -58,7 +59,7 @@ public abstract class GestureInteraction<T extends GestureRecognizer> extends In
   /**
    * Applies the values of the gesture recognizer stream to the target view.
    */
-  protected abstract void apply(MotionRuntime runtime, MotionObservable<T> stream, View target);
+  protected abstract void apply(MotionRuntime runtime, MotionObservable<GR> stream, View target);
 
   private static class GestureListener implements OnTouchListener {
     private final SimpleArrayMap<Class<? extends GestureRecognizer>, GestureRecognizer> gestureRecognizers =
