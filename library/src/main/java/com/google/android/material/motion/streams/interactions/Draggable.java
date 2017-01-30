@@ -27,7 +27,7 @@ import static com.google.android.material.motion.streams.operators.GestureOperat
 /**
  * A draggable interaction.
  */
-public class Draggable extends GestureInteraction<DragGestureRecognizer> {
+public class Draggable extends GestureInteraction<DragGestureRecognizer, Float[]> {
 
   public Draggable() {
     this(new DragGestureRecognizer());
@@ -40,6 +40,7 @@ public class Draggable extends GestureInteraction<DragGestureRecognizer> {
   @Override
   protected void apply(MotionRuntime runtime, MotionObservable<DragGestureRecognizer> stream, final View target) {
     MotionObservable<Float[]> translatedStream = stream.compose(translated(target));
+    translatedStream = flatten(translatedStream);
 
     runtime.write(translatedStream, new ScopedWritable<Float[]>() {
       @Override

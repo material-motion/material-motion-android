@@ -27,6 +27,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import static android.icu.lang.UCharacter.GraphemeClusterBreak.T;
 import static com.google.android.material.motion.streams.MotionObservable.ACTIVE;
 import static com.google.android.material.motion.streams.MotionObservable.AT_REST;
 
@@ -81,7 +82,7 @@ public final class MotionRuntime {
     }));
   }
 
-  public <T> void addInteraction(Interaction<T> interaction, T target) {
+  public <O> void addInteraction(Interaction<?, O> interaction, O target) {
     interaction.apply(this, target);
   }
 

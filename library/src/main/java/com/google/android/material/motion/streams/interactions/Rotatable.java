@@ -26,7 +26,7 @@ import static com.google.android.material.motion.streams.operators.GestureOperat
 /**
  * A rotatable interaction.
  */
-public class Rotatable extends GestureInteraction<RotateGestureRecognizer> {
+public class Rotatable extends GestureInteraction<RotateGestureRecognizer, Float> {
 
   public Rotatable() {
     this(new RotateGestureRecognizer());
@@ -39,6 +39,7 @@ public class Rotatable extends GestureInteraction<RotateGestureRecognizer> {
   @Override
   protected void apply(MotionRuntime runtime, MotionObservable<RotateGestureRecognizer> stream, final View target) {
     MotionObservable<Float> rotatedStream = stream.compose(rotated(target));
+    rotatedStream = flatten(rotatedStream);
 
     runtime.write(rotatedStream, target, View.ROTATION);
   }
