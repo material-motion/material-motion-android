@@ -15,6 +15,7 @@
  */
 package com.google.android.material.motion.streams.operators;
 
+import android.graphics.RectF;
 import android.support.annotation.VisibleForTesting;
 
 import com.google.android.material.motion.streams.MotionObservable.MapOperation;
@@ -77,5 +78,52 @@ public final class FloatArrayOperators {
         return new Float[]{x, y};
       }
     };
+  }
+
+  /**
+   * Applies resistance to values that fall outside of the given rect. Resistance increases until
+   * the distance reaches length, where resistance becomes infinite.
+   */
+  public static Operation<Float[], Float[]> rubberBanded(final RectF rect, final float length) {
+    return new MapOperation<Float[], Float[]>() {
+      @Override
+      public Float[] transform(Float[] value) {
+        float x = rubberBand(value[0], rect.left, rect.right, length);
+        float y = rubberBand(value[1], rect.top, rect.bottom, length);
+        return new Float[]{x, y};
+      }
+    };
+  }
+
+  private static float rubberBand(float value, float min, float max, float bandLength) {
+    if (value >= min && value <= max) {
+      // While we're within range we don't rubber band the value.
+      return value;
+    }
+
+    if (bandLength <= 0) {
+      // The rubber band doesn't exist, return the minimum value so that we stay put.
+      return min;
+    }
+
+    if (value > max) {
+      return band(value - max, bandLength) + max;
+
+    } else if (value < min) {
+      return min - band(min - value, bandLength);
+    }
+
+    return value;
+  }
+
+  /**
+   * Accepts values from [0...+inf] and ensures that f(x) < bandLength for all values.
+   */
+  private static float band(float value, float bandLength) {
+    // 0.55 chosen as an approximation of iOS' rubber banding behavior.
+    float rubberBandCoefficient = 0.55f;
+
+    float demoninator = value * rubberBandCoefficient / bandLength + 1;
+    return bandLength * (1 - 1 / demoninator);
   }
 }
