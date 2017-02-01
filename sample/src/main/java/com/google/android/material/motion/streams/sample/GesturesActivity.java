@@ -6,9 +6,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
 import com.google.android.material.motion.streams.MotionRuntime;
-import com.google.android.material.motion.streams.interactions.Draggable;
-import com.google.android.material.motion.streams.interactions.Pinchable;
-import com.google.android.material.motion.streams.interactions.Rotatable;
+import com.google.android.material.motion.streams.interactions.DirectlyManipulable;
 
 import static com.google.android.material.motion.streams.operators.FloatArrayOperators.lockToYAxis;
 import static com.google.android.material.motion.streams.operators.FloatArrayOperators.rubberBanded;
@@ -24,13 +22,12 @@ public class GesturesActivity extends AppCompatActivity {
 
     View target = findViewById(R.id.target);
 
-    Draggable draggable = new Draggable();
-    draggable
+    DirectlyManipulable directlyManipulable = new DirectlyManipulable();
+
+    directlyManipulable.draggable
       .compose(lockToYAxis(0f))
       .compose(rubberBanded(new RectF(-500f, -500f, 500f, 500f), 200f));
 
-    runtime.addInteraction(draggable, target);
-    runtime.addInteraction(new Pinchable(), target);
-    runtime.addInteraction(new Rotatable(), target);
+    runtime.addInteraction(directlyManipulable, target);
   }
 }
