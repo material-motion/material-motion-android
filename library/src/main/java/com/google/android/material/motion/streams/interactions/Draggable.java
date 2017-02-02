@@ -21,6 +21,9 @@ import com.google.android.material.motion.gestures.DragGestureRecognizer;
 import com.google.android.material.motion.streams.MotionObservable;
 import com.google.android.material.motion.streams.MotionObservable.ScopedWritable;
 import com.google.android.material.motion.streams.MotionRuntime;
+import com.google.android.material.motion.streams.ReactiveProperties;
+import com.google.android.material.motion.streams.ReactiveProperty;
+import com.google.android.material.motion.streams.properties.ViewProperties;
 
 import static com.google.android.material.motion.streams.operators.GestureOperators.translated;
 
@@ -39,14 +42,16 @@ public class Draggable extends GestureInteraction<DragGestureRecognizer, Float[]
 
   @Override
   protected void apply(MotionRuntime runtime, MotionObservable<DragGestureRecognizer> stream, final View target) {
-    MotionObservable<Float[]> translatedStream = stream.compose(translated(target));
+    final ReactiveProperty<Float[]> translation =
+      ReactiveProperties.of(target, ViewProperties.TRANSLATION);
+
+    MotionObservable<Float[]> translatedStream = stream.compose(translated(translation));
     translatedStream = flatten(translatedStream);
 
     runtime.write(translatedStream, new ScopedWritable<Float[]>() {
       @Override
       public void write(Float[] value) {
-        target.setTranslationX(value[0]);
-        target.setTranslationY(value[1]);
+        translation.write(value);
       }
     });
   }
