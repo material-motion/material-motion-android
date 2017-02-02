@@ -16,6 +16,7 @@
 package com.google.android.material.motion.streams;
 
 import android.support.annotation.NonNull;
+import android.view.View;
 
 import com.google.android.material.motion.observable.IndefiniteObservable.Disconnector;
 import com.google.android.material.motion.observable.IndefiniteObservable.Subscription;
