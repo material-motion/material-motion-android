@@ -24,6 +24,7 @@ public class GesturesActivity extends AppCompatActivity {
     setContentView(R.layout.gestures_activity);
 
     final View target = findViewById(R.id.target);
+    target.setBackgroundDrawable(new CheckerboardDrawable());
 
     DirectlyManipulable directlyManipulable = new DirectlyManipulable();
 
