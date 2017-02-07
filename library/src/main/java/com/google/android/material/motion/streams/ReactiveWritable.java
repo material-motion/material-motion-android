@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-present The Material Motion Authors. All Rights Reserved.
+ * Copyright 2017-present The Material Motion Authors. All Rights Reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,30 +15,13 @@
  */
 package com.google.android.material.motion.streams;
 
-import android.util.Property;
-
 /**
- * An unscoped reactive property.
+ * A property that can be written from a MotionObservable stream.
  */
-public final class UnscopedReactiveProperty<O, T> extends ReactiveProperty<T> {
+public interface ReactiveWritable<T> {
 
-  private final O target;
-  private final Property<O, T> property;
-
-  public UnscopedReactiveProperty(O target, Property<O, T> property) {
-    this.target = target;
-    this.property = property;
-  }
-
-  @Override
-  public T read() {
-    return property.get(target);
-  }
-
-  @Override
-  public void write(T value) {
-    property.set(target, value);
-
-    onWrite(value);
-  }
+  /**
+   * Writes the property with the given value.
+   */
+  void write(T value);
 }

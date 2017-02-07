@@ -35,15 +35,11 @@ import com.google.android.material.motion.gestures.DragGestureRecognizer;
 import com.google.android.material.motion.observable.IndefiniteObservable;
 import com.google.android.material.motion.observable.IndefiniteObservable.Subscription;
 import com.google.android.material.motion.streams.MotionObservable;
-import com.google.android.material.motion.streams.MotionObservable.ConstantProperty;
 import com.google.android.material.motion.streams.MotionObservable.FilterOperation;
 import com.google.android.material.motion.streams.MotionObservable.MapOperation;
 import com.google.android.material.motion.streams.MotionObservable.MotionObserver;
 import com.google.android.material.motion.streams.MotionObservable.MotionState;
-import com.google.android.material.motion.streams.MotionObservable.ScopedReadable;
-import com.google.android.material.motion.streams.MotionObservable.ScopedWritable;
-import com.google.android.material.motion.streams.ReactiveProperty;
-import com.google.android.material.motion.streams.ReactiveProperty.ValueReactiveProperty;
+import com.google.android.material.motion.streams.ReactiveWritable;
 import com.google.android.material.motion.streams.sources.GestureSource;
 import com.google.android.material.motion.streams.sources.ReboundSpringSource;
 import com.google.android.material.motion.streams.springs.LabVectorizer;
@@ -185,7 +181,7 @@ public class StreamsActivity extends AppCompatActivity {
       GestureSource
         .from(gesture)
         .compose(centroid())
-        .write(new ScopedWritable<PointF>() {
+        .write(new ReactiveWritable<PointF>() {
           @Override
           public void write(PointF value) {
             text.setText(String.format(Locale.getDefault(), "[%f, %f]", value.x, value.y));
@@ -195,10 +191,8 @@ public class StreamsActivity extends AppCompatActivity {
   }
 
   private void runDemo3() {
-    final ReactiveProperty<Integer> destination = new ValueReactiveProperty<>(Color.RED);
-    ScopedReadable<Integer> initialValue = new ConstantProperty<>(Color.RED);
-    ScopedReadable<Integer> initialVelocity = new ConstantProperty<>(0);
-    ScopedReadable<Float> threshold = new ConstantProperty<>(0.01f);
+    final MaterialSpring<Integer> spring =
+      new MaterialSpring<>(Color.RED, Color.RED, 0, 0.01f, 1, 10);
 
     springTarget.setOnTouchListener(new View.OnTouchListener() {
       @Override
@@ -207,11 +201,11 @@ public class StreamsActivity extends AppCompatActivity {
 
         switch (action) {
           case MotionEvent.ACTION_DOWN:
-            destination.write(Color.GREEN);
+            spring.destination.write(Color.GREEN);
             break;
           case MotionEvent.ACTION_UP:
           case MotionEvent.ACTION_CANCEL:
-            destination.write(Color.RED);
+            spring.destination.write(Color.RED);
             break;
         }
 
@@ -219,18 +213,9 @@ public class StreamsActivity extends AppCompatActivity {
       }
     });
 
-    MaterialSpring<Integer> spring =
-      new MaterialSpring<>(
-        destination,
-        initialValue,
-        initialVelocity,
-        threshold,
-        new ValueReactiveProperty<>(1f),
-        new ValueReactiveProperty<>(10f));
-
     ReboundSpringSource
       .from(spring, new RgbVectorizer())
-      .write(new ScopedWritable<Integer>() {
+      .write(new ReactiveWritable<Integer>() {
         @Override
         public void write(Integer value) {
           springTarget.setBackgroundColor(value);
@@ -239,7 +224,7 @@ public class StreamsActivity extends AppCompatActivity {
 
     ReboundSpringSource
       .from(spring, new LabVectorizer())
-      .write(new ScopedWritable<Integer>() {
+      .write(new ReactiveWritable<Integer>() {
         @Override
         public void write(Integer value) {
           dragTarget.setBackgroundColor(value);
