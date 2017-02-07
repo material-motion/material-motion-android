@@ -50,18 +50,7 @@ public final class MotionRuntime {
    * Subscribes to the stream, writes its output to the given property, and observes its state.
    */
   public <O, T> void write(MotionObservable<T> stream, final O target, final Property<O, T> property) {
-    subscriptions.add(stream.subscribe(new MotionObserver<T>() {
-
-      @Override
-      public void next(T value) {
-        property.set(target, value);
-      }
-
-      @Override
-      public void state(@MotionState int state) {
-        onObserverStateChange(this, state);
-      }
-    }));
+    write(stream, ReactiveProperties.of(target, property));
   }
 
   /**

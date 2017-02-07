@@ -44,4 +44,23 @@ public final class ViewProperties {
       return array;
     }
   };
+
+  public static final Property<View, Float[]> SCALE = new Property<View, Float[]>(
+    Float[].class, "scale") {
+
+    private final Float[] array = new Float[2];
+
+    @Override
+    public void set(View object, Float[] value) {
+      object.setScaleX(value[0]);
+      object.setScaleY(value[1]);
+    }
+
+    @Override
+    public Float[] get(View object) {
+      array[0] = object.getScaleX();
+      array[1] = object.getScaleY();
+      return array;
+    }
+  };
 }
