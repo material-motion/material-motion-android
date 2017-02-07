@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
   <item name="gesture_listener_tag" type="id"/>
+  <item name="gesture_anchor_point_adjustment_tag" type="id"/>
 </resources>
