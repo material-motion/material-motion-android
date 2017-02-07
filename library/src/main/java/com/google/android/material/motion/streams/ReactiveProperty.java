@@ -16,25 +16,50 @@
 package com.google.android.material.motion.streams;
 
 import android.support.annotation.NonNull;
-import android.view.View;
+import android.support.v4.util.SimpleArrayMap;
+import android.util.Property;
 
 import com.google.android.material.motion.observable.IndefiniteObservable.Disconnector;
 import com.google.android.material.motion.observable.IndefiniteObservable.Subscription;
 import com.google.android.material.motion.streams.MotionObservable.MotionObserver;
-import com.google.android.material.motion.streams.MotionObservable.ScopedReadable;
-import com.google.android.material.motion.streams.MotionObservable.ScopedWritable;
 
 import java.util.List;
+import java.util.WeakHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * A reactive property represents a subscribable, readable/writable value. Subscribers will receive
  * updates whenever {@link #write(Object)} is invoked.
  */
-public abstract class ReactiveProperty<T> implements ScopedReadable<T>, ScopedWritable<T> {
+public abstract class ReactiveProperty<T> implements ReactiveReadable<T>, ReactiveWritable<T> {
+
+  private static final WeakHashMap<Object, SimpleArrayMap<Property<?, ?>, ReactiveProperty<?>>> targetProperties = new WeakHashMap<>();
+
+  public static <T, O> ReactiveProperty<T> of(O target, Property<O, T> property) {
+    SimpleArrayMap<Property<?, ?>, ReactiveProperty<?>> properties = targetProperties.get(target);
+    if (properties == null) {
+      properties = new SimpleArrayMap<>();
+      targetProperties.put(target, properties);
+    }
+
+    ReactiveProperty<?> reactiveProperty = properties.get(property);
+    if (reactiveProperty == null) {
+      reactiveProperty = new PropertyReactiveProperty<>(target, property);
+      properties.put(property, reactiveProperty);
+    }
+
+    //noinspection unchecked
+    return (ReactiveProperty<T>) reactiveProperty;
+  }
+
+  public static <T> ReactiveProperty<T> of(T initialValue) {
+    return new ValueReactiveProperty<>(initialValue);
+  }
+
 
   private final List<MotionObserver<T>> observers = new CopyOnWriteArrayList<>();
 
+  @Override
   public final Subscription subscribe(@NonNull final MotionObserver<T> observer) {
     if (!observers.contains(observer)) {
       observers.add(observer);
@@ -60,9 +85,35 @@ public abstract class ReactiveProperty<T> implements ScopedReadable<T>, ScopedWr
   }
 
   /**
-   * A simple reactive property that holds a single value.
+   * A reactive property backed by a {@link Property}.
    */
-  public static class ValueReactiveProperty<T> extends ReactiveProperty<T> {
+  private static final class PropertyReactiveProperty<O, T> extends ReactiveProperty<T> {
+
+    private final O target;
+    private final Property<O, T> property;
+
+    public PropertyReactiveProperty(O target, Property<O, T> property) {
+      this.target = target;
+      this.property = property;
+    }
+
+    @Override
+    public T read() {
+      return property.get(target);
+    }
+
+    @Override
+    public void write(T value) {
+      property.set(target, value);
+
+      onWrite(value);
+    }
+  }
+
+  /**
+   * A reactive property backed by a value.
+   */
+  private static class ValueReactiveProperty<T> extends ReactiveProperty<T> {
 
     private T value;
 

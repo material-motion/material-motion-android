@@ -15,8 +15,8 @@
  */
 package com.google.android.material.motion.streams.springs;
 
-import com.google.android.material.motion.streams.MotionObservable;
 import com.google.android.material.motion.streams.ReactiveProperty;
+import com.google.android.material.motion.streams.ReactiveReadable;
 
 /**
  * A spring can pull a value from an initial position to a destination using a physical simulation.
@@ -44,14 +44,14 @@ public class MaterialSpring<T> {
    * <p>
    * Default extracted from a POP spring with speed = 12 and bounciness = 4.
    */
-  public static final ReactiveProperty<Float> DEFAULT_TENSION_PROPERTY = null;
+  public static final ReactiveReadable<Float> DEFAULT_TENSION_PROPERTY = ReactiveProperty.of(DEFAULT_TENSION);
 
   /**
    * The default spring friction coefficient. Represents {@link #DEFAULT_FRICTION}.
    * <p>
    * Default extracted from a POP spring with speed = 12 and bounciness = 4.
    */
-  public static final ReactiveProperty<Float> DEFAULT_FRICTION_PROPERTY = null;
+  public static final ReactiveReadable<Float> DEFAULT_FRICTION_PROPERTY = ReactiveProperty.of(DEFAULT_FRICTION);
 
   /**
    * The destination value of the spring represented as a property.
@@ -61,17 +61,17 @@ public class MaterialSpring<T> {
   /**
    * The initial value of the spring represented as a readable.
    */
-  public final MotionObservable.ScopedReadable<T> initialValue;
+  public final ReactiveReadable<T> initialValue;
 
   /**
    * The initial velocity of the spring represented as a readable.
    */
-  public final MotionObservable.ScopedReadable<T> initialVelocity;
+  public final ReactiveReadable<T> initialVelocity;
 
   /**
    * The value used when determining completion of the spring simulation.
    */
-  public final MotionObservable.ScopedReadable<Float> threshold;
+  public final ReactiveReadable<Float> threshold;
 
   /**
    * The tension coefficient of the spring represented as a property.
@@ -93,12 +93,12 @@ public class MaterialSpring<T> {
     float threshold,
     float tension,
     float friction) {
-    this.destination = new ReactiveProperty.ValueReactiveProperty<>(destination);
-    this.initialValue = new MotionObservable.ConstantProperty<>(initialValue);
-    this.initialVelocity = new MotionObservable.ConstantProperty<>(initialVelocity);
-    this.threshold = new MotionObservable.ConstantProperty<>(threshold);
-    this.tension = new ReactiveProperty.ValueReactiveProperty<>(tension);
-    this.friction = new ReactiveProperty.ValueReactiveProperty<>(friction);
+    this.destination = ReactiveProperty.of(destination);
+    this.initialValue = ReactiveProperty.of(initialValue);
+    this.initialVelocity = ReactiveProperty.of(initialVelocity);
+    this.threshold = ReactiveProperty.of(threshold);
+    this.tension = ReactiveProperty.of(tension);
+    this.friction = ReactiveProperty.of(friction);
   }
 
   /**
@@ -106,9 +106,9 @@ public class MaterialSpring<T> {
    */
   public MaterialSpring(
     ReactiveProperty<T> destination,
-    MotionObservable.ScopedReadable<T> initialValue,
-    MotionObservable.ScopedReadable<T> initialVelocity,
-    MotionObservable.ScopedReadable<Float> threshold,
+    ReactiveReadable<T> initialValue,
+    ReactiveReadable<T> initialVelocity,
+    ReactiveReadable<Float> threshold,
     ReactiveProperty<Float> tension,
     ReactiveProperty<Float> friction) {
     this.destination = destination;
@@ -116,8 +116,8 @@ public class MaterialSpring<T> {
     this.initialVelocity = initialVelocity;
     this.threshold = threshold;
     this.tension = tension == DEFAULT_TENSION_PROPERTY
-      ? new ReactiveProperty.ValueReactiveProperty<>(DEFAULT_TENSION) : tension;
+      ? ReactiveProperty.of(DEFAULT_TENSION) : tension;
     this.friction = friction == DEFAULT_FRICTION_PROPERTY
-      ? new ReactiveProperty.ValueReactiveProperty<>(DEFAULT_FRICTION) : friction;
+      ? ReactiveProperty.of(DEFAULT_FRICTION) : friction;
   }
 }

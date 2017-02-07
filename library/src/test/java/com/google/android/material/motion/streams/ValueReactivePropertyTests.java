@@ -30,7 +30,7 @@ import static com.google.common.truth.Truth.assertThat;
 
 @RunWith(RobolectricTestRunner.class)
 @Config(constants = BuildConfig.class, sdk = 21)
-public class ReactivePropertyTests {
+public class ValueReactivePropertyTests {
 
   private static final float E = 0.0001f;
 
@@ -38,7 +38,7 @@ public class ReactivePropertyTests {
 
   @Before
   public void setUp() {
-    property = new ReactiveProperty.ValueReactiveProperty<>(5f);
+    property = ReactiveProperty.of(5f);
   }
 
   @Test

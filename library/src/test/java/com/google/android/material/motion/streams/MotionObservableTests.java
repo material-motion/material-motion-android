@@ -20,7 +20,9 @@ import android.support.annotation.NonNull;
 import android.view.View;
 
 import com.google.android.material.motion.observable.IndefiniteObservable;
+import com.google.android.material.motion.observable.IndefiniteObservable.Subscription;
 import com.google.android.material.motion.streams.MotionObservable.MotionObserver;
+import com.google.android.material.motion.streams.testing.TrackingMotionObserver;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -28,6 +30,8 @@ import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
+
+import java.util.Arrays;
 
 import static com.google.android.material.motion.streams.MotionObservable.ACTIVE;
 import static com.google.common.truth.Truth.assertThat;
@@ -126,47 +130,33 @@ public class MotionObservableTests {
   }
 
   @Test
-  public void writeScopedProperty() {
-    observable.write(new MotionObservable.ScopedWritable<Float>() {
-      @Override
-      public void write(Float value) {
-        assertThat(value).isWithin(E).of(5f);
-      }
-    }).subscribe().unsubscribe();
+  public void writeReactiveProperty() {
+    ReactiveProperty<Float> property = ReactiveProperty.of(100f);
+
+    property.write(5f);
+
+    assertThat(property.read()).isWithin(0f).of(5f);
   }
 
   @Test
-  public void readScopedProperty() {
-    MotionObservable.ScopedReadable<Float> reader = new MotionObservable.ScopedReadable<Float>() {
-      @Override
-      public Float read() {
-        return 6f;
-      }
-    };
+  public void readReactiveProperty() {
+    ReactiveProperty<Float> reader = ReactiveProperty.of(6f);
 
     assertThat(reader.read()).isWithin(E).of(6f);
   }
 
   @Test
-  public void writeInlineProperty() {
-    observable.write(new MotionObservable.InlineWritable<Float>() {
-      @Override
-      public void write(Float value) {
-        assertThat(value).isWithin(E).of(5f);
-      }
-    }).subscribe().unsubscribe();
-  }
+  public void subscribeReactiveProperty() {
+    ReactiveProperty<Float> property = ReactiveProperty.of(6f);
 
-  @Test
-  public void readInlineProperty() {
-    MotionObservable.ScopedReadable<Float> reader = new MotionObservable.InlineReadable<Float>() {
-      @Override
-      public Float read() {
-        return 6f;
-      }
-    };
+    TrackingMotionObserver<Float> tracker = new TrackingMotionObserver<>();
+    Subscription subscription = property.subscribe(tracker);
 
-    assertThat(reader.read()).isWithin(E).of(6f);
+    property.write(7f);
+    property.write(8f);
+    subscription.unsubscribe();
+
+    assertThat(tracker.values).isEqualTo(Arrays.asList(6f, 7f, 8f));
   }
 
   @Test
