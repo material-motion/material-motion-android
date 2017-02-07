@@ -34,11 +34,11 @@ public abstract class GestureInteraction<GR extends GestureRecognizer, T>
   extends Interaction<T, View> {
 
   private final GR gestureRecognizer;
-  private final MotionObservable<GR> stream;
+  final MotionObservable<GR> gestureStream;
 
   protected GestureInteraction(GR gestureRecognizer) {
     this.gestureRecognizer = gestureRecognizer;
-    this.stream = GestureSource.from(gestureRecognizer);
+    this.gestureStream = GestureSource.from(gestureRecognizer);
   }
 
   @Override

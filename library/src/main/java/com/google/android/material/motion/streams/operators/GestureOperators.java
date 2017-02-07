@@ -15,6 +15,7 @@
  */
 package com.google.android.material.motion.streams.operators;
 
+import android.graphics.Matrix;
 import android.graphics.PointF;
 import android.support.annotation.VisibleForTesting;
 import android.view.View;
@@ -24,11 +25,15 @@ import com.google.android.material.motion.gestures.GestureRecognizer;
 import com.google.android.material.motion.gestures.GestureRecognizer.GestureRecognizerState;
 import com.google.android.material.motion.gestures.RotateGestureRecognizer;
 import com.google.android.material.motion.gestures.ScaleGestureRecognizer;
+import com.google.android.material.motion.observable.IndefiniteObservable.Subscription;
 import com.google.android.material.motion.observable.Observer;
 import com.google.android.material.motion.streams.MotionObservable;
 import com.google.android.material.motion.streams.MotionObservable.FilterOperation;
 import com.google.android.material.motion.streams.MotionObservable.MapOperation;
 import com.google.android.material.motion.streams.MotionObservable.Operation;
+import com.google.android.material.motion.streams.MotionObservable.SimpleMotionObserver;
+import com.google.android.material.motion.streams.ReactiveProperties;
+import com.google.android.material.motion.streams.properties.ViewProperties;
 
 /**
  * Extended operators for gestures.
@@ -36,6 +41,11 @@ import com.google.android.material.motion.streams.MotionObservable.Operation;
  * @see MotionObservable#compose(Operation)
  */
 public final class GestureOperators {
+
+  /* Temporary variables. */
+  private static final float[] array = new float[2];
+  private static final Matrix matrix = new Matrix();
+  private static final Matrix inverse = new Matrix();
 
   @VisibleForTesting
   GestureOperators() {
@@ -117,8 +127,25 @@ public final class GestureOperators {
   public static <T extends DragGestureRecognizer> Operation<T, Float[]> translated(final View view) {
     return new Operation<T, Float[]>() {
 
+      private Subscription adjustmentSubscription;
+
       private float initialTranslationX;
       private float initialTranslationY;
+      private float adjustmentX;
+      private float adjustmentY;
+
+      @Override
+      public void onConnect() {
+        adjustmentSubscription =
+          ReactiveProperties.of(view, ViewProperties.ANCHOR_POINT_ADJUSTMENT)
+            .subscribe(new SimpleMotionObserver<Float[]>() {
+              @Override
+              public void next(Float[] value) {
+                adjustmentX += value[0];
+                adjustmentY += value[1];
+              }
+            });
+      }
 
       @Override
       public void next(Observer<Float[]> observer, T gestureRecognizer) {
@@ -126,17 +153,24 @@ public final class GestureOperators {
           case GestureRecognizer.BEGAN:
             initialTranslationX = view.getTranslationX();
             initialTranslationY = view.getTranslationY();
+            adjustmentX = 0f;
+            adjustmentY = 0f;
             break;
           case GestureRecognizer.CHANGED:
             float translationX = gestureRecognizer.getTranslationX();
             float translationY = gestureRecognizer.getTranslationY();
 
             observer.next(new Float[]{
-              initialTranslationX + translationX,
-              initialTranslationY + translationY,
+              initialTranslationX + adjustmentX + translationX,
+              initialTranslationY + adjustmentY + translationY,
             });
             break;
         }
+      }
+
+      @Override
+      public void onDisconnect() {
+        adjustmentSubscription.unsubscribe();
       }
     };
   }
@@ -189,6 +223,39 @@ public final class GestureOperators {
             observer.next(new Float[]{initialScaleX * scale, initialScaleY * scale});
             break;
         }
+      }
+    };
+  }
+
+  public static <T extends GestureRecognizer> Operation<T, Float[]> pivot() {
+    return new Operation<T, Float[]>() {
+
+      @Override
+      public void next(Observer<Float[]> observer, T gestureRecognizer) {
+        Float[] pivot = new Float[]{
+          gestureRecognizer.getCentroidX(),
+          gestureRecognizer.getCentroidY()
+        };
+        observer.next(pivot);
+      }
+    };
+  }
+
+  public static <T extends GestureRecognizer> Operation<T, Float[]> anchored(final View view) {
+    return new Operation<T, Float[]>() {
+
+      @Override
+      public void next(Observer<Float[]> observer, T gestureRecognizer) {
+        array[0] = view.getPivotX();
+        array[1] = view.getPivotY();
+        GestureRecognizer.getTransformationMatrix(view, matrix, inverse);
+        matrix.mapPoints(array);
+
+        Float[] adjustment = new Float[]{
+          gestureRecognizer.getUntransformedCentroidX() - array[0],
+          gestureRecognizer.getUntransformedCentroidY() - array[1],
+        };
+        observer.next(adjustment);
       }
     };
   }

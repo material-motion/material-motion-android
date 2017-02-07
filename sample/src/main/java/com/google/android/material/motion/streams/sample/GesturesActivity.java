@@ -27,11 +27,6 @@ public class GesturesActivity extends AppCompatActivity {
     target.setBackgroundDrawable(new CheckerboardDrawable());
 
     DirectlyManipulable directlyManipulable = new DirectlyManipulable();
-
-    directlyManipulable.draggable
-      .constrain(lockToYAxis(0f))
-      .constrain(rubberBanded(new RectF(-500f, -500f, 500f, 500f), 200f));
-
     runtime.addInteraction(directlyManipulable, target);
 
     findViewById(R.id.button).setOnClickListener(new View.OnClickListener() {
