@@ -19,8 +19,8 @@ import android.view.View;
 
 import com.google.android.material.motion.gestures.ScaleGestureRecognizer;
 import com.google.android.material.motion.streams.MotionObservable;
-import com.google.android.material.motion.streams.MotionObservable.ScopedWritable;
 import com.google.android.material.motion.streams.MotionRuntime;
+import com.google.android.material.motion.streams.properties.ViewProperties;
 
 import static com.google.android.material.motion.streams.operators.GestureOperators.scaled;
 
@@ -38,16 +38,10 @@ public class Pinchable extends GestureInteraction<ScaleGestureRecognizer, Float[
   }
 
   @Override
-  protected void apply(final MotionRuntime runtime, MotionObservable<ScaleGestureRecognizer> stream, final View target) {
+  protected void onApply(final MotionRuntime runtime, MotionObservable<ScaleGestureRecognizer> stream, final View target) {
     MotionObservable<Float[]> scaledStream = stream.compose(scaled(target));
     scaledStream = flatten(scaledStream);
 
-    runtime.write(scaledStream, new ScopedWritable<Float[]>() {
-      @Override
-      public void write(Float[] value) {
-        target.setScaleX(value[0]);
-        target.setScaleY(value[1]);
-      }
-    });
+    runtime.write(scaledStream, target, ViewProperties.SCALE);
   }
 }
