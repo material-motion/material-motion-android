@@ -28,8 +28,8 @@ public class GesturesActivity extends AppCompatActivity {
     DirectlyManipulable directlyManipulable = new DirectlyManipulable();
 
     directlyManipulable.draggable
-      .compose(lockToYAxis(0f))
-      .compose(rubberBanded(new RectF(-500f, -500f, 500f, 500f), 200f));
+      .constrain(lockToYAxis(0f))
+      .constrain(rubberBanded(new RectF(-500f, -500f, 500f, 500f), 200f));
 
     runtime.addInteraction(directlyManipulable, target);
 
