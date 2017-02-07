@@ -16,7 +16,6 @@
 package com.google.android.material.motion.streams.operators;
 
 import android.graphics.PointF;
-import android.support.annotation.NonNull;
 import android.support.annotation.VisibleForTesting;
 import android.view.View;
 
@@ -25,19 +24,11 @@ import com.google.android.material.motion.gestures.GestureRecognizer;
 import com.google.android.material.motion.gestures.GestureRecognizer.GestureRecognizerState;
 import com.google.android.material.motion.gestures.RotateGestureRecognizer;
 import com.google.android.material.motion.gestures.ScaleGestureRecognizer;
-import com.google.android.material.motion.observable.IndefiniteObservable.Connector;
-import com.google.android.material.motion.observable.IndefiniteObservable.Disconnector;
-import com.google.android.material.motion.observable.IndefiniteObservable.Subscription;
 import com.google.android.material.motion.observable.Observer;
 import com.google.android.material.motion.streams.MotionObservable;
 import com.google.android.material.motion.streams.MotionObservable.FilterOperation;
 import com.google.android.material.motion.streams.MotionObservable.MapOperation;
-import com.google.android.material.motion.streams.MotionObservable.MotionObserver;
-import com.google.android.material.motion.streams.MotionObservable.MotionState;
 import com.google.android.material.motion.streams.MotionObservable.Operation;
-import com.google.android.material.motion.streams.MotionObservable.RawOperation;
-import com.google.android.material.motion.streams.MotionObservable.SimpleMotionObserver;
-import com.google.android.material.motion.streams.ReactiveProperty;
 
 /**
  * Extended operators for gestures.
@@ -123,72 +114,29 @@ public final class GestureOperators {
    * Adds the current translation to the initial translation of the given view and emits the
    * result while the gesture recognizer is active.
    */
-  public static <T extends DragGestureRecognizer> RawOperation<T, Float[]> translated(
-    final ReactiveProperty<Float[]> initialTranslation) {
-    return new RawOperation<T, Float[]>() {
+  public static <T extends DragGestureRecognizer> Operation<T, Float[]> translated(final View view) {
+    return new Operation<T, Float[]>() {
+
+      private float initialTranslationX;
+      private float initialTranslationY;
 
       @Override
-      public MotionObservable<Float[]> connect(final MotionObservable<T> upstream) {
-        return new MotionObservable<>(
-          new Connector<MotionObserver<Float[]>>() {
+      public void next(Observer<Float[]> observer, T gestureRecognizer) {
+        switch (gestureRecognizer.getState()) {
+          case GestureRecognizer.BEGAN:
+            initialTranslationX = view.getTranslationX();
+            initialTranslationY = view.getTranslationY();
+            break;
+          case GestureRecognizer.CHANGED:
+            float translationX = gestureRecognizer.getTranslationX();
+            float translationY = gestureRecognizer.getTranslationY();
 
-            private float lastTranslationX;
-            private float lastTranslationY;
-
-            @NonNull
-            @Override
-            public Disconnector connect(final MotionObserver<Float[]> downstream) {
-              final Subscription propertySubscription = initialTranslation.subscribe(
-                new SimpleMotionObserver<Float[]>() {
-                  @Override
-                  public void next(Float[] value) {
-                    lastTranslationX = value[0];
-                    lastTranslationY = value[1];
-
-                    // TODO: Call observer.next()?
-                  }
-                });
-
-              final Subscription upstreamSubscription = upstream.subscribe(
-                new MotionObserver<T>() {
-
-                  private float initialTranslationX;
-                  private float initialTranslationY;
-
-                  @Override
-                  public void next(T gestureRecognizer) {
-                    switch (gestureRecognizer.getState()) {
-                      case GestureRecognizer.BEGAN:
-                        initialTranslationX = lastTranslationX;
-                        initialTranslationY = lastTranslationY;
-                        break;
-                      case GestureRecognizer.CHANGED:
-                        float translationX = gestureRecognizer.getTranslationX();
-                        float translationY = gestureRecognizer.getTranslationY();
-
-                        downstream.next(
-                          new Float[]{
-                            initialTranslationX + translationX,
-                            initialTranslationY + translationY});
-                        break;
-                    }
-                  }
-
-                  @Override
-                  public void state(@MotionState int state) {
-                    downstream.state(state);
-                  }
-                });
-
-              return new Disconnector() {
-                @Override
-                public void disconnect() {
-                  propertySubscription.unsubscribe();
-                  upstreamSubscription.unsubscribe();
-                }
-              };
-            }
-          });
+            observer.next(new Float[]{
+              initialTranslationX + translationX,
+              initialTranslationY + translationY,
+            });
+            break;
+        }
       }
     };
   }

@@ -45,7 +45,7 @@ public class Draggable extends GestureInteraction<DragGestureRecognizer, Float[]
     final ReactiveProperty<Float[]> translation =
       ReactiveProperties.of(target, ViewProperties.TRANSLATION);
 
-    MotionObservable<Float[]> translatedStream = stream.compose(translated(translation));
+    MotionObservable<Float[]> translatedStream = stream.compose(translated(target));
     translatedStream = flatten(translatedStream);
 
     runtime.write(translatedStream, new ScopedWritable<Float[]>() {
