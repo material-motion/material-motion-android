@@ -26,7 +26,7 @@ public abstract class Interaction<T, O> {
 
   public abstract void apply(MotionRuntime runtime, O target);
 
-  public final Interaction<T, O> compose(Operation<T, T> operation) {
+  public final Interaction<T, O> constrain(Operation<T, T> operation) {
     operations.add(operation);
     return this;
   }
