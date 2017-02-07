@@ -32,7 +32,7 @@ import com.google.android.material.motion.streams.MotionObservable.FilterOperati
 import com.google.android.material.motion.streams.MotionObservable.MapOperation;
 import com.google.android.material.motion.streams.MotionObservable.Operation;
 import com.google.android.material.motion.streams.MotionObservable.SimpleMotionObserver;
-import com.google.android.material.motion.streams.ReactiveProperties;
+import com.google.android.material.motion.streams.ReactiveProperty;
 import com.google.android.material.motion.streams.properties.ViewProperties;
 
 /**
@@ -137,7 +137,7 @@ public final class GestureOperators {
       @Override
       public void onConnect() {
         adjustmentSubscription =
-          ReactiveProperties.of(view, ViewProperties.ANCHOR_POINT_ADJUSTMENT)
+          ReactiveProperty.of(view, ViewProperties.ANCHOR_POINT_ADJUSTMENT)
             .subscribe(new SimpleMotionObserver<Float[]>() {
               @Override
               public void next(Float[] value) {

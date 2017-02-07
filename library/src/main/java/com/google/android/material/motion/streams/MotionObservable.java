@@ -167,63 +167,6 @@ public class MotionObservable<T> extends IndefiniteObservable<MotionObserver<T>>
   }
 
   /**
-   * A property that can be read into a MotionObservable stream.
-   */
-  public interface ScopedReadable<T> {
-
-    /**
-     * Reads the property's value.
-     */
-    T read();
-  }
-
-  /**
-   * A simple scoped readable that holds a single value.
-   */
-  public static class ConstantProperty<T> implements ScopedReadable<T> {
-
-    private T value;
-
-    public ConstantProperty(T value) {
-      this.value = value;
-    }
-
-    @Override
-    public T read() {
-      return value;
-    }
-  }
-
-  /**
-   * A property that can be written from a MotionObservable stream.
-   */
-  public interface ScopedWritable<T> {
-
-    /**
-     * Writes the property with the given value.
-     */
-    void write(T value);
-  }
-
-  /**
-   * A property that can be read into a MotionObservable stream.
-   *
-   * @deprecated in #develop#. Use {@link ScopedReadable} instead.
-   */
-  @Deprecated
-  public interface InlineReadable<T> extends ScopedReadable<T> {
-  }
-
-  /**
-   * A property that can be written from a MotionObservable stream.
-   *
-   * @deprecated in #develop#. Use {@link ScopedWritable} instead.
-   */
-  @Deprecated
-  public interface InlineWritable<T> extends ScopedWritable<T> {
-  }
-
-  /**
    * @deprecated in #develop. Use {@link #compose(Operation)} instead.
    */
   @Deprecated
@@ -315,8 +258,10 @@ public class MotionObservable<T> extends IndefiniteObservable<MotionObserver<T>>
 
   /**
    * Writes the values from an Observable onto the given inline property.
+   * @deprecated in #develop#. Instead, use {@link MotionRuntime#write}.
    */
-  public MotionObservable<T> write(final ScopedWritable<T> property) {
+  @Deprecated
+  public MotionObservable<T> write(final ReactiveWritable<T> property) {
     return compose(new Operation<T, T>() {
       @Override
       public void next(Observer<T> observer, T value) {
