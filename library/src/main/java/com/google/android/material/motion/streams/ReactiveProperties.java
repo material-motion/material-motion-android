@@ -16,15 +16,14 @@
 package com.google.android.material.motion.streams;
 
 import android.support.annotation.VisibleForTesting;
+import android.support.v4.util.SimpleArrayMap;
 import android.util.Property;
 
 import java.util.WeakHashMap;
 
 public final class ReactiveProperties {
 
-  private static final WeakHashMap<Object[], UnscopedReactiveProperty> reactiveProperties =
-    new WeakHashMap<>();
-  private static final Object[] key = new Object[2];
+  private static final WeakHashMap<Object, SimpleArrayMap<Property<?, ?>, ReactiveProperty<?>>> targetProperties = new WeakHashMap<>();
 
   @VisibleForTesting
   public ReactiveProperties() {
@@ -32,15 +31,19 @@ public final class ReactiveProperties {
   }
 
   public static <T, O> ReactiveProperty<T> of(O target, Property<O, T> property) {
-    key[0] = target;
-    key[1] = property;
+    SimpleArrayMap<Property<?, ?>, ReactiveProperty<?>> properties = targetProperties.get(target);
+    if (properties == null) {
+      properties = new SimpleArrayMap<>();
+      targetProperties.put(target, properties);
+    }
 
-    //noinspection unchecked
-    UnscopedReactiveProperty<O, T> reactiveProperty = reactiveProperties.get(key);
+    ReactiveProperty<?> reactiveProperty = properties.get(property);
     if (reactiveProperty == null) {
       reactiveProperty = new UnscopedReactiveProperty<>(target, property);
-      reactiveProperties.put(new Object[]{target, property}, reactiveProperty);
+      properties.put(property, reactiveProperty);
     }
-    return reactiveProperty;
+
+    //noinspection unchecked
+    return (ReactiveProperty<T>) reactiveProperty;
   }
 }
