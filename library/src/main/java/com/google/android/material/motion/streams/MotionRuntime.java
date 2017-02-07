@@ -20,14 +20,12 @@ import android.util.Property;
 import com.google.android.material.motion.observable.IndefiniteObservable.Subscription;
 import com.google.android.material.motion.streams.MotionObservable.MotionObserver;
 import com.google.android.material.motion.streams.MotionObservable.MotionState;
-import com.google.android.material.motion.streams.MotionObservable.ScopedWritable;
 
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import static android.icu.lang.UCharacter.GraphemeClusterBreak.T;
 import static com.google.android.material.motion.streams.MotionObservable.ACTIVE;
 import static com.google.android.material.motion.streams.MotionObservable.AT_REST;
 
@@ -50,13 +48,13 @@ public final class MotionRuntime {
    * Subscribes to the stream, writes its output to the given property, and observes its state.
    */
   public <O, T> void write(MotionObservable<T> stream, final O target, final Property<O, T> property) {
-    write(stream, ReactiveProperties.of(target, property));
+    write(stream, ReactiveProperty.of(target, property));
   }
 
   /**
    * Subscribes to the stream, writes its output to the given property, and observes its state.
    */
-  public <T> void write(MotionObservable<T> stream, final ScopedWritable<T> property) {
+  public <T> void write(MotionObservable<T> stream, final ReactiveWritable<T> property) {
     subscriptions.add(stream.subscribe(new MotionObserver<T>() {
 
       @Override

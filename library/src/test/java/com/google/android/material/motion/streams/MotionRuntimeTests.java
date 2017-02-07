@@ -50,17 +50,15 @@ public class MotionRuntimeTests {
   }
 
   @Test
-  public void writesCorrectValueToScopedProperty() {
+  public void writesCorrectValueToReactiveProperty() {
     SimulatedMotionSource<Float> source = new SimulatedMotionSource<>();
     MotionObservable<Float> stream = source.getObservable();
 
-    runtime.write(stream, new MotionObservable.ScopedWritable<Float>() {
-      @Override
-      public void write(Float value) {
-        assertThat(value).isWithin(E).of(5f);
-      }
-    });
+    ReactiveProperty<Float> property = ReactiveProperty.of(0f);
+    runtime.write(stream, property);
+
     source.next(5f);
+    assertThat(property.read()).isWithin(0f).of(5f);
   }
 
   @Test
@@ -80,11 +78,7 @@ public class MotionRuntimeTests {
     SimulatedMotionSource<Float> source = new SimulatedMotionSource<>();
     MotionObservable<Float> stream = source.getObservable();
 
-    runtime.write(stream, new MotionObservable.ScopedWritable<Float>() {
-      @Override
-      public void write(Float value) {
-      }
-    });
+    runtime.write(stream, ReactiveProperty.of(0f));
 
     assertThat(runtime.getState()).isEqualTo(AT_REST);
     source.state(MotionObservable.ACTIVE);

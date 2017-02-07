@@ -33,17 +33,17 @@ import static com.google.common.truth.Truth.assertThat;
 
 @RunWith(RobolectricTestRunner.class)
 @Config(constants = BuildConfig.class, sdk = 21)
-public class UnscopedReactivePropertyTests {
+public class PropertyReactivePropertyTests {
 
   private static final float E = 0.0001f;
 
   private View target;
-  private UnscopedReactiveProperty<View, Float> property;
+  private ReactiveProperty<Float> property;
 
   @Before
   public void setUp() {
     target = new View(Robolectric.setupActivity(Activity.class));
-    property = new UnscopedReactiveProperty<>(target, View.ALPHA);
+    property = ReactiveProperty.of(target, View.ALPHA);
   }
 
   @Test
