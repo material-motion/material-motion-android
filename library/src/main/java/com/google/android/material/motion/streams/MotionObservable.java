@@ -106,11 +106,6 @@ public class MotionObservable<T> extends IndefiniteObservable<MotionObserver<T>>
     }
   }
 
-  public static abstract class RawOperation<T, U> {
-
-    public abstract MotionObservable<U> connect(MotionObservable<T> upstream);
-  }
-
   /**
    * An operation is able to transform incoming values before choosing whether or not to pass them
    * downstream.
@@ -126,6 +121,12 @@ public class MotionObservable<T> extends IndefiniteObservable<MotionObserver<T>>
      * @param value The incoming value.
      */
     public abstract void next(Observer<U> observer, T value);
+
+    public void onConnect() {
+    }
+
+    public void onDisconnect() {
+    }
   }
 
   /**
@@ -251,6 +252,7 @@ public class MotionObservable<T> extends IndefiniteObservable<MotionObserver<T>>
       @NonNull
       @Override
       public Disconnector connect(final MotionObserver<U> observer) {
+        operation.onConnect();
         final Subscription subscription = upstream.subscribe(new MotionObserver<T>() {
 
           @Override
@@ -268,15 +270,12 @@ public class MotionObservable<T> extends IndefiniteObservable<MotionObserver<T>>
 
           @Override
           public void disconnect() {
+            operation.onDisconnect();
             subscription.unsubscribe();
           }
         };
       }
     });
-  }
-
-  public <U> MotionObservable<U> compose(RawOperation<T, U> operation) {
-    return operation.connect(this);
   }
 
   /**
