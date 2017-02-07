@@ -15,9 +15,12 @@
  */
 package com.google.android.material.motion.streams.properties;
 
+import android.support.annotation.IdRes;
 import android.support.annotation.VisibleForTesting;
 import android.util.Property;
 import android.view.View;
+
+import com.google.android.material.motion.streams.R;
 
 public final class ViewProperties {
 
@@ -63,4 +66,71 @@ public final class ViewProperties {
       return array;
     }
   };
+
+  public static final Property<View, Float[]> PIVOT = new Property<View, Float[]>(
+    Float[].class, "pivot") {
+
+    private final Float[] array = new Float[2];
+
+    @Override
+    public void set(View object, Float[] value) {
+      object.setPivotX(value[0]);
+      object.setPivotY(value[1]);
+    }
+
+    @Override
+    public Float[] get(View object) {
+      array[0] = object.getPivotX();
+      array[1] = object.getPivotY();
+      return array;
+    }
+  };
+
+  public static final Property<View, Float[]> ANCHOR_POINT_ADJUSTMENT =
+    new TagProperty<Float[]>(
+      Float[].class,
+      "anchor_point_adjustment",
+      R.id.gesture_anchor_point_adjustment_tag,
+      new Float[]{0f, 0f}) {
+
+      @Override
+      public void set(View object, Float[] adjustment) {
+        super.set(object, adjustment);
+
+        object.setTranslationX(object.getTranslationX() + adjustment[0]);
+        object.setTranslationY(object.getTranslationY() + adjustment[1]);
+      }
+
+      @Override
+      public Float[] get(View object) {
+        return super.get(object);
+      }
+    };
+
+  private static class TagProperty<T> extends Property<View, T> {
+
+    private final int id;
+    private final T initialValue;
+
+    public TagProperty(Class<T> type, String name, @IdRes int id, T initialValue) {
+      super(type, name);
+      this.id = id;
+      this.initialValue = initialValue;
+    }
+
+    @Override
+    public void set(View object, T value) {
+      object.setTag(id, value);
+    }
+
+    @Override
+    public T get(View object) {
+      Object value = object.getTag(id);
+      if (value == null) {
+        value = initialValue;
+      }
+      //noinspection unchecked
+      return (T) value;
+    }
+  }
 }
