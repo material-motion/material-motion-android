@@ -53,13 +53,13 @@ public abstract class GestureInteraction<GR extends GestureRecognizer, T>
 
     gestureListener.gestureRecognizers.put(gestureRecognizer.getClass(), gestureRecognizer);
 
-    apply(runtime, stream, target);
+    onApply(runtime, stream, target);
   }
 
   /**
    * Applies the values of the gesture recognizer stream to the target view.
    */
-  protected abstract void apply(MotionRuntime runtime, MotionObservable<GR> stream, View target);
+  protected abstract void onApply(MotionRuntime runtime, MotionObservable<GR> stream, View target);
 
   private static class GestureListener implements OnTouchListener {
     private final SimpleArrayMap<Class<? extends GestureRecognizer>, GestureRecognizer> gestureRecognizers =
