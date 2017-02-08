@@ -41,8 +41,8 @@ import com.google.android.material.motion.streams.MotionObservable.MotionObserve
 import com.google.android.material.motion.streams.MotionObservable.MotionState;
 import com.google.android.material.motion.streams.MotionRuntime;
 import com.google.android.material.motion.streams.ReactiveWritable;
+import com.google.android.material.motion.streams.properties.ViewProperties;
 import com.google.android.material.motion.streams.sources.GestureSource;
-import com.google.android.material.motion.streams.sources.ReboundSpringSource;
 import com.google.android.material.motion.streams.springs.LabVectorizer;
 import com.google.android.material.motion.streams.springs.MaterialSpring;
 import com.google.android.material.motion.streams.springs.RgbVectorizer;
@@ -195,8 +195,24 @@ public class StreamsActivity extends AppCompatActivity {
   }
 
   private void runDemo3() {
-    final MaterialSpring<Integer> spring =
-      new MaterialSpring<>(Color.RED, Color.RED, 0, 0.01f, 1, 10);
+    final MaterialSpring<View, Integer> rgbSpring = new MaterialSpring<>(
+      ViewProperties.BACKGROUND_COLOR,
+      new RgbVectorizer(),
+      Color.RED,
+      Color.RED,
+      0,
+      0.01f,
+      1,
+      10);
+    final MaterialSpring<View, Integer> labSpring = new MaterialSpring<>(
+      ViewProperties.BACKGROUND_COLOR,
+      new LabVectorizer(),
+      Color.RED,
+      Color.RED,
+      0,
+      0.01f,
+      1,
+      10);
 
     springTarget.setOnTouchListener(new View.OnTouchListener() {
       @Override
@@ -205,11 +221,13 @@ public class StreamsActivity extends AppCompatActivity {
 
         switch (action) {
           case MotionEvent.ACTION_DOWN:
-            spring.destination.write(Color.GREEN);
+            rgbSpring.destination.write(Color.GREEN);
+            labSpring.destination.write(Color.GREEN);
             break;
           case MotionEvent.ACTION_UP:
           case MotionEvent.ACTION_CANCEL:
-            spring.destination.write(Color.RED);
+            rgbSpring.destination.write(Color.RED);
+            labSpring.destination.write(Color.RED);
             break;
         }
 
@@ -217,21 +235,8 @@ public class StreamsActivity extends AppCompatActivity {
       }
     });
 
-    MotionObservable<Integer> rgbSpring = ReboundSpringSource.from(spring, new RgbVectorizer());
-    runtime.write(rgbSpring, new ReactiveWritable<Integer>() {
-      @Override
-      public void write(Integer value) {
-        springTarget.setBackgroundColor(value);
-      }
-    });
-
-    MotionObservable<Integer> labSpring = ReboundSpringSource.from(spring, new LabVectorizer());
-    runtime.write(labSpring, new ReactiveWritable<Integer>() {
-      @Override
-      public void write(Integer value) {
-        dragTarget.setBackgroundColor(value);
-      }
-    });
+    runtime.addInteraction(rgbSpring, springTarget);
+    runtime.addInteraction(labSpring, dragTarget);
   }
 
   private CharSequence italicizeAndCapitalize(String value) {

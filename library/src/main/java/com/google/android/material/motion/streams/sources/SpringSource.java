@@ -31,7 +31,7 @@ public abstract class SpringSource {
    * The properties on the <code>spring</code> param may be changed to dynamically modify the
    * behavior of this source.
    */
-  public final MotionObservable<Float> create(MaterialSpring<Float> spring) {
+  public final <O> MotionObservable<Float> create(MaterialSpring<O, Float> spring) {
     return create(spring, new FloatVectorizer());
   }
 
@@ -41,6 +41,6 @@ public abstract class SpringSource {
    * The properties on the <code>spring</code> param may be changed to dynamically modify the
    * behavior of this source.
    */
-  public abstract <T> MotionObservable<T> create(
-    MaterialSpring<T> spring, TypeVectorizer<T> vectorizer);
+  public abstract <O, T> MotionObservable<T> create(
+    MaterialSpring<O, T> spring, TypeVectorizer<T> vectorizer);
 }
