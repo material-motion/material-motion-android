@@ -20,13 +20,13 @@ import com.google.android.material.motion.streams.MotionObservable.Operation;
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class Interaction<T, O> {
+public abstract class Interaction<O, T> {
 
   private final List<Operation<T, T>> operations = new ArrayList<>();
 
   public abstract void apply(MotionRuntime runtime, O target);
 
-  public final Interaction<T, O> constrain(Operation<T, T> operation) {
+  public final Interaction<O, T> constrain(Operation<T, T> operation) {
     operations.add(operation);
     return this;
   }
