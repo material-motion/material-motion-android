@@ -42,10 +42,12 @@ public class MotionObservableTests {
 
   private static final float E = 0.0001f;
 
+  private MotionRuntime runtime;
   private MotionObservable<Float> observable;
 
   @Before
   public void setUp() {
+    runtime = new MotionRuntime();
     observable = new MotionObservable<>(
       new IndefiniteObservable.Connector<MotionObserver<Float>>() {
         @NonNull
@@ -116,7 +118,6 @@ public class MotionObservableTests {
         assertThat(state).isEqualTo(ACTIVE);
       }
     }).unsubscribe();
-    ;
   }
 
   @Test
@@ -124,7 +125,7 @@ public class MotionObservableTests {
     View target = new View(Robolectric.setupActivity(Activity.class));
     target.setTranslationX(0);
 
-    observable.write(target, View.TRANSLATION_X).subscribe().unsubscribe();
+    runtime.write(observable, target, View.TRANSLATION_X);
 
     assertThat(target.getTranslationX()).isWithin(E).of(5f);
   }
@@ -157,65 +158,5 @@ public class MotionObservableTests {
     subscription.unsubscribe();
 
     assertThat(tracker.values).isEqualTo(Arrays.asList(6f, 7f, 8f));
-  }
-
-  @Test
-  public void deprecatedOperator() {
-    observable.operator(new MotionObservable.MapOperation<Float, Float>() {
-      @Override
-      public Float transform(Float value) {
-        return value * 2f;
-      }
-    }).subscribe(new MotionObserver<Float>() {
-      @Override
-      public void next(Float value) {
-        assertThat(value).isWithin(E).of(10f);
-      }
-
-      @Override
-      public void state(@MotionObservable.MotionState int state) {
-        assertThat(state).isEqualTo(ACTIVE);
-      }
-    });
-  }
-
-  @Test
-  public void deprecatedMap() {
-    observable.map(new MotionObservable.MapOperation<Float, Float>() {
-      @Override
-      public Float transform(Float value) {
-        return value * 2f;
-      }
-    }).subscribe(new MotionObserver<Float>() {
-      @Override
-      public void next(Float value) {
-        assertThat(value).isWithin(E).of(10f);
-      }
-
-      @Override
-      public void state(@MotionObservable.MotionState int state) {
-        assertThat(state).isEqualTo(ACTIVE);
-      }
-    });
-  }
-
-  @Test
-  public void deprecatedFilter() {
-    observable.filter(new MotionObservable.FilterOperation<Float>() {
-      @Override
-      public boolean filter(Float value) {
-        return true;
-      }
-    }).subscribe(new MotionObserver<Float>() {
-      @Override
-      public void next(Float value) {
-        assertThat(value).isWithin(E).of(5f);
-      }
-
-      @Override
-      public void state(@MotionObservable.MotionState int state) {
-        assertThat(state).isEqualTo(ACTIVE);
-      }
-    });
   }
 }

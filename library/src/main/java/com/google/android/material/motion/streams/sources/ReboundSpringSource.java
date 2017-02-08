@@ -26,9 +26,9 @@ import com.google.android.material.motion.observable.IndefiniteObservable.Connec
 import com.google.android.material.motion.streams.MotionObservable;
 import com.google.android.material.motion.streams.MotionObservable.MotionObserver;
 import com.google.android.material.motion.streams.MotionObservable.SimpleMotionObserver;
-import com.google.android.material.motion.streams.springs.MaterialSpring;
 import com.google.android.material.motion.streams.springs.CompositeReboundSpring;
 import com.google.android.material.motion.streams.springs.CompositeReboundSpring.CompositeSpringListener;
+import com.google.android.material.motion.streams.springs.MaterialSpring;
 import com.google.android.material.motion.streams.springs.TypeVectorizer;
 
 /**

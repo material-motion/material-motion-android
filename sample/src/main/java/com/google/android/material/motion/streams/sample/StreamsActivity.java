@@ -39,6 +39,7 @@ import com.google.android.material.motion.streams.MotionObservable.FilterOperati
 import com.google.android.material.motion.streams.MotionObservable.MapOperation;
 import com.google.android.material.motion.streams.MotionObservable.MotionObserver;
 import com.google.android.material.motion.streams.MotionObservable.MotionState;
+import com.google.android.material.motion.streams.MotionRuntime;
 import com.google.android.material.motion.streams.ReactiveWritable;
 import com.google.android.material.motion.streams.sources.GestureSource;
 import com.google.android.material.motion.streams.sources.ReboundSpringSource;
@@ -60,6 +61,8 @@ public class StreamsActivity extends AppCompatActivity {
   private static final String[] values = new String[]{
     "foo", "skip", "bar", "baz", "qux"
   };
+
+  private final MotionRuntime runtime = new MotionRuntime();
 
   private TextView text;
   private Button nextButton;
@@ -122,11 +125,12 @@ public class StreamsActivity extends AppCompatActivity {
         public CharSequence transform(String value) {
           return italicizeAndCapitalize(value);
         }
-      })
-      .write(text, TEXT_PROPERTY);
+      });
 
-    final Subscription subscription = stream
-      .subscribe(new MotionObserver<CharSequence>() {
+    runtime.write(stream, text, TEXT_PROPERTY);
+
+    final Subscription subscription = stream.subscribe(
+      new MotionObserver<CharSequence>() {
 
         @Override
         public void next(CharSequence value) {
@@ -180,14 +184,14 @@ public class StreamsActivity extends AppCompatActivity {
     MotionObservable<PointF> observable =
       GestureSource
         .from(gesture)
-        .compose(centroid())
-        .write(new ReactiveWritable<PointF>() {
-          @Override
-          public void write(PointF value) {
-            text.setText(String.format(Locale.getDefault(), "[%f, %f]", value.x, value.y));
-          }
-        });
-    observable.subscribe();
+        .compose(centroid());
+
+    runtime.write(observable, new ReactiveWritable<PointF>() {
+      @Override
+      public void write(PointF value) {
+        text.setText(String.format(Locale.getDefault(), "[%f, %f]", value.x, value.y));
+      }
+    });
   }
 
   private void runDemo3() {
@@ -213,23 +217,21 @@ public class StreamsActivity extends AppCompatActivity {
       }
     });
 
-    ReboundSpringSource
-      .from(spring, new RgbVectorizer())
-      .write(new ReactiveWritable<Integer>() {
-        @Override
-        public void write(Integer value) {
-          springTarget.setBackgroundColor(value);
-        }
-      }).subscribe();
+    MotionObservable<Integer> rgbSpring = ReboundSpringSource.from(spring, new RgbVectorizer());
+    runtime.write(rgbSpring, new ReactiveWritable<Integer>() {
+      @Override
+      public void write(Integer value) {
+        springTarget.setBackgroundColor(value);
+      }
+    });
 
-    ReboundSpringSource
-      .from(spring, new LabVectorizer())
-      .write(new ReactiveWritable<Integer>() {
-        @Override
-        public void write(Integer value) {
-          dragTarget.setBackgroundColor(value);
-        }
-      }).subscribe();
+    MotionObservable<Integer> labSpring = ReboundSpringSource.from(spring, new LabVectorizer());
+    runtime.write(labSpring, new ReactiveWritable<Integer>() {
+      @Override
+      public void write(Integer value) {
+        dragTarget.setBackgroundColor(value);
+      }
+    });
   }
 
   private CharSequence italicizeAndCapitalize(String value) {
