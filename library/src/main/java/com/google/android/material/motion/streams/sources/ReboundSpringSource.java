@@ -49,7 +49,7 @@ public final class ReboundSpringSource extends SpringSource {
    * The properties on the <code>spring</code> param may be changed to dynamically modify the
    * behavior of this source.
    */
-  public static MotionObservable<Float> from(MaterialSpring<Float> spring) {
+  public static <O> MotionObservable<Float> from(MaterialSpring<O, Float> spring) {
     return SPRING_SOURCE.create(spring);
   }
 
@@ -59,13 +59,13 @@ public final class ReboundSpringSource extends SpringSource {
    * The properties on the <code>spring</code> param may be changed to dynamically modify the
    * behavior of this source.
    */
-  public static <T> MotionObservable<T> from(MaterialSpring<T> spring, TypeVectorizer<T> vectorizer) {
+  public static <O, T> MotionObservable<T> from(MaterialSpring<O, T> spring, TypeVectorizer<T> vectorizer) {
     return SPRING_SOURCE.create(spring, vectorizer);
   }
 
   @Override
-  public <T> MotionObservable<T> create(
-    final MaterialSpring<T> spring, final TypeVectorizer<T> vectorizer) {
+  public <O, T> MotionObservable<T> create(
+    final MaterialSpring<O, T> spring, final TypeVectorizer<T> vectorizer) {
     return new MotionObservable<>(new Connector<MotionObserver<T>>() {
       @NonNull
       @Override

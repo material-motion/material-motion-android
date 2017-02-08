@@ -15,6 +15,9 @@
  */
 package com.google.android.material.motion.streams.properties;
 
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.support.annotation.IdRes;
 import android.support.annotation.VisibleForTesting;
 import android.util.Property;
@@ -29,62 +32,62 @@ public final class ViewProperties {
     throw new UnsupportedOperationException();
   }
 
-  public static final Property<View, Float[]> TRANSLATION = new Property<View, Float[]>(
-    Float[].class, "translation") {
+  public static final Property<View, Float[]> TRANSLATION =
+    new Property<View, Float[]>(Float[].class, "translation") {
 
-    private final Float[] array = new Float[2];
+      private final Float[] array = new Float[2];
 
-    @Override
-    public void set(View object, Float[] value) {
-      object.setTranslationX(value[0]);
-      object.setTranslationY(value[1]);
-    }
+      @Override
+      public void set(View object, Float[] value) {
+        object.setTranslationX(value[0]);
+        object.setTranslationY(value[1]);
+      }
 
-    @Override
-    public Float[] get(View object) {
-      array[0] = object.getTranslationX();
-      array[1] = object.getTranslationY();
-      return array;
-    }
-  };
+      @Override
+      public Float[] get(View object) {
+        array[0] = object.getTranslationX();
+        array[1] = object.getTranslationY();
+        return array;
+      }
+    };
 
-  public static final Property<View, Float[]> SCALE = new Property<View, Float[]>(
-    Float[].class, "scale") {
+  public static final Property<View, Float[]> SCALE =
+    new Property<View, Float[]>(Float[].class, "scale") {
 
-    private final Float[] array = new Float[2];
+      private final Float[] array = new Float[2];
 
-    @Override
-    public void set(View object, Float[] value) {
-      object.setScaleX(value[0]);
-      object.setScaleY(value[1]);
-    }
+      @Override
+      public void set(View object, Float[] value) {
+        object.setScaleX(value[0]);
+        object.setScaleY(value[1]);
+      }
 
-    @Override
-    public Float[] get(View object) {
-      array[0] = object.getScaleX();
-      array[1] = object.getScaleY();
-      return array;
-    }
-  };
+      @Override
+      public Float[] get(View object) {
+        array[0] = object.getScaleX();
+        array[1] = object.getScaleY();
+        return array;
+      }
+    };
 
-  public static final Property<View, Float[]> PIVOT = new Property<View, Float[]>(
-    Float[].class, "pivot") {
+  public static final Property<View, Float[]> PIVOT =
+    new Property<View, Float[]>(Float[].class, "pivot") {
 
-    private final Float[] array = new Float[2];
+      private final Float[] array = new Float[2];
 
-    @Override
-    public void set(View object, Float[] value) {
-      object.setPivotX(value[0]);
-      object.setPivotY(value[1]);
-    }
+      @Override
+      public void set(View object, Float[] value) {
+        object.setPivotX(value[0]);
+        object.setPivotY(value[1]);
+      }
 
-    @Override
-    public Float[] get(View object) {
-      array[0] = object.getPivotX();
-      array[1] = object.getPivotY();
-      return array;
-    }
-  };
+      @Override
+      public Float[] get(View object) {
+        array[0] = object.getPivotX();
+        array[1] = object.getPivotY();
+        return array;
+      }
+    };
 
   public static final Property<View, Float[]> ANCHOR_POINT_ADJUSTMENT =
     new TagProperty<Float[]>(
@@ -104,6 +107,24 @@ public final class ViewProperties {
       @Override
       public Float[] get(View object) {
         return super.get(object);
+      }
+    };
+
+  public static final Property<View, Integer> BACKGROUND_COLOR =
+    new Property<View, Integer>(Integer.class, "background_color") {
+
+      @Override
+      public void set(View object, Integer value) {
+        object.setBackgroundColor(value);
+      }
+
+      @Override
+      public Integer get(View object) {
+        Drawable background = object.getBackground();
+        if (background instanceof ColorDrawable) {
+          return ((ColorDrawable) background).getColor();
+        }
+        return Color.TRANSPARENT;
       }
     };
 

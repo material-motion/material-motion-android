@@ -15,15 +15,21 @@
  */
 package com.google.android.material.motion.streams.springs;
 
+import android.util.Property;
+
+import com.google.android.material.motion.streams.Interaction;
+import com.google.android.material.motion.streams.MotionObservable;
+import com.google.android.material.motion.streams.MotionRuntime;
 import com.google.android.material.motion.streams.ReactiveProperty;
 import com.google.android.material.motion.streams.ReactiveReadable;
+import com.google.android.material.motion.streams.sources.ReboundSpringSource;
 
 /**
  * A spring can pull a value from an initial position to a destination using a physical simulation.
  * <p>
  * This class defines the spring type for use in creating a spring source.
  */
-public class MaterialSpring<T> {
+public class MaterialSpring<O, T> extends Interaction<O, T> {
 
   /**
    * The default spring tension coefficient.
@@ -83,41 +89,58 @@ public class MaterialSpring<T> {
    */
   public final ReactiveProperty<Float> friction;
 
+  private final Property<O, T> property;
+  private final TypeVectorizer<T> vectorizer;
+  private final MotionObservable<T> stream;
+
   /**
    * Creates a spring with the provided values.
    */
   public MaterialSpring(
+    Property<O, T> property,
+    TypeVectorizer<T> vectorizer,
     T destination,
     T initialValue,
     T initialVelocity,
     float threshold,
     float tension,
     float friction) {
-    this.destination = ReactiveProperty.of(destination);
-    this.initialValue = ReactiveProperty.of(initialValue);
-    this.initialVelocity = ReactiveProperty.of(initialVelocity);
-    this.threshold = ReactiveProperty.of(threshold);
-    this.tension = ReactiveProperty.of(tension);
-    this.friction = ReactiveProperty.of(friction);
+    this(property,
+      vectorizer,
+      ReactiveProperty.of(destination),
+      ReactiveProperty.of(initialValue),
+      ReactiveProperty.of(initialVelocity),
+      ReactiveProperty.of(threshold),
+      ReactiveProperty.of(tension),
+      ReactiveProperty.of(friction));
   }
 
   /**
    * Creates a spring with the provided properties.
    */
   public MaterialSpring(
+    Property<O, T> property,
+    TypeVectorizer<T> vectorizer,
     ReactiveProperty<T> destination,
     ReactiveReadable<T> initialValue,
     ReactiveReadable<T> initialVelocity,
     ReactiveReadable<Float> threshold,
     ReactiveProperty<Float> tension,
     ReactiveProperty<Float> friction) {
+    this.property = property;
+    this.vectorizer = vectorizer;
     this.destination = destination;
     this.initialValue = initialValue;
     this.initialVelocity = initialVelocity;
     this.threshold = threshold;
-    this.tension = tension == DEFAULT_TENSION_PROPERTY
-      ? ReactiveProperty.of(DEFAULT_TENSION) : tension;
-    this.friction = friction == DEFAULT_FRICTION_PROPERTY
-      ? ReactiveProperty.of(DEFAULT_FRICTION) : friction;
+    this.tension = tension;
+    this.friction = friction;
+
+    this.stream = ReboundSpringSource.from(this, vectorizer);
+  }
+
+  @Override
+  public void apply(MotionRuntime runtime, O target) {
+    runtime.write(flatten(stream), target, property);
   }
 }
