@@ -69,7 +69,7 @@ public final class MotionRuntime {
     }));
   }
 
-  public <O> void addInteraction(Interaction<?, O> interaction, O target) {
+  public <O> void addInteraction(Interaction<O, ?> interaction, O target) {
     interaction.apply(this, target);
   }
 

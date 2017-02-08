@@ -31,7 +31,7 @@ import com.google.android.material.motion.streams.sources.GestureSource;
  * Abstract base class for all gesture interactions.
  */
 public abstract class GestureInteraction<GR extends GestureRecognizer, T>
-  extends Interaction<T, View> {
+  extends Interaction<View, T> {
 
   private final GR gestureRecognizer;
   final MotionObservable<GR> gestureStream;

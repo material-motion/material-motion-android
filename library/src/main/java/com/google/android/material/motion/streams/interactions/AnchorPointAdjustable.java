@@ -28,7 +28,7 @@ import static com.google.android.material.motion.streams.operators.GestureOperat
 import static com.google.android.material.motion.streams.operators.GestureOperators.onRecognitionState;
 import static com.google.android.material.motion.streams.operators.GestureOperators.pivot;
 
-public class AnchorPointAdjustable extends Interaction<Void, View> {
+public class AnchorPointAdjustable extends Interaction<View, Void> {
 
   private final Pinchable pinchable;
   private final Rotatable rotatable;

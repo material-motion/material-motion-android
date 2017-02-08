@@ -20,7 +20,7 @@ import android.view.View;
 import com.google.android.material.motion.streams.Interaction;
 import com.google.android.material.motion.streams.MotionRuntime;
 
-public class DirectlyManipulable extends Interaction<Void, View> {
+public class DirectlyManipulable extends Interaction<View, Void> {
 
   public final Draggable draggable = new Draggable();
   public final Pinchable pinchable = new Pinchable();

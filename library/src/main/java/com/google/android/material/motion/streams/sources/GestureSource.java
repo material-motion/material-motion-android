@@ -17,6 +17,7 @@ package com.google.android.material.motion.streams.sources;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.VisibleForTesting;
 
 import com.google.android.material.motion.gestures.GestureRecognizer;
 import com.google.android.material.motion.gestures.GestureRecognizer.GestureRecognizerState;
@@ -32,19 +33,15 @@ import com.google.android.material.motion.streams.MotionObservable.MotionState;
  */
 public final class GestureSource {
 
-  private static final GestureSource GESTURE_SOURCE = new GestureSource();
-
-  /**
-   * Creates a gesture source that will connect to the provided gesture recognizer.
-   */
-  public static <T extends GestureRecognizer> MotionObservable<T> from(T gesture) {
-    return GESTURE_SOURCE.create(gesture);
+  @VisibleForTesting
+  public GestureSource() {
+    throw new UnsupportedOperationException();
   }
 
   /**
    * Creates a gesture source that will connect to the provided gesture recognizer.
    */
-  public <T extends GestureRecognizer> MotionObservable<T> create(final T gesture) {
+  public static <T extends GestureRecognizer> MotionObservable<T> from(final T gesture) {
     return new MotionObservable<>(new Connector<MotionObserver<T>>() {
       @NonNull
       @Override
@@ -60,16 +57,15 @@ public final class GestureSource {
     });
   }
 
-  private static class GestureConnection<T extends GestureRecognizer> {
+  private static class GestureConnection<GR extends GestureRecognizer> {
 
-    private final T gesture;
-    private final MotionObserver<T> observer;
+    private final GR gesture;
+    private final MotionObserver<GR> observer;
     @Nullable
     @MotionState
     private Integer lastPropagatedState = null;
 
-    private GestureConnection(
-      T gesture, MotionObserver<T> observer) {
+    private GestureConnection(GR gesture, MotionObserver<GR> observer) {
       this.gesture = gesture;
       this.observer = observer;
 
