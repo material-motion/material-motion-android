@@ -17,7 +17,6 @@ package com.google.android.material.motion.streams;
 
 import android.support.annotation.IntDef;
 import android.support.annotation.NonNull;
-import android.util.Property;
 import android.view.View;
 import android.widget.TextView;
 
@@ -167,14 +166,6 @@ public class MotionObservable<T> extends IndefiniteObservable<MotionObserver<T>>
   }
 
   /**
-   * @deprecated in #develop. Use {@link #compose(Operation)} instead.
-   */
-  @Deprecated
-  public <U> MotionObservable<U> operator(final Operation<? super T, U> operation) {
-    return compose(operation);
-  }
-
-  /**
    * A light-weight operator builder. Applies the given operation to the incoming stream.
    * <p>
    * This is the preferred method for building new operators. This builder can be used to create
@@ -217,56 +208,6 @@ public class MotionObservable<T> extends IndefiniteObservable<MotionObserver<T>>
             subscription.unsubscribe();
           }
         };
-      }
-    });
-  }
-
-  /**
-   * Transforms the items emitted by an Observable by applying a function to each item.
-   *
-   * @deprecated in #develop#. Instead, use {@link #compose(Operation)} and pass in a {@link
-   * MapOperation}.
-   */
-  @Deprecated
-  public <U> MotionObservable<U> map(MapOperation<T, U> map) {
-    return compose(map);
-  }
-
-  /**
-   * Only emits those values from an Observable that satisfy a filter.
-   *
-   * @deprecated in #develop#. Instead, use {@link #compose(Operation)} and pass in a {@link
-   * FilterOperation}.
-   */
-  @Deprecated
-  public MotionObservable<T> filter(FilterOperation<T> filter) {
-    return compose(filter);
-  }
-
-  /**
-   * Writes the values from an Observable onto the given unscoped property.
-   */
-  public <O> MotionObservable<T> write(final O target, final Property<O, T> property) {
-    return compose(new Operation<T, T>() {
-      @Override
-      public void next(Observer<T> observer, T value) {
-        property.set(target, value);
-        observer.next(value);
-      }
-    });
-  }
-
-  /**
-   * Writes the values from an Observable onto the given inline property.
-   * @deprecated in #develop#. Instead, use {@link MotionRuntime#write}.
-   */
-  @Deprecated
-  public MotionObservable<T> write(final ReactiveWritable<T> property) {
-    return compose(new Operation<T, T>() {
-      @Override
-      public void next(Observer<T> observer, T value) {
-        property.write(value);
-        observer.next(value);
       }
     });
   }
