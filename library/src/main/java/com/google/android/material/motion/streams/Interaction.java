@@ -15,14 +15,39 @@
  */
 package com.google.android.material.motion.streams;
 
+import android.util.Property;
+
 import com.google.android.material.motion.streams.MotionObservable.Operation;
+import com.google.android.material.motion.streams.MotionObservable.SimpleMotionObserver;
+import com.google.android.material.motion.streams.operators.CommonOperators;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public abstract class Interaction<O, T> {
 
+  public final ReactiveProperty<Boolean> enabled = ReactiveProperty.of(true);
+
   private final List<Operation<T, T>> operations = new ArrayList<>();
+  private final List<PendingWrite<?>> writes = new ArrayList<>();
+
+  public Interaction() {
+    enabled
+      .compose(CommonOperators.<Boolean>dedupe())
+      .subscribe(new SimpleMotionObserver<Boolean>() {
+        @Override
+        public void next(Boolean value) {
+          for (int i = 0, count = writes.size(); i < count; i++) {
+            PendingWrite pendingWrite = writes.get(i);
+            if (value) {
+              pendingWrite.runtime.write(pendingWrite.observable, pendingWrite.property);
+            } else {
+              pendingWrite.runtime.unwrite(pendingWrite.observable, pendingWrite.property);
+            }
+          }
+        }
+      });
+  }
 
   public abstract void apply(MotionRuntime runtime, O target);
 
@@ -36,5 +61,17 @@ public abstract class Interaction<O, T> {
       stream = stream.compose(operations.get(i));
     }
     return stream;
+  }
+
+  protected final <T> void write(MotionRuntime runtime, MotionObservable<T> stream, O target, Property<O, T> property) {
+    write(runtime, stream, ReactiveProperty.of(target, property));
+  }
+
+  protected final <T> void write(MotionRuntime runtime, MotionObservable<T> stream, ReactiveWritable<T> property) {
+    writes.add(new PendingWrite<>(runtime, stream, property));
+
+    if (enabled.read()) {
+      runtime.write(stream, property);
+    }
   }
 }

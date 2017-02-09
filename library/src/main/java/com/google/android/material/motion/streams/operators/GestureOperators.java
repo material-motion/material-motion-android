@@ -88,6 +88,15 @@ public final class GestureOperators {
     };
   }
 
+  public static <T extends DragGestureRecognizer> Operation<T, Float[]> velocity() {
+    return new MapOperation<T, Float[]>() {
+      @Override
+      public Float[] transform(T value) {
+        return new Float[]{value.getVelocityX(), value.getVelocityY()};
+      }
+    };
+  }
+
   /**
    * Only forwards the gesture recognizer if its state matches the provided value.
    */

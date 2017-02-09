@@ -87,20 +87,25 @@ public final class ReboundSpringSource extends SpringSource {
         });
 
         final int count = vectorizer.getVectorLength();
+        float[] initialValues = new float[count];
+        float[] initialVelocities = new float[count];
 
         final Spring[] reboundSprings = new Spring[count];
-        float[] initialValues = vectorizer.vectorize(spring.initialValue.read());
+        vectorizer.vectorize(spring.initialValue.read(), initialValues);
+        vectorizer.vectorize(spring.initialVelocity.read(), initialVelocities);
 
         for (int i = 0; i < count; i++) {
           reboundSprings[i] = springSystem.createSpring();
           reboundSprings[i].setSpringConfig(springConfig);
-          reboundSprings[i].setCurrentValue(initialValues[i]);
+          reboundSprings[i].setCurrentValue(initialValues[i], false);
+          reboundSprings[i].setVelocity(initialVelocities[i]);
         }
 
         spring.destination.subscribe(new SimpleMotionObserver<T>() {
           @Override
           public void next(T value) {
-            float[] endValues = vectorizer.vectorize(value);
+            float[] endValues = new float[count];
+            vectorizer.vectorize(value, endValues);
 
             for (int i = 0; i < count; i++) {
               reboundSprings[i].setEndValue(endValues[i]);
@@ -114,6 +119,9 @@ public final class ReboundSpringSource extends SpringSource {
           @Override
           public void disconnect() {
             connection.disconnect();
+            for (int i = 0; i < count; i++) {
+              reboundSprings[i].setAtRest();
+            }
           }
         };
       }

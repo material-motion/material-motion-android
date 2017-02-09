@@ -15,15 +15,14 @@
  */
 package com.google.android.material.motion.streams;
 
+import android.support.v4.util.SimpleArrayMap;
 import android.util.Property;
 
 import com.google.android.material.motion.observable.IndefiniteObservable.Subscription;
 import com.google.android.material.motion.streams.MotionObservable.MotionObserver;
 import com.google.android.material.motion.streams.MotionObservable.MotionState;
 
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import static com.google.android.material.motion.streams.MotionObservable.ACTIVE;
@@ -34,7 +33,7 @@ import static com.google.android.material.motion.streams.MotionObservable.AT_RES
  */
 public final class MotionRuntime {
 
-  private final List<Subscription> subscriptions = new ArrayList<>();
+  private final SimpleArrayMap<MotionObservable<?>, SimpleArrayMap<ReactiveWritable<?>, Subscription>> subscriptions = new SimpleArrayMap<>();
   private final Set<MotionObserver<?>> activeObservers = new HashSet<>();
   @MotionState
   private int state = AT_REST;
@@ -47,15 +46,21 @@ public final class MotionRuntime {
   /**
    * Subscribes to the stream, writes its output to the given property, and observes its state.
    */
-  public <O, T> void write(MotionObservable<T> stream, final O target, final Property<O, T> property) {
+  <O, T> void write(MotionObservable<T> stream, final O target, final Property<O, T> property) {
     write(stream, ReactiveProperty.of(target, property));
   }
 
   /**
    * Subscribes to the stream, writes its output to the given property, and observes its state.
    */
-  public <T> void write(MotionObservable<T> stream, final ReactiveWritable<T> property) {
-    subscriptions.add(stream.subscribe(new MotionObserver<T>() {
+  <T> void write(MotionObservable<T> stream, final ReactiveWritable<T> property) {
+    SimpleArrayMap<ReactiveWritable<?>, Subscription> subs = subscriptions.get(stream);
+    if (subs == null) {
+      subs = new SimpleArrayMap<>();
+      subscriptions.put(stream, subs);
+    }
+
+    subs.put(property, stream.subscribe(new MotionObserver<T>() {
 
       @Override
       public void next(T value) {
@@ -67,6 +72,20 @@ public final class MotionRuntime {
         onObserverStateChange(this, state);
       }
     }));
+  }
+
+  <O, T> void unwrite(MotionObservable<T> stream, final O target, final Property<O, T> property) {
+    unwrite(stream, ReactiveProperty.of(target, property));
+  }
+
+  <T> void unwrite(MotionObservable<T> stream, final ReactiveWritable<T> property) {
+    SimpleArrayMap<ReactiveWritable<?>, Subscription> subs = subscriptions.get(stream);
+
+    subs.remove(property).unsubscribe();
+
+    if (subs.isEmpty()) {
+      subscriptions.remove(stream);
+    }
   }
 
   public <O, T> void addInteraction(Interaction<O, T> interaction, O target) {

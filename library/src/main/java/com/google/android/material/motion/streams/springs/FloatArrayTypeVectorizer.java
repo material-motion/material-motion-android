@@ -15,22 +15,27 @@
  */
 package com.google.android.material.motion.streams.springs;
 
-/**
- * A vectorizer for single floating point values.
- */
-public class FloatVectorizer extends TypeVectorizer<Float> {
+public class FloatArrayTypeVectorizer extends TypeVectorizer<Float[]> {
 
-  public FloatVectorizer() {
-    super(1);
+  private final Float[] array;
+
+  public FloatArrayTypeVectorizer(int arrayLength) {
+    super(arrayLength);
+    array = new Float[arrayLength];
   }
 
   @Override
-  public void onVectorize(Float value, float[] vector) {
-    vector[0] = value;
+  public void onVectorize(Float[] value, float[] vector) {
+    for (int i = 0; i < value.length; i++) {
+      vector[i] = value[i];
+    }
   }
 
   @Override
-  public Float compose(float[] vector) {
-    return vector[0];
+  public Float[] compose(float[] vector) {
+    for (int i = 0; i < vector.length; i++) {
+      array[i] = vector[i];
+    }
+    return array;
   }
 }

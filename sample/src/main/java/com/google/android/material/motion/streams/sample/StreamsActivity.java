@@ -127,7 +127,7 @@ public class StreamsActivity extends AppCompatActivity {
         }
       });
 
-    runtime.write(stream, text, TEXT_PROPERTY);
+//    runtime.write(stream, text, TEXT_PROPERTY);
 
     final Subscription subscription = stream.subscribe(
       new MotionObserver<CharSequence>() {
@@ -186,12 +186,12 @@ public class StreamsActivity extends AppCompatActivity {
         .from(gesture)
         .compose(centroid());
 
-    runtime.write(observable, new ReactiveWritable<PointF>() {
-      @Override
-      public void write(PointF value) {
-        text.setText(String.format(Locale.getDefault(), "[%f, %f]", value.x, value.y));
-      }
-    });
+//    runtime.write(observable, new ReactiveWritable<PointF>() {
+//      @Override
+//      public void write(PointF value) {
+//        text.setText(String.format(Locale.getDefault(), "[%f, %f]", value.x, value.y));
+//      }
+//    });
   }
 
   private void runDemo3() {

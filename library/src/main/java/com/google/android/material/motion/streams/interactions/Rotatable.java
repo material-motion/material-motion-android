@@ -41,6 +41,6 @@ public class Rotatable extends GestureInteraction<RotateGestureRecognizer, Float
     MotionObservable<Float> rotatedStream = stream.compose(rotated(target));
     rotatedStream = flatten(rotatedStream);
 
-    runtime.write(rotatedStream, target, View.ROTATION);
+    write(runtime, rotatedStream, target, View.ROTATION);
   }
 }

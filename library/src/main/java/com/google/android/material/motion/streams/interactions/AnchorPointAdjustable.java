@@ -48,7 +48,7 @@ public class AnchorPointAdjustable extends Interaction<View, Void> {
     MotionObservable<GestureRecognizer> gestureStream =
       interaction.gestureStream.compose(onRecognitionState(CHANGED));
 
-    runtime.write(gestureStream.compose(pivot()), target, ViewProperties.PIVOT);
-    runtime.write(gestureStream.compose(anchored(target)), target, ViewProperties.ANCHOR_POINT_ADJUSTMENT);
+    write(runtime, gestureStream.compose(pivot()), target, ViewProperties.PIVOT);
+    write(runtime, gestureStream.compose(anchored(target)), target, ViewProperties.ANCHOR_POINT_ADJUSTMENT);
   }
 }

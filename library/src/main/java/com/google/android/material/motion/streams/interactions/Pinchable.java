@@ -42,6 +42,6 @@ public class Pinchable extends GestureInteraction<ScaleGestureRecognizer, Float[
     MotionObservable<Float[]> scaledStream = stream.compose(scaled(target));
     scaledStream = flatten(scaledStream);
 
-    runtime.write(scaledStream, target, ViewProperties.SCALE);
+    write(runtime, scaledStream, target, ViewProperties.SCALE);
   }
 }

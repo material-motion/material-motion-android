@@ -141,6 +141,6 @@ public class MaterialSpring<O, T> extends Interaction<O, T> {
 
   @Override
   public void apply(MotionRuntime runtime, O target) {
-    runtime.write(flatten(stream), target, property);
+    write(runtime, flatten(stream), target, property);
   }
 }
