@@ -16,13 +16,17 @@
 package com.google.android.material.motion.streams;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.util.SimpleArrayMap;
 import android.util.Property;
 
+import com.google.android.material.motion.observable.IndefiniteObservable.Connector;
 import com.google.android.material.motion.observable.IndefiniteObservable.Disconnector;
 import com.google.android.material.motion.observable.IndefiniteObservable.Subscription;
 import com.google.android.material.motion.streams.MotionObservable.MotionObserver;
+import com.google.android.material.motion.streams.MotionObservable.Operation;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.WeakHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -56,23 +60,48 @@ public abstract class ReactiveProperty<T> implements ReactiveReadable<T>, Reacti
     return new ValueReactiveProperty<>(initialValue);
   }
 
+  public static <T> ReactiveProperty<T[]> of(T[] initialValue) {
+    return new ValueReactiveProperty<>(Arrays.copyOf(initialValue, initialValue.length));
+  }
+
 
   private final List<MotionObserver<T>> observers = new CopyOnWriteArrayList<>();
+  @Nullable
+  private MotionObservable<T> stream;
 
   @Override
   public final Subscription subscribe(@NonNull final MotionObserver<T> observer) {
-    if (!observers.contains(observer)) {
-      observers.add(observer);
+    return getStream().subscribe(observer);
+  }
 
-      observer.next(read());
+  public <U> MotionObservable<U> compose(final Operation<? super T, U> operation) {
+    return getStream().compose(operation);
+  }
+
+  public MotionObservable<T> getStream() {
+    if (stream == null) {
+      stream = new MotionObservable<>(new Connector<MotionObserver<T>>() {
+
+        @NonNull
+        @Override
+        public Disconnector connect(final MotionObserver<T> observer) {
+          if (!observers.contains(observer)) {
+            observers.add(observer);
+
+            observer.next(read());
+          }
+
+          return new Disconnector() {
+
+            @Override
+            public void disconnect() {
+              observers.remove(observer);
+            }
+          };
+        }
+      });
     }
-
-    return new Subscription(new Disconnector() {
-      @Override
-      public void disconnect() {
-        observers.remove(observer);
-      }
-    });
+    return stream;
   }
 
   /**
