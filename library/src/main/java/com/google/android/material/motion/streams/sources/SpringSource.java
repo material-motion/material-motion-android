@@ -17,7 +17,7 @@ package com.google.android.material.motion.streams.sources;
 
 import com.google.android.material.motion.streams.MotionObservable;
 import com.google.android.material.motion.streams.springs.FloatVectorizer;
-import com.google.android.material.motion.streams.springs.MaterialSpring;
+import com.google.android.material.motion.streams.interactions.MaterialSpring;
 import com.google.android.material.motion.streams.springs.TypeVectorizer;
 
 /**
