@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.google.android.material.motion.streams.springs;
+package com.google.android.material.motion.streams.interactions;
 
 import android.util.Property;
 
@@ -23,6 +23,7 @@ import com.google.android.material.motion.streams.MotionRuntime;
 import com.google.android.material.motion.streams.ReactiveProperty;
 import com.google.android.material.motion.streams.ReactiveReadable;
 import com.google.android.material.motion.streams.sources.ReboundSpringSource;
+import com.google.android.material.motion.streams.springs.TypeVectorizer;
 
 /**
  * A spring can pull a value from an initial position to a destination using a physical simulation.

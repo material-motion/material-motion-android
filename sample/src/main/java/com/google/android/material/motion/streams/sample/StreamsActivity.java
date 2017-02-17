@@ -25,7 +25,7 @@ import android.view.View;
 import com.google.android.material.motion.streams.MotionObservable.MotionObserver;
 import com.google.android.material.motion.streams.MotionRuntime;
 import com.google.android.material.motion.streams.springs.FloatVectorizer;
-import com.google.android.material.motion.streams.springs.MaterialSpring;
+import com.google.android.material.motion.streams.interactions.MaterialSpring;
 
 /**
  * Streams for Android sample Activity.
