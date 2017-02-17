@@ -67,12 +67,12 @@ public class MaterialSpring<O, T> extends Interaction<O, T> {
   /**
    * The initial value of the spring represented as a readable.
    */
-  public final ReactiveReadable<T> initialValue;
+  public final ReactiveProperty<T> initialValue;
 
   /**
    * The initial velocity of the spring represented as a readable.
    */
-  public final ReactiveReadable<T> initialVelocity;
+  public final ReactiveProperty<T> initialVelocity;
 
   /**
    * The value used when determining completion of the spring simulation.
@@ -122,8 +122,8 @@ public class MaterialSpring<O, T> extends Interaction<O, T> {
     Property<O, T> property,
     TypeVectorizer<T> vectorizer,
     ReactiveProperty<T> destination,
-    ReactiveReadable<T> initialValue,
-    ReactiveReadable<T> initialVelocity,
+    ReactiveProperty<T> initialValue,
+    ReactiveProperty<T> initialVelocity,
     ReactiveReadable<Float> threshold,
     ReactiveProperty<Float> tension,
     ReactiveProperty<Float> friction) {

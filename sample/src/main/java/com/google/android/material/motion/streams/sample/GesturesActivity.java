@@ -6,36 +6,43 @@ import android.view.View;
 
 import com.google.android.material.motion.streams.MotionRuntime;
 import com.google.android.material.motion.streams.ReactiveProperty;
-import com.google.android.material.motion.streams.interactions.DirectlyManipulable;
+import com.google.android.material.motion.streams.interactions.Tossable;
 import com.google.android.material.motion.streams.properties.ViewProperties;
 
 public class GesturesActivity extends AppCompatActivity {
 
   private final MotionRuntime runtime = new MotionRuntime();
 
+  private View container;
+  private View target;
+  private View destination;
+
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.gestures_activity);
 
-    final View target = findViewById(R.id.target);
-    target.setBackgroundDrawable(new CheckerboardDrawable());
+    container = findViewById(android.R.id.content);
+    target = findViewById(R.id.target);
+    destination = findViewById(R.id.destination);
 
-    DirectlyManipulable directlyManipulable = new DirectlyManipulable();
-    runtime.addInteraction(directlyManipulable, target);
+    destination.setBackgroundDrawable(new CheckerboardDrawable());
 
-    findViewById(R.id.button).setOnClickListener(new View.OnClickListener() {
+    target.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
       @Override
-      public void onClick(View v) {
-        ReactiveProperty<Float[]> initialTranslation =
-          ReactiveProperty.of(target, ViewProperties.TRANSLATION);
-        Float[] translation = initialTranslation.read();
-
-        translation[0] /= 2f;
-        translation[1] /= 2f;
-
-        initialTranslation.write(translation);
+      public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
+        v.removeOnLayoutChangeListener(this);
+        springDemo();
       }
     });
+  }
+
+  private void springDemo() {
+    ReactiveProperty<Float[]> anchor = ReactiveProperty.of(ViewProperties.POSITION.get(target));
+
+    Tossable tossable = new Tossable(anchor);
+    runtime.addInteraction(tossable, target);
+
+    runtime.write(tossable.anchor.getStream(), ReactiveProperty.of(destination, ViewProperties.POSITION));
   }
 }
