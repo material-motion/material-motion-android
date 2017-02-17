@@ -21,14 +21,12 @@ package com.google.android.material.motion.streams.springs;
 public abstract class TypeVectorizer<T> {
 
   private final int vectorLength;
-  private final float[] vector;
 
   /**
    * @param vectorLength The length of the vector that can represent a T typed value.
    */
   public TypeVectorizer(int vectorLength) {
     this.vectorLength = vectorLength;
-    this.vector = new float[vectorLength];
   }
 
   public final int getVectorLength() {
@@ -38,9 +36,12 @@ public abstract class TypeVectorizer<T> {
   /**
    * Transforms a T typed value to an equivalent float[].
    */
-  public final float[] vectorize(T value) {
-    vectorize(value, vector);
-    return vector;
+  public final void vectorize(T value, float[] vector) {
+    if (vector.length != vectorLength) {
+      throw new IllegalArgumentException(
+        "Expected vector " + vector + " to be of length " + vectorLength);
+    }
+    onVectorize(value, vector);
   }
 
   /**
@@ -48,7 +49,7 @@ public abstract class TypeVectorizer<T> {
    *
    * @param vector the vector should be written to this parameter.
    */
-  public abstract void vectorize(T value, float[] vector);
+  public abstract void onVectorize(T value, float[] vector);
 
   /**
    * Transforms a T typed value from the equivalent float[].

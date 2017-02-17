@@ -30,7 +30,7 @@ public class LabVectorizer extends TypeVectorizer<Integer> {
   }
 
   @Override
-  public void vectorize(Integer color, float[] vector) {
+  public void onVectorize(Integer color, float[] vector) {
     vector[0] = Color.alpha(color);
 
     ColorUtils.colorToLAB(color, lab);

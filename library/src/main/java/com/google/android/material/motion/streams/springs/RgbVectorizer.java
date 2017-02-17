@@ -27,7 +27,7 @@ public class RgbVectorizer extends TypeVectorizer<Integer> {
   }
 
   @Override
-  public void vectorize(Integer color, float[] vector) {
+  public void onVectorize(Integer color, float[] vector) {
     vector[0] = Color.alpha(color);
     vector[1] = Color.red(color);
     vector[2] = Color.green(color);
