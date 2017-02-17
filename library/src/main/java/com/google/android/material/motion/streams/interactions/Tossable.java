@@ -15,12 +15,12 @@
  */
 package com.google.android.material.motion.streams.interactions;
 
+import android.util.Property;
 import android.view.View;
 
 import com.google.android.material.motion.streams.Interaction;
 import com.google.android.material.motion.streams.MotionRuntime;
 import com.google.android.material.motion.streams.ReactiveProperty;
-import com.google.android.material.motion.streams.properties.ViewProperties;
 import com.google.android.material.motion.streams.springs.FloatArrayTypeVectorizer;
 import com.google.android.material.motion.streams.springs.MaterialSpring;
 
@@ -30,14 +30,17 @@ import static com.google.android.material.motion.streams.operators.GestureOperat
 public class Tossable extends Interaction<View, Void> {
 
   public final Draggable draggable;
+  private final Property<View, Float[]> springProperty;
   public final ReactiveProperty<Float[]> anchor;
 
-  public Tossable(ReactiveProperty<Float[]> anchor) {
-    this(new Draggable(), anchor);
+  public Tossable(Property<View, Float[]> springProperty, ReactiveProperty<Float[]> anchor) {
+    this(new Draggable(), springProperty, anchor);
   }
 
-  public Tossable(Draggable draggable, ReactiveProperty<Float[]> anchor) {
+  public Tossable(
+    Draggable draggable, Property<View, Float[]> springProperty, ReactiveProperty<Float[]> anchor) {
     this.draggable = draggable;
+    this.springProperty = springProperty;
     this.anchor = anchor;
 
     draggable.gestureRecognizer.dragSlop = 0;
@@ -47,10 +50,10 @@ public class Tossable extends Interaction<View, Void> {
   public void apply(MotionRuntime runtime, View target) {
     // TODO: Make spring a field so it can be customized.
     MaterialSpring<View, Float[]> spring = new MaterialSpring<>(
-      ViewProperties.POSITION,
+      springProperty,
       new FloatArrayTypeVectorizer(2),
       anchor,
-      ReactiveProperty.of(target, ViewProperties.POSITION),
+      ReactiveProperty.of(target, springProperty),
       ReactiveProperty.of(new Float[]{0f, 0f}),
       ReactiveProperty.of(1f),
       ReactiveProperty.of(1f),

@@ -51,8 +51,8 @@ public final class ViewProperties {
       }
     };
 
-  public static final Property<View, Float[]> POSITION =
-    new Property<View, Float[]>(Float[].class, "position") {
+  public static final Property<View, Float[]> CENTER =
+    new Property<View, Float[]>(Float[].class, "center") {
 
       private final Float[] array = new Float[2];
 
