@@ -22,7 +22,6 @@ import com.google.android.material.motion.streams.Interaction;
 import com.google.android.material.motion.streams.MotionRuntime;
 import com.google.android.material.motion.streams.ReactiveProperty;
 import com.google.android.material.motion.streams.springs.FloatArrayTypeVectorizer;
-import com.google.android.material.motion.streams.springs.MaterialSpring;
 
 import static com.google.android.material.motion.streams.operators.GestureOperators.isAtRest;
 import static com.google.android.material.motion.streams.operators.GestureOperators.velocity;

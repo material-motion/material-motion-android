@@ -31,7 +31,7 @@ import com.google.android.material.motion.streams.MotionObservable.SimpleMotionO
 import com.google.android.material.motion.streams.operators.CommonOperators;
 import com.google.android.material.motion.streams.springs.CompositeReboundSpring;
 import com.google.android.material.motion.streams.springs.CompositeReboundSpring.CompositeSpringListener;
-import com.google.android.material.motion.streams.springs.MaterialSpring;
+import com.google.android.material.motion.streams.interactions.MaterialSpring;
 import com.google.android.material.motion.streams.springs.TypeVectorizer;
 
 /**
