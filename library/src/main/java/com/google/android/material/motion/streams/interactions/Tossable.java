@@ -15,6 +15,7 @@
  */
 package com.google.android.material.motion.streams.interactions;
 
+import android.util.Property;
 import android.view.View;
 
 import com.google.android.material.motion.streams.Interaction;
@@ -30,14 +31,17 @@ import static com.google.android.material.motion.streams.operators.GestureOperat
 public class Tossable extends Interaction<View, Void> {
 
   public final Draggable draggable;
+  private final Property<View, Float[]> property;
   public final ReactiveProperty<Float[]> anchor;
 
-  public Tossable(ReactiveProperty<Float[]> anchor) {
-    this(new Draggable(), anchor);
+  public Tossable(Property<View, Float[]> property, ReactiveProperty<Float[]> anchor) {
+    this(new Draggable(), property, anchor);
   }
 
-  public Tossable(Draggable draggable, ReactiveProperty<Float[]> anchor) {
+  public Tossable(
+    Draggable draggable, Property<View, Float[]> property, ReactiveProperty<Float[]> anchor) {
     this.draggable = draggable;
+    this.property = property;
     this.anchor = anchor;
 
     draggable.gestureRecognizer.dragSlop = 0;
@@ -47,10 +51,10 @@ public class Tossable extends Interaction<View, Void> {
   public void apply(MotionRuntime runtime, View target) {
     // TODO: Make spring a field so it can be customized.
     MaterialSpring<View, Float[]> spring = new MaterialSpring<>(
-      ViewProperties.POSITION,
+      property,
       new FloatArrayTypeVectorizer(2),
       anchor,
-      ReactiveProperty.of(target, ViewProperties.POSITION),
+      ReactiveProperty.of(target, ViewProperties.CENTER),
       ReactiveProperty.of(new Float[]{0f, 0f}),
       ReactiveProperty.of(1f),
       ReactiveProperty.of(1f),

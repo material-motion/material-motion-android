@@ -39,14 +39,15 @@ public class GesturesActivity extends AppCompatActivity {
   }
 
   private void springDemo() {
-    ReactiveProperty<Float[]> anchor = ReactiveProperty.of(ViewProperties.POSITION.get(target));
+    ReactiveProperty<Float[]> anchor = ReactiveProperty.of(ViewProperties.CENTER.get(target));
 
-    Tossable tossable = new Tossable(anchor);
+    Tossable tossable = new Tossable(ViewProperties.CENTER, anchor);
     runtime.addInteraction(tossable, target);
 
     Tap tap = new Tap(container);
     runtime.addInteraction(tap, tossable.anchor);
 
-    runtime.write(tossable.anchor.getStream(), ReactiveProperty.of(destination, ViewProperties.POSITION));
+    runtime.write(
+      tossable.anchor.getStream(), ReactiveProperty.of(destination, ViewProperties.CENTER));
   }
 }
