@@ -51,6 +51,25 @@ public final class ViewProperties {
       }
     };
 
+  public static final Property<View, Float[]> POSITION =
+    new Property<View, Float[]>(Float[].class, "position") {
+
+      private final Float[] array = new Float[2];
+
+      @Override
+      public void set(View object, Float[] value) {
+        object.setX(value[0] - object.getWidth() / 2f);
+        object.setY(value[1] - object.getHeight() / 2f);
+      }
+
+      @Override
+      public Float[] get(View object) {
+        array[0] = object.getX() + object.getWidth() / 2f;
+        array[1] = object.getY() + object.getHeight() / 2f;
+        return array;
+      }
+    };
+
   public static final Property<View, Float[]> SCALE =
     new Property<View, Float[]>(Float[].class, "scale") {
 

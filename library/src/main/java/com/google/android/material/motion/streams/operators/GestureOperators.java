@@ -35,6 +35,10 @@ import com.google.android.material.motion.streams.MotionObservable.SimpleMotionO
 import com.google.android.material.motion.streams.ReactiveProperty;
 import com.google.android.material.motion.streams.properties.ViewProperties;
 
+import static com.google.android.material.motion.gestures.GestureRecognizer.BEGAN;
+import static com.google.android.material.motion.gestures.GestureRecognizer.CHANGED;
+import static com.google.android.material.motion.streams.operators.BooleanOperators.not;
+
 /**
  * Extended operators for gestures.
  *
@@ -88,6 +92,17 @@ public final class GestureOperators {
     };
   }
 
+  public static <T extends DragGestureRecognizer> Operation<T, Float[]> velocity() {
+    return new Operation<T, Float[]>() {
+      @Override
+      public void next(Observer<Float[]> observer, T value) {
+        if (value.getState() == GestureRecognizer.RECOGNIZED) {
+          observer.next(new Float[]{value.getVelocityX(), value.getVelocityY()});
+        }
+      }
+    };
+  }
+
   /**
    * Only forwards the gesture recognizer if its state matches the provided value.
    */
@@ -120,6 +135,21 @@ public final class GestureOperators {
     };
   }
 
+  public static <T extends DragGestureRecognizer> MapOperation<T, Boolean> isActive() {
+    return new MapOperation<T, Boolean>() {
+      @Override
+      public Boolean transform(T value) {
+        int state = value.getState();
+        boolean active = state == BEGAN || state == CHANGED;
+        return active;
+      }
+    };
+  }
+
+  public static <T extends DragGestureRecognizer> MapOperation<T, Boolean> isAtRest() {
+    return not(GestureOperators.<T>isActive());
+  }
+
   /**
    * Adds the current translation to the initial translation of the given view and emits the
    * result while the gesture recognizer is active.
@@ -150,13 +180,13 @@ public final class GestureOperators {
       @Override
       public void next(Observer<Float[]> observer, T gestureRecognizer) {
         switch (gestureRecognizer.getState()) {
-          case GestureRecognizer.BEGAN:
+          case BEGAN:
             initialTranslationX = view.getTranslationX();
             initialTranslationY = view.getTranslationY();
             adjustmentX = 0f;
             adjustmentY = 0f;
             break;
-          case GestureRecognizer.CHANGED:
+          case CHANGED:
             float translationX = gestureRecognizer.getTranslationX();
             float translationY = gestureRecognizer.getTranslationY();
 
@@ -187,10 +217,10 @@ public final class GestureOperators {
       @Override
       public void next(Observer<Float> observer, T gestureRecognizer) {
         switch (gestureRecognizer.getState()) {
-          case GestureRecognizer.BEGAN:
+          case BEGAN:
             initialRotation = view.getRotation();
             break;
-          case GestureRecognizer.CHANGED:
+          case CHANGED:
             float rotation = gestureRecognizer.getRotation();
 
             observer.next((float) (initialRotation + rotation * (180 / Math.PI)));
@@ -213,11 +243,11 @@ public final class GestureOperators {
       @Override
       public void next(Observer<Float[]> observer, T gestureRecognizer) {
         switch (gestureRecognizer.getState()) {
-          case GestureRecognizer.BEGAN:
+          case BEGAN:
             initialScaleX = view.getScaleX();
             initialScaleY = view.getScaleY();
             break;
-          case GestureRecognizer.CHANGED:
+          case CHANGED:
             float scale = gestureRecognizer.getScale();
 
             observer.next(new Float[]{initialScaleX * scale, initialScaleY * scale});
