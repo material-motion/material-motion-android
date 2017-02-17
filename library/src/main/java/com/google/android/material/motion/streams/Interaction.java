@@ -22,6 +22,8 @@ import java.util.List;
 
 public abstract class Interaction<O, T> {
 
+  public final ReactiveProperty<Boolean> enabled = ReactiveProperty.of(true);
+
   private final List<Operation<T, T>> operations = new ArrayList<>();
 
   public abstract void apply(MotionRuntime runtime, O target);
