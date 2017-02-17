@@ -20,6 +20,7 @@ import android.view.View;
 import com.google.android.material.motion.gestures.RotateGestureRecognizer;
 import com.google.android.material.motion.streams.MotionObservable;
 import com.google.android.material.motion.streams.MotionRuntime;
+import com.google.android.material.motion.streams.gestures.GestureInteraction;
 
 import static com.google.android.material.motion.streams.operators.GestureOperators.rotated;
 

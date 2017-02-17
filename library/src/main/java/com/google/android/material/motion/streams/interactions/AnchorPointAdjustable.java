@@ -21,6 +21,7 @@ import com.google.android.material.motion.gestures.GestureRecognizer;
 import com.google.android.material.motion.streams.Interaction;
 import com.google.android.material.motion.streams.MotionObservable;
 import com.google.android.material.motion.streams.MotionRuntime;
+import com.google.android.material.motion.streams.gestures.GestureInteraction;
 import com.google.android.material.motion.streams.properties.ViewProperties;
 
 import static com.google.android.material.motion.gestures.GestureRecognizer.CHANGED;
