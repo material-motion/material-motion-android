@@ -20,6 +20,7 @@ import android.view.View;
 import com.google.android.material.motion.gestures.DragGestureRecognizer;
 import com.google.android.material.motion.streams.MotionObservable;
 import com.google.android.material.motion.streams.MotionRuntime;
+import com.google.android.material.motion.streams.gestures.GestureInteraction;
 import com.google.android.material.motion.streams.properties.ViewProperties;
 
 import static com.google.android.material.motion.streams.operators.GestureOperators.translated;

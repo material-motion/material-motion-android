@@ -13,18 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.google.android.material.motion.streams.interactions;
+package com.google.android.material.motion.streams.gestures;
 
-import android.support.v4.util.SimpleArrayMap;
-import android.view.MotionEvent;
 import android.view.View;
-import android.view.View.OnTouchListener;
 
 import com.google.android.material.motion.gestures.GestureRecognizer;
 import com.google.android.material.motion.streams.Interaction;
 import com.google.android.material.motion.streams.MotionObservable;
 import com.google.android.material.motion.streams.MotionRuntime;
-import com.google.android.material.motion.streams.R;
 import com.google.android.material.motion.streams.sources.GestureSource;
 
 /**
@@ -33,8 +29,8 @@ import com.google.android.material.motion.streams.sources.GestureSource;
 public abstract class GestureInteraction<GR extends GestureRecognizer, T>
   extends Interaction<View, T> {
 
-  private final GR gestureRecognizer;
-  final MotionObservable<GR> gestureStream;
+  public final GR gestureRecognizer;
+  public final MotionObservable<GR> gestureStream;
 
   protected GestureInteraction(GR gestureRecognizer) {
     this.gestureRecognizer = gestureRecognizer;
@@ -43,15 +39,7 @@ public abstract class GestureInteraction<GR extends GestureRecognizer, T>
 
   @Override
   public final void apply(MotionRuntime runtime, View target) {
-    // View.getOnTouchListener() does not exist, so we store the listener in a tag.
-    GestureListener gestureListener = (GestureListener) target.getTag(R.id.gesture_listener_tag);
-    if (gestureListener == null) {
-      gestureListener = new GestureListener();
-      target.setTag(R.id.gesture_listener_tag, gestureListener);
-    }
-    target.setOnTouchListener(gestureListener);
-
-    gestureListener.gestureRecognizers.put(gestureRecognizer.getClass(), gestureRecognizer);
+    OnTouchListeners.add(target, gestureRecognizer);
 
     onApply(runtime, gestureStream, target);
   }
@@ -61,19 +49,4 @@ public abstract class GestureInteraction<GR extends GestureRecognizer, T>
    */
   protected abstract void onApply(MotionRuntime runtime, MotionObservable<GR> stream, View target);
 
-  private static class GestureListener implements OnTouchListener {
-    private final SimpleArrayMap<Class<? extends GestureRecognizer>, GestureRecognizer> gestureRecognizers =
-      new SimpleArrayMap<>();
-
-    @Override
-    public boolean onTouch(View view, MotionEvent event) {
-      boolean handled = false;
-
-      for (int i = 0, count = gestureRecognizers.size(); i < count; i++) {
-        handled |= gestureRecognizers.valueAt(i).onTouch(view, event);
-      }
-
-      return handled;
-    }
-  }
 }
