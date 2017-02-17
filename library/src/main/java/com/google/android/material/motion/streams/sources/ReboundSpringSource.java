@@ -23,9 +23,12 @@ import com.facebook.rebound.SpringConfig;
 import com.facebook.rebound.SpringSystem;
 import com.google.android.material.motion.observable.IndefiniteObservable;
 import com.google.android.material.motion.observable.IndefiniteObservable.Connector;
+import com.google.android.material.motion.observable.IndefiniteObservable.Disconnector;
+import com.google.android.material.motion.observable.IndefiniteObservable.Subscription;
 import com.google.android.material.motion.streams.MotionObservable;
 import com.google.android.material.motion.streams.MotionObservable.MotionObserver;
 import com.google.android.material.motion.streams.MotionObservable.SimpleMotionObserver;
+import com.google.android.material.motion.streams.operators.CommonOperators;
 import com.google.android.material.motion.streams.springs.CompositeReboundSpring;
 import com.google.android.material.motion.streams.springs.CompositeReboundSpring.CompositeSpringListener;
 import com.google.android.material.motion.streams.springs.MaterialSpring;
@@ -67,57 +70,96 @@ public final class ReboundSpringSource extends SpringSource {
   public <O, T> MotionObservable<T> create(
     final MaterialSpring<O, T> spring, final TypeVectorizer<T> vectorizer) {
     return new MotionObservable<>(new Connector<MotionObserver<T>>() {
+
+      private Spring[] reboundSprings;
+
+      private Subscription destinationSubscription;
+      private Subscription frictionSubscription;
+      private Subscription tensionSubscription;
+
       @NonNull
       @Override
-      public IndefiniteObservable.Disconnector connect(MotionObserver<T> observer) {
-        final SpringConfig springConfig = new SpringConfig(0, 0);
+      public Disconnector connect(MotionObserver<T> observer) {
+        reboundSprings = new Spring[vectorizer.getVectorLength()];
+        for (int i = 0; i < reboundSprings.length; i++) {
+          reboundSprings[i] = springSystem.createSpring();
+        }
 
-        spring.tension.subscribe(new SimpleMotionObserver<Float>() {
+        final Subscription enabledSubscription =
+          spring.enabled.getStream()
+            .compose(CommonOperators.<Boolean>dedupe())
+            .subscribe(new SimpleMotionObserver<Boolean>() {
+              @Override
+              public void next(Boolean enabled) {
+                if (enabled) {
+                  start();
+                } else {
+                  stop();
+                }
+              }
+            });
+
+        final SpringConnection<T> connection =
+          new SpringConnection<>(reboundSprings, vectorizer, observer);
+
+        return new IndefiniteObservable.Disconnector() {
+          @Override
+          public void disconnect() {
+            connection.disconnect();
+            enabledSubscription.unsubscribe();
+            stop();
+          }
+        };
+      }
+
+      private void start() {
+        final SpringConfig springConfig = new SpringConfig(0, 0);
+        tensionSubscription = spring.tension.subscribe(new SimpleMotionObserver<Float>() {
           @Override
           public void next(Float value) {
             springConfig.tension = OrigamiValueConverter.tensionFromOrigamiValue(value);
           }
         });
-
-        spring.friction.subscribe(new SimpleMotionObserver<Float>() {
+        frictionSubscription = spring.friction.subscribe(new SimpleMotionObserver<Float>() {
           @Override
           public void next(Float value) {
             springConfig.friction = OrigamiValueConverter.frictionFromOrigamiValue(value);
           }
         });
 
-        final int count = vectorizer.getVectorLength();
-
-        final Spring[] reboundSprings = new Spring[count];
-        float[] initialValues = new float[count];
+        float[] initialValues = new float[reboundSprings.length];
         vectorizer.vectorize(spring.initialValue.read(), initialValues);
 
-        for (int i = 0; i < count; i++) {
-          reboundSprings[i] = springSystem.createSpring();
+        float[] initialVelocities = new float[reboundSprings.length];
+        vectorizer.vectorize(spring.initialVelocity.read(), initialVelocities);
+
+        for (int i = 0; i < reboundSprings.length; i++) {
           reboundSprings[i].setSpringConfig(springConfig);
           reboundSprings[i].setCurrentValue(initialValues[i]);
+          reboundSprings[i].setVelocity(initialVelocities[i]);
         }
 
-        spring.destination.subscribe(new SimpleMotionObserver<T>() {
+        final float[] endValues = new float[reboundSprings.length];
+        destinationSubscription = spring.destination.subscribe(new SimpleMotionObserver<T>() {
           @Override
           public void next(T value) {
-            float[] endValues = new float[count];
             vectorizer.vectorize(value, endValues);
 
-            for (int i = 0; i < count; i++) {
+            for (int i = 0; i < reboundSprings.length; i++) {
               reboundSprings[i].setEndValue(endValues[i]);
             }
           }
         });
+      }
 
-        final SpringConnection<T> connection =
-          new SpringConnection<>(reboundSprings, vectorizer, observer);
-        return new IndefiniteObservable.Disconnector() {
-          @Override
-          public void disconnect() {
-            connection.disconnect();
-          }
-        };
+      private void stop() {
+        tensionSubscription.unsubscribe();
+        frictionSubscription.unsubscribe();
+        destinationSubscription.unsubscribe();
+
+        for (int i = 0; i < reboundSprings.length; i++) {
+          reboundSprings[i].setAtRest();
+        }
       }
     });
   }
