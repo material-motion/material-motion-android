@@ -38,7 +38,7 @@ dependencies {
   // If you are developing any dependencies locally, also list them in local.dependencies.
   compile 'com.github.material-motion:indefinite-observable-android:develop-SNAPSHOT'
   compile 'com.github.material-motion:gestures-android:develop-SNAPSHOT'
-  compile 'com.github.material-motion:family-rebound-android:1.1.0'
+  compile 'com.facebook.rebound:rebound:0.3.8'
   compile 'com.android.support:support-core-utils:25.1.0'
 
   testCompile 'com.google.truth:truth:0.28'

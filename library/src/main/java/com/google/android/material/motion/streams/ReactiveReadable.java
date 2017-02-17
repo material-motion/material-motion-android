@@ -17,7 +17,8 @@ package com.google.android.material.motion.streams;
 
 import android.support.annotation.NonNull;
 
-import com.google.android.material.motion.observable.IndefiniteObservable;
+import com.google.android.material.motion.observable.IndefiniteObservable.Subscription;
+import com.google.android.material.motion.streams.MotionObservable.MotionObserver;
 
 /**
  * A property that can be read into a MotionObservable stream.
@@ -35,5 +36,5 @@ public interface ReactiveReadable<T> {
    * The given observer will be notified of the property's current value and every time the
    * property is written to.
    */
-  IndefiniteObservable.Subscription subscribe(@NonNull final MotionObservable.MotionObserver<T> observer);
+  Subscription subscribe(@NonNull final MotionObserver<T> observer);
 }
