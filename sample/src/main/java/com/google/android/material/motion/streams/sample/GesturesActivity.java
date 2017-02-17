@@ -6,6 +6,7 @@ import android.view.View;
 
 import com.google.android.material.motion.streams.MotionRuntime;
 import com.google.android.material.motion.streams.ReactiveProperty;
+import com.google.android.material.motion.streams.interactions.Tap;
 import com.google.android.material.motion.streams.interactions.Tossable;
 import com.google.android.material.motion.streams.properties.ViewProperties;
 
@@ -42,6 +43,9 @@ public class GesturesActivity extends AppCompatActivity {
 
     Tossable tossable = new Tossable(anchor);
     runtime.addInteraction(tossable, target);
+
+    Tap tap = new Tap(container);
+    runtime.addInteraction(tap, tossable.anchor);
 
     runtime.write(tossable.anchor.getStream(), ReactiveProperty.of(destination, ViewProperties.POSITION));
   }
