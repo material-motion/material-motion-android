@@ -33,4 +33,5 @@ dependencies {
     compile project(':library')
     compile 'com.android.support:appcompat-v7:25.1.0'
     compile 'com.android.support:recyclerview-v7:25.1.0'
+    compile 'pl.droidsonroids.gif:android-gif-drawable:1.2.5'
 }

@@ -19,35 +19,19 @@
   android:layout_height="match_parent"
   android:orientation="vertical">
 
-  <TextView
-    android:id="@+id/text"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:text="Hello, World!"/>
-
-  <Button
-    android:id="@+id/next_button"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:text="Next"/>
-
-  <Button
-    android:id="@+id/unsubscribe_button"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:text="Unsubscribe"/>
-
-  <View
-    android:id="@+id/drag_target"
+  <pl.droidsonroids.gif.GifImageView
+    android:id="@+id/tween_target"
     android:layout_width="200dp"
     android:layout_height="200dp"
     android:layout_margin="5dp"
-    android:background="#ff0000"/>
+    android:padding="2dp"
+    android:src="@drawable/mochi"/>
 
-  <View
+  <pl.droidsonroids.gif.GifImageView
     android:id="@+id/spring_target"
     android:layout_width="200dp"
     android:layout_height="200dp"
     android:layout_margin="5dp"
-    android:background="#ff0000"/>
+    android:padding="2dp"
+    android:src="@drawable/mochi"/>
 </LinearLayout>
