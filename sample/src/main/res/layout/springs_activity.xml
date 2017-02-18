@@ -14,24 +14,49 @@
   ~ See the License for the specific language governing permissions and
   ~ limitations under the License.
 -->
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
   android:layout_width="match_parent"
   android:layout_height="match_parent"
+  android:clipChildren="false"
   android:orientation="vertical">
 
-  <pl.droidsonroids.gif.GifImageView
-    android:id="@+id/tween_target"
+  <ImageView
+    android:id="@+id/rebound_destination"
     android:layout_width="200dp"
     android:layout_height="200dp"
+    android:layout_gravity="center_vertical"
+    android:layout_margin="5dp"
+    android:padding="4dp"
+    android:src="#ffffff"
+    android:visibility="visible"/>
+
+  <ImageView
+    android:id="@+id/physics_destination"
+    android:layout_width="200dp"
+    android:layout_height="200dp"
+    android:layout_below="@+id/rebound_destination"
+    android:layout_gravity="center_vertical"
+    android:layout_margin="5dp"
+    android:padding="4dp"
+    android:src="#ffffff"
+    android:visibility="visible"/>
+
+  <pl.droidsonroids.gif.GifImageView
+    android:id="@+id/rebound_target"
+    android:layout_width="200dp"
+    android:layout_height="200dp"
+    android:layout_gravity="center_vertical"
     android:layout_margin="5dp"
     android:padding="2dp"
     android:src="@drawable/mochi"/>
 
   <pl.droidsonroids.gif.GifImageView
-    android:id="@+id/spring_target"
+    android:id="@+id/physics_target"
     android:layout_width="200dp"
     android:layout_height="200dp"
+    android:layout_below="@+id/rebound_target"
+    android:layout_gravity="center_vertical"
     android:layout_margin="5dp"
     android:padding="2dp"
     android:src="@drawable/mochi"/>
-</LinearLayout>
+</RelativeLayout>

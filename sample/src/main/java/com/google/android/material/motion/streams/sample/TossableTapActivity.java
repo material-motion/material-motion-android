@@ -10,7 +10,7 @@ import com.google.android.material.motion.streams.interactions.Tap;
 import com.google.android.material.motion.streams.interactions.Tossable;
 import com.google.android.material.motion.streams.properties.ViewProperties;
 
-public class GesturesActivity extends AppCompatActivity {
+public class TossableTapActivity extends AppCompatActivity {
 
   private final MotionRuntime runtime = new MotionRuntime();
 
@@ -21,7 +21,7 @@ public class GesturesActivity extends AppCompatActivity {
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    setContentView(R.layout.gestures_activity);
+    setContentView(R.layout.tossable_tap_activity);
 
     container = findViewById(android.R.id.content);
     target = findViewById(R.id.target);
@@ -33,12 +33,12 @@ public class GesturesActivity extends AppCompatActivity {
       @Override
       public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
         v.removeOnLayoutChangeListener(this);
-        springDemo();
+        runDemo();
       }
     });
   }
 
-  private void springDemo() {
+  private void runDemo() {
     ReactiveProperty<Float[]> anchor = ReactiveProperty.of(ViewProperties.CENTER.get(target));
 
     Tossable tossable = new Tossable(ViewProperties.CENTER, anchor);

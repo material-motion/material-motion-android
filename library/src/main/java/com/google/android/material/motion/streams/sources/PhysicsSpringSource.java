@@ -111,12 +111,14 @@ public final class PhysicsSpringSource extends SpringSource {
           @Override
           public void next(Float value) {
             springForce.k = Spring.tensionFromOrigamiValue(value);
+            integrator.start();
           }
         });
         frictionSubscription = spring.friction.subscribe(new SimpleMotionObserver<Float>() {
           @Override
           public void next(Float value) {
             springForce.b = Spring.frictionFromOrigamiValue(value);
+            integrator.start();
           }
         });
 
@@ -139,6 +141,7 @@ public final class PhysicsSpringSource extends SpringSource {
             spring.vectorizer.vectorize(value, endValues);
 
             springForce.setAnchorPoint(new Vector(endValues));
+            integrator.start();
           }
         });
 
