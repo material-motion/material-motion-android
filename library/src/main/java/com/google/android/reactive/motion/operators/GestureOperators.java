@@ -20,13 +20,13 @@ import android.graphics.PointF;
 import android.support.annotation.VisibleForTesting;
 import android.view.View;
 
+import com.google.android.indefinite.observable.IndefiniteObservable.Subscription;
+import com.google.android.indefinite.observable.Observer;
 import com.google.android.material.motion.gestures.DragGestureRecognizer;
 import com.google.android.material.motion.gestures.GestureRecognizer;
 import com.google.android.material.motion.gestures.GestureRecognizer.GestureRecognizerState;
 import com.google.android.material.motion.gestures.RotateGestureRecognizer;
 import com.google.android.material.motion.gestures.ScaleGestureRecognizer;
-import com.google.android.material.motion.observable.IndefiniteObservable.Subscription;
-import com.google.android.material.motion.observable.Observer;
 import com.google.android.reactive.motion.MotionObservable;
 import com.google.android.reactive.motion.MotionObservable.FilterOperation;
 import com.google.android.reactive.motion.MotionObservable.MapOperation;

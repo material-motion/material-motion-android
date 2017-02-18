@@ -10,9 +10,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.google.android.reactive.motion.sample.R;
-import com.google.android.reactive.motion.sample.TossableTapActivity;
-
 public class MainActivity extends AppCompatActivity {
 
   private Demo[] demos;

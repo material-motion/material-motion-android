@@ -20,8 +20,8 @@ import android.support.annotation.NonNull;
 import android.view.View;
 import android.widget.TextView;
 
-import com.google.android.material.motion.observable.IndefiniteObservable;
-import com.google.android.material.motion.observable.Observer;
+import com.google.android.indefinite.observable.IndefiniteObservable;
+import com.google.android.indefinite.observable.Observer;
 import com.google.android.reactive.motion.MotionObservable.MotionObserver;
 
 import java.lang.annotation.Retention;

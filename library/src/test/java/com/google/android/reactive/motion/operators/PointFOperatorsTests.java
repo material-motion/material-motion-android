@@ -18,8 +18,8 @@ package com.google.android.reactive.motion.operators;
 import android.graphics.PointF;
 import android.support.annotation.NonNull;
 
+import com.google.android.indefinite.observable.IndefiniteObservable;
 import com.google.android.material.motion.gestures.BuildConfig;
-import com.google.android.material.motion.observable.IndefiniteObservable;
 import com.google.android.reactive.motion.MotionObservable;
 import com.google.android.reactive.motion.testing.TrackingMotionObserver;
 

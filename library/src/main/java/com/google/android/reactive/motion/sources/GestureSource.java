@@ -19,11 +19,11 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.VisibleForTesting;
 
+import com.google.android.indefinite.observable.IndefiniteObservable.Connector;
+import com.google.android.indefinite.observable.IndefiniteObservable.Disconnector;
 import com.google.android.material.motion.gestures.GestureRecognizer;
 import com.google.android.material.motion.gestures.GestureRecognizer.GestureRecognizerState;
 import com.google.android.material.motion.gestures.GestureRecognizer.GestureStateChangeListener;
-import com.google.android.material.motion.observable.IndefiniteObservable.Connector;
-import com.google.android.material.motion.observable.IndefiniteObservable.Disconnector;
 import com.google.android.reactive.motion.MotionObservable;
 import com.google.android.reactive.motion.MotionObservable.MotionObserver;
 import com.google.android.reactive.motion.MotionObservable.MotionState;

@@ -19,14 +19,10 @@ import android.app.Activity;
 import android.support.annotation.NonNull;
 import android.view.View;
 
-import com.google.android.material.motion.observable.IndefiniteObservable;
-import com.google.android.material.motion.observable.IndefiniteObservable.Subscription;
-import com.google.android.reactive.motion.MotionObservable;
+import com.google.android.indefinite.observable.IndefiniteObservable;
+import com.google.android.indefinite.observable.IndefiniteObservable.Subscription;
 import com.google.android.reactive.motion.MotionObservable.MotionObserver;
-import com.google.android.reactive.motion.MotionRuntime;
-import com.google.android.reactive.motion.ReactiveProperty;
 import com.google.android.reactive.motion.testing.TrackingMotionObserver;
-import com.google.android.reactive.motion.BuildConfig;
 
 import org.junit.Before;
 import org.junit.Test;

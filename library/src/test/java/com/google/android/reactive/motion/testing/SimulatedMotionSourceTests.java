@@ -15,7 +15,7 @@
  */
 package com.google.android.reactive.motion.testing;
 
-import com.google.android.material.motion.observable.IndefiniteObservable;
+import com.google.android.indefinite.observable.IndefiniteObservable;
 import com.google.android.reactive.motion.BuildConfig;
 import com.google.android.reactive.motion.MotionObservable;
 import com.google.android.reactive.motion.MotionObservable.MotionState;
