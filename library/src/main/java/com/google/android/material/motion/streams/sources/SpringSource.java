@@ -16,9 +16,7 @@
 package com.google.android.material.motion.streams.sources;
 
 import com.google.android.material.motion.streams.MotionObservable;
-import com.google.android.material.motion.streams.springs.FloatVectorizer;
 import com.google.android.material.motion.streams.interactions.MaterialSpring;
-import com.google.android.material.motion.streams.springs.TypeVectorizer;
 
 /**
  * The abstract base class for all spring sources.
@@ -26,21 +24,10 @@ import com.google.android.material.motion.streams.springs.TypeVectorizer;
 public abstract class SpringSource {
 
   /**
-   * Creates a spring source for a float spring.
-   * <p>
-   * The properties on the <code>spring</code> param may be changed to dynamically modify the
-   * behavior of this source.
-   */
-  public final <O> MotionObservable<Float> create(MaterialSpring<O, Float> spring) {
-    return create(spring, new FloatVectorizer());
-  }
-
-  /**
    * Creates a spring source for a T valued spring.
    * <p>
    * The properties on the <code>spring</code> param may be changed to dynamically modify the
    * behavior of this source.
    */
-  public abstract <O, T> MotionObservable<T> create(
-    MaterialSpring<O, T> spring, TypeVectorizer<T> vectorizer);
+  public abstract <O, T> MotionObservable<T> create(MaterialSpring<O, T> spring);
 }

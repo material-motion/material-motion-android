@@ -22,7 +22,7 @@ import com.google.android.material.motion.streams.MotionObservable;
 import com.google.android.material.motion.streams.MotionRuntime;
 import com.google.android.material.motion.streams.ReactiveProperty;
 import com.google.android.material.motion.streams.ReactiveReadable;
-import com.google.android.material.motion.streams.sources.ReboundSpringSource;
+import com.google.android.material.motion.streams.sources.SpringSource;
 import com.google.android.material.motion.streams.springs.TypeVectorizer;
 
 /**
@@ -90,8 +90,8 @@ public class MaterialSpring<O, T> extends Interaction<O, T> {
    */
   public final ReactiveProperty<Float> friction;
 
+  public final TypeVectorizer<T> vectorizer;
   private final Property<O, T> property;
-  private final TypeVectorizer<T> vectorizer;
   private final MotionObservable<T> stream;
 
   /**
@@ -105,7 +105,8 @@ public class MaterialSpring<O, T> extends Interaction<O, T> {
     T initialVelocity,
     float threshold,
     float tension,
-    float friction) {
+    float friction,
+    SpringSource springSource) {
     this(property,
       vectorizer,
       ReactiveProperty.of(destination),
@@ -113,7 +114,8 @@ public class MaterialSpring<O, T> extends Interaction<O, T> {
       ReactiveProperty.of(initialVelocity),
       ReactiveProperty.of(threshold),
       ReactiveProperty.of(tension),
-      ReactiveProperty.of(friction));
+      ReactiveProperty.of(friction),
+      springSource);
   }
 
   /**
@@ -127,7 +129,8 @@ public class MaterialSpring<O, T> extends Interaction<O, T> {
     ReactiveProperty<T> initialVelocity,
     ReactiveReadable<Float> threshold,
     ReactiveProperty<Float> tension,
-    ReactiveProperty<Float> friction) {
+    ReactiveProperty<Float> friction,
+    SpringSource springSource) {
     this.property = property;
     this.vectorizer = vectorizer;
     this.destination = destination;
@@ -137,7 +140,7 @@ public class MaterialSpring<O, T> extends Interaction<O, T> {
     this.tension = tension;
     this.friction = friction;
 
-    this.stream = ReboundSpringSource.from(this, vectorizer);
+    this.stream = springSource.create(this);
   }
 
   @Override
