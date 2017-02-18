@@ -5,7 +5,7 @@ android {
     buildToolsVersion '25.0.0'
 
     defaultConfig {
-        applicationId "com.google.android.material.motion.streams.sample"
+        applicationId "com.google.android.reactive.motion.sample"
         minSdkVersion 15
         targetSdkVersion 25
         versionCode 1

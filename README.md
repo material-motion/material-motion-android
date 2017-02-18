@@ -1,14 +1,14 @@
-# Streams for Android
+# Reactive Motion for Android
 
-[![Build Status](https://travis-ci.org/material-motion/streams-android.svg?branch=develop)](https://travis-ci.org/material-motion/streams-android)
-[![codecov](https://codecov.io/gh/material-motion/streams-android/branch/develop/graph/badge.svg)](https://codecov.io/gh/material-motion/streams-android)
-[![Release](https://img.shields.io/github/release/material-motion/streams-android.svg)](https://github.com/material-motion/streams-android/releases/latest)
-[![Docs](https://img.shields.io/badge/jitpack-docs-green.svg)](https://jitpack.io/com/github/material-motion/streams-android/stable-SNAPSHOT/javadoc/)
+[![Build Status](https://travis-ci.org/material-motion/reactive-motion-android.svg?branch=develop)](https://travis-ci.org/material-motion/reactive-motion-android)
+[![codecov](https://codecov.io/gh/material-motion/reactive-motion-android/branch/develop/graph/badge.svg)](https://codecov.io/gh/material-motion/reactive-motion-android)
+[![Release](https://img.shields.io/github/release/material-motion/reactive-motion-android.svg)](https://github.com/material-motion/reactive-motion-android/releases/latest)
+[![Docs](https://img.shields.io/badge/jitpack-docs-green.svg)](https://jitpack.io/com/github/material-motion/reactive-motion-android/stable-SNAPSHOT/javadoc/)
 
-The Streams for Android repo.
+The Reactive Motion for Android repo.
 
 Learn more about the APIs defined in the library by reading our
-[technical documentation](https://jitpack.io/com/github/material-motion/streams-android/1.0.0/javadoc/) and our
+[technical documentation](https://jitpack.io/com/github/material-motion/reactive-motion-android/1.0.0/javadoc/) and our
 [Starmap](https://material-motion.github.io/material-motion/starmap/).
 
 ## Installation
@@ -25,12 +25,12 @@ allprojects {
 }
 ```
 
-Depend on the [latest version](https://github.com/material-motion/streams-android/releases) of the library.
+Depend on the [latest version](https://github.com/material-motion/reactive-motion-android/releases) of the library.
 Take care to occasionally [check for updates](https://github.com/ben-manes/gradle-versions-plugin).
 
 ```gradle
 dependencies {
-    compile 'com.github.material-motion:streams-android:1.0.0'
+    compile 'com.github.material-motion:reactive-motion-android:1.0.0'
 }
 ```
 
@@ -45,7 +45,7 @@ with its client project. To add a local dependency on this library, add this
 library's identifier to your project's `local.dependencies`:
 
 ```
-com.github.material-motion:streams-android
+com.github.material-motion:reactive-motion-android
 ```
 
 > Because `local.dependencies` is never to be checked into Version Control
@@ -76,14 +76,14 @@ choose the root `build.gradle` file.
 
 To build the sample application, run the following commands:
 
-    git clone https://github.com/material-motion/streams-android.git
-    cd streams-android
+    git clone https://github.com/material-motion/reactive-motion-android.git
+    cd reactive-motion-android
     gradle installDebug
 
 To run all unit tests, run the following commands:
 
-    git clone https://github.com/material-motion/streams-android.git
-    cd streams-android
+    git clone https://github.com/material-motion/reactive-motion-android.git
+    cd reactive-motion-android
     gradle test
 
 ## Guides
@@ -99,7 +99,7 @@ To run all unit tests, run the following commands:
 
 We welcome contributions!
 
-Check out our [upcoming milestones](https://github.com/material-motion/streams-android/milestones).
+Check out our [upcoming milestones](https://github.com/material-motion/reactive-motion-android/milestones).
 
 Learn more about [our team](https://material-motion.github.io/material-motion/team/),
 [our community](https://material-motion.github.io/material-motion/team/community/), and
