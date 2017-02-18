@@ -20,7 +20,6 @@ public class MainActivity extends AppCompatActivity {
     setContentView(R.layout.activity_main);
 
     demos = new Demo[]{
-      new Demo("Springs", new Intent(this, SpringsActivity.class)),
       new Demo("Tossable Tap", new Intent(this, TossableTapActivity.class)),
     };
 
