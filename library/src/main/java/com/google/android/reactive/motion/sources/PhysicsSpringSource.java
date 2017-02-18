@@ -17,9 +17,9 @@ package com.google.android.reactive.motion.sources;
 
 import android.support.annotation.NonNull;
 
-import com.google.android.material.motion.observable.IndefiniteObservable.Connector;
-import com.google.android.material.motion.observable.IndefiniteObservable.Disconnector;
-import com.google.android.material.motion.observable.IndefiniteObservable.Subscription;
+import com.google.android.indefinite.observable.IndefiniteObservable.Connector;
+import com.google.android.indefinite.observable.IndefiniteObservable.Disconnector;
+import com.google.android.indefinite.observable.IndefiniteObservable.Subscription;
 import com.google.android.material.motion.physics.Integrator;
 import com.google.android.material.motion.physics.forces.Spring;
 import com.google.android.material.motion.physics.integrators.Rk4Integrator;

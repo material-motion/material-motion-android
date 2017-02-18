@@ -18,7 +18,7 @@ package com.google.android.reactive.motion.operators;
 import android.support.annotation.Nullable;
 import android.support.annotation.VisibleForTesting;
 
-import com.google.android.material.motion.observable.Observer;
+import com.google.android.indefinite.observable.Observer;
 import com.google.android.reactive.motion.MotionObservable.Operation;
 
 public class CommonOperators {

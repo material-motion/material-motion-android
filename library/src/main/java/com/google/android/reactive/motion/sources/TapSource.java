@@ -21,9 +21,9 @@ import android.view.GestureDetector.SimpleOnGestureListener;
 import android.view.MotionEvent;
 import android.view.View;
 
-import com.google.android.material.motion.observable.IndefiniteObservable.Connector;
-import com.google.android.material.motion.observable.IndefiniteObservable.Disconnector;
-import com.google.android.material.motion.observable.IndefiniteObservable.Subscription;
+import com.google.android.indefinite.observable.IndefiniteObservable.Connector;
+import com.google.android.indefinite.observable.IndefiniteObservable.Disconnector;
+import com.google.android.indefinite.observable.IndefiniteObservable.Subscription;
 import com.google.android.reactive.motion.MotionObservable;
 import com.google.android.reactive.motion.MotionObservable.MotionObserver;
 import com.google.android.reactive.motion.MotionObservable.SimpleMotionObserver;

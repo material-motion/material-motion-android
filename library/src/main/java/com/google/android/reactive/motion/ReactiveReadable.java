@@ -17,7 +17,7 @@ package com.google.android.reactive.motion;
 
 import android.support.annotation.NonNull;
 
-import com.google.android.material.motion.observable.IndefiniteObservable.Subscription;
+import com.google.android.indefinite.observable.IndefiniteObservable.Subscription;
 import com.google.android.reactive.motion.MotionObservable.MotionObserver;
 
 /**
