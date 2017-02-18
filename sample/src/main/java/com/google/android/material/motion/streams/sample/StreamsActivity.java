@@ -24,8 +24,9 @@ import android.view.View;
 
 import com.google.android.material.motion.streams.MotionObservable.MotionObserver;
 import com.google.android.material.motion.streams.MotionRuntime;
-import com.google.android.material.motion.streams.springs.FloatVectorizer;
 import com.google.android.material.motion.streams.interactions.MaterialSpring;
+import com.google.android.material.motion.streams.sources.PhysicsSpringSource;
+import com.google.android.material.motion.streams.springs.FloatVectorizer;
 
 /**
  * Streams for Android sample Activity.
@@ -61,7 +62,8 @@ public class StreamsActivity extends AppCompatActivity {
       0f,
       0.01f,
       1,
-      10);
+      10,
+      PhysicsSpringSource.SPRING_SOURCE);
 
     springTarget.setOnTouchListener(new View.OnTouchListener() {
       @Override

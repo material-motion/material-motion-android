@@ -21,6 +21,7 @@ import android.view.View;
 import com.google.android.material.motion.streams.Interaction;
 import com.google.android.material.motion.streams.MotionRuntime;
 import com.google.android.material.motion.streams.ReactiveProperty;
+import com.google.android.material.motion.streams.sources.PhysicsSpringSource;
 import com.google.android.material.motion.streams.springs.FloatArrayTypeVectorizer;
 
 import static com.google.android.material.motion.streams.operators.GestureOperators.isAtRest;
@@ -56,7 +57,8 @@ public class Tossable extends Interaction<View, Void> {
       ReactiveProperty.of(new Float[]{0f, 0f}),
       ReactiveProperty.of(1f),
       ReactiveProperty.of(1f),
-      ReactiveProperty.of(4f));
+      ReactiveProperty.of(4f),
+      PhysicsSpringSource.SPRING_SOURCE);
 
     runtime.addInteraction(draggable, target);
     runtime.addInteraction(spring, target);

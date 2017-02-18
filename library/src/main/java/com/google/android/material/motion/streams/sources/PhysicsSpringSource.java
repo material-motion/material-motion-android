@@ -17,33 +17,25 @@ package com.google.android.material.motion.streams.sources;
 
 import android.support.annotation.NonNull;
 
-import com.facebook.rebound.OrigamiValueConverter;
-import com.facebook.rebound.Spring;
-import com.facebook.rebound.SpringConfig;
-import com.facebook.rebound.SpringSystem;
 import com.google.android.material.motion.observable.IndefiniteObservable.Connector;
 import com.google.android.material.motion.observable.IndefiniteObservable.Disconnector;
 import com.google.android.material.motion.observable.IndefiniteObservable.Subscription;
+import com.google.android.material.motion.physics.Integrator;
+import com.google.android.material.motion.physics.forces.Spring;
+import com.google.android.material.motion.physics.integrators.Rk4Integrator;
+import com.google.android.material.motion.physics.math.Vector;
 import com.google.android.material.motion.streams.MotionObservable;
 import com.google.android.material.motion.streams.MotionObservable.MotionObserver;
 import com.google.android.material.motion.streams.MotionObservable.SimpleMotionObserver;
 import com.google.android.material.motion.streams.interactions.MaterialSpring;
 import com.google.android.material.motion.streams.operators.CommonOperators;
-import com.google.android.material.motion.streams.springs.CompositeReboundSpring;
-import com.google.android.material.motion.streams.springs.CompositeReboundSpring.CompositeSpringListener;
-import com.google.android.material.motion.streams.springs.TypeVectorizer;
 
 /**
- * A source for rebound springs.
- * <p>
- * Rebound springs only support animating between float values. This class supports arbitrary T
- * values by vectorizing the value into floats, and animating them individually using separate
- * rebound springs.
+ * A source for physics springs.
  */
-public final class ReboundSpringSource extends SpringSource {
+public final class PhysicsSpringSource extends SpringSource {
 
-  public static final SpringSource SPRING_SOURCE = new ReboundSpringSource();
-  private final SpringSystem springSystem = SpringSystem.create();
+  public static final SpringSource SPRING_SOURCE = new PhysicsSpringSource();
 
   /**
    * Creates a spring source for a T valued spring.
@@ -59,7 +51,8 @@ public final class ReboundSpringSource extends SpringSource {
   public <O, T> MotionObservable<T> create(final MaterialSpring<O, T> spring) {
     return new MotionObservable<>(new Connector<MotionObserver<T>>() {
 
-      private Spring[] reboundSprings;
+      private Integrator integrator;
+      private Spring springForce;
 
       private Subscription destinationSubscription;
       private Subscription frictionSubscription;
@@ -67,14 +60,28 @@ public final class ReboundSpringSource extends SpringSource {
 
       @NonNull
       @Override
-      public Disconnector connect(MotionObserver<T> observer) {
-        reboundSprings = new Spring[spring.vectorizer.getVectorLength()];
-        for (int i = 0; i < reboundSprings.length; i++) {
-          reboundSprings[i] = springSystem.createSpring();
-        }
+      public Disconnector connect(final MotionObserver<T> observer) {
+        integrator = new Rk4Integrator();
+        springForce = new Spring();
+        integrator.addForce(springForce);
 
-        final SpringConnection<T> connection =
-          new SpringConnection<>(reboundSprings, spring.vectorizer, observer);
+        integrator.addListener(new Integrator.SimpleListener() {
+          @Override
+          public void onStart() {
+            observer.state(MotionObservable.ACTIVE);
+          }
+
+          @Override
+          public void onUpdate(Vector x, Vector v) {
+            T value = spring.vectorizer.compose(x.getValues());
+            observer.next(value);
+          }
+
+          @Override
+          public void onStop() {
+            observer.state(MotionObservable.AT_REST);
+          }
+        });
 
         final Subscription enabledSubscription =
           spring.enabled.getStream()
@@ -93,7 +100,6 @@ public final class ReboundSpringSource extends SpringSource {
         return new Disconnector() {
           @Override
           public void disconnect() {
-            connection.disconnect();
             enabledSubscription.unsubscribe();
             stop();
           }
@@ -101,21 +107,20 @@ public final class ReboundSpringSource extends SpringSource {
       }
 
       private void start() {
-        final SpringConfig springConfig = new SpringConfig(0, 0);
         tensionSubscription = spring.tension.subscribe(new SimpleMotionObserver<Float>() {
           @Override
           public void next(Float value) {
-            springConfig.tension = OrigamiValueConverter.tensionFromOrigamiValue(value);
+            springForce.k = Spring.tensionFromOrigamiValue(value);
           }
         });
         frictionSubscription = spring.friction.subscribe(new SimpleMotionObserver<Float>() {
           @Override
           public void next(Float value) {
-            springConfig.friction = OrigamiValueConverter.frictionFromOrigamiValue(value);
+            springForce.b = Spring.frictionFromOrigamiValue(value);
           }
         });
 
-        final int count = reboundSprings.length;
+        final int count = spring.vectorizer.getVectorLength();
 
         float[] initialValues = new float[count];
         spring.vectorizer.vectorize(spring.initialValue.read(), initialValues);
@@ -124,9 +129,7 @@ public final class ReboundSpringSource extends SpringSource {
         spring.vectorizer.vectorize(spring.initialVelocity.read(), initialVelocities);
 
         for (int i = 0; i < count; i++) {
-          reboundSprings[i].setSpringConfig(springConfig);
-          reboundSprings[i].setCurrentValue(initialValues[i]);
-          reboundSprings[i].setVelocity(initialVelocities[i]);
+          integrator.setState(new Vector(initialValues), new Vector(initialVelocities));
         }
 
         final float[] endValues = new float[count];
@@ -135,60 +138,20 @@ public final class ReboundSpringSource extends SpringSource {
           public void next(T value) {
             spring.vectorizer.vectorize(value, endValues);
 
-            for (int i = 0; i < count; i++) {
-              reboundSprings[i].setEndValue(endValues[i]);
-            }
+            springForce.setAnchorPoint(new Vector(endValues));
           }
         });
+
+        integrator.start();
       }
 
       private void stop() {
+        integrator.stop();
+
         tensionSubscription.unsubscribe();
         frictionSubscription.unsubscribe();
         destinationSubscription.unsubscribe();
-
-        for (int i = 0; i < reboundSprings.length; i++) {
-          reboundSprings[i].setAtRest();
-        }
       }
     });
-  }
-
-  private static class SpringConnection<T> {
-
-    private final CompositeReboundSpring spring;
-    private final TypeVectorizer<T> vectorizer;
-    private final MotionObserver<T> observer;
-
-    private SpringConnection(
-      Spring[] springs, TypeVectorizer<T> vectorizer, MotionObserver<T> observer) {
-      this.spring = new CompositeReboundSpring(springs);
-      this.vectorizer = vectorizer;
-      this.observer = observer;
-
-      this.spring.addListener(springListener);
-    }
-
-    private void disconnect() {
-      spring.removeListener(springListener);
-    }
-
-    private final CompositeSpringListener springListener = new CompositeSpringListener() {
-      @Override
-      public void onCompositeSpringActivate() {
-        observer.state(MotionObservable.ACTIVE);
-      }
-
-      @Override
-      public void onCompositeSpringUpdate(float[] values) {
-        T value = vectorizer.compose(values);
-        observer.next(value);
-      }
-
-      @Override
-      public void onCompositeSpringAtRest() {
-        observer.state(MotionObservable.AT_REST);
-      }
-    };
   }
 }
