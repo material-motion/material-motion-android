@@ -15,6 +15,8 @@
  */
 package com.google.android.reactive.motion.springs;
 
+import java.util.Arrays;
+
 /**
  * A vectorizer transforms a T typed value to and from an equivalent float[] representation.
  */
@@ -39,7 +41,7 @@ public abstract class TypeVectorizer<T> {
   public final void vectorize(T value, float[] vector) {
     if (vector.length != vectorLength) {
       throw new IllegalArgumentException(
-        "Expected vector " + vector + " to be of length " + vectorLength);
+        "Expected vector " + Arrays.toString(vector) + " to be of length " + vectorLength);
     }
     onVectorize(value, vector);
   }
