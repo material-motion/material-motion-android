@@ -58,7 +58,7 @@ public class Tossable extends Interaction<View, Void> {
       ReactiveProperty.of(1f),
       ReactiveProperty.of(1f),
       ReactiveProperty.of(4f),
-      PhysicsSpringSource.SPRING_SOURCE);
+      PhysicsSpringSource.SYSTEM);
 
     runtime.addInteraction(draggable, target);
     runtime.addInteraction(spring, target);

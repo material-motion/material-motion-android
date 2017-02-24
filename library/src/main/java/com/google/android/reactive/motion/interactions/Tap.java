@@ -30,7 +30,7 @@ public class Tap extends Interaction<ReactiveProperty<Float[]>, Float[]> {
 
   public Tap(View container) {
     this.container = container;
-    this.tapStream = TapSource.from(this);
+    this.tapStream = new TapSource(this).getStream();
   }
 
   @Override
