@@ -15,8 +15,12 @@
  */
 package com.google.android.reactive.motion.sources;
 
+import android.support.v4.util.SimpleArrayMap;
+
 import com.google.android.indefinite.observable.IndefiniteObservable.Subscription;
+import com.google.android.indefinite.observable.Observer;
 import com.google.android.material.motion.physics.Integrator;
+import com.google.android.material.motion.physics.Integrator.Listener;
 import com.google.android.material.motion.physics.Integrator.SimpleListener;
 import com.google.android.material.motion.physics.forces.Spring;
 import com.google.android.material.motion.physics.integrators.Rk4Integrator;
@@ -25,9 +29,6 @@ import com.google.android.reactive.motion.MotionObservable;
 import com.google.android.reactive.motion.MotionObservable.MotionObserver;
 import com.google.android.reactive.motion.MotionObservable.SimpleMotionObserver;
 import com.google.android.reactive.motion.interactions.MaterialSpring;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * A source for physics springs.
@@ -45,7 +46,7 @@ public final class PhysicsSpringSource<T> extends SpringSource<T> {
 
   private final Integrator integrator;
   private final Spring springForce;
-  private final List<Integrator.Listener> integratorListeners = new ArrayList<>();
+  private final SimpleArrayMap<Observer<T>, Listener> integratorListeners = new SimpleArrayMap<>();
 
   private Subscription destinationSubscription;
   private Subscription frictionSubscription;
@@ -83,7 +84,7 @@ public final class PhysicsSpringSource<T> extends SpringSource<T> {
 
   @Override
   protected void onConnect(final MotionObserver<T> observer) {
-    integratorListeners.add(new SimpleListener() {
+    integratorListeners.put(observer, new SimpleListener() {
 
       @Override
       public void onStart() {
@@ -153,5 +154,10 @@ public final class PhysicsSpringSource<T> extends SpringSource<T> {
     tensionSubscription.unsubscribe();
     frictionSubscription.unsubscribe();
     destinationSubscription.unsubscribe();
+  }
+
+  @Override
+  protected void onDisconnect(MotionObserver<T> observer) {
+    integratorListeners.remove(observer);
   }
 }
