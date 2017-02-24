@@ -17,6 +17,7 @@ package com.google.android.reactive.motion.sources;
 
 import com.google.android.indefinite.observable.IndefiniteObservable.Subscription;
 import com.google.android.material.motion.physics.Integrator;
+import com.google.android.material.motion.physics.Integrator.SimpleListener;
 import com.google.android.material.motion.physics.forces.Spring;
 import com.google.android.material.motion.physics.integrators.Rk4Integrator;
 import com.google.android.material.motion.physics.math.Vector;
@@ -24,6 +25,9 @@ import com.google.android.reactive.motion.MotionObservable;
 import com.google.android.reactive.motion.MotionObservable.MotionObserver;
 import com.google.android.reactive.motion.MotionObservable.SimpleMotionObserver;
 import com.google.android.reactive.motion.interactions.MaterialSpring;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A source for physics springs.
@@ -39,8 +43,9 @@ public final class PhysicsSpringSource<T> extends SpringSource<T> {
 
   private final MaterialSpring<?, T> spring;
 
-  private Integrator integrator;
-  private Spring springForce;
+  private final Integrator integrator;
+  private final Spring springForce;
+  private final List<Integrator.Listener> integratorListeners = new ArrayList<>();
 
   private Subscription destinationSubscription;
   private Subscription frictionSubscription;
@@ -49,15 +54,37 @@ public final class PhysicsSpringSource<T> extends SpringSource<T> {
   public PhysicsSpringSource(MaterialSpring<?, T> spring) {
     super(spring);
     this.spring = spring;
+    integrator = new Rk4Integrator();
+    springForce = new Spring();
+    integrator.addForce(springForce);
+    integrator.addListener(new SimpleListener() {
+      @Override
+      public void onStart() {
+        for (int i = 0, count = integratorListeners.size(); i < count; i++) {
+          integratorListeners.get(i).onStart();
+        }
+      }
+
+      @Override
+      public void onUpdate(Vector x, Vector v) {
+        for (int i = 0, count = integratorListeners.size(); i < count; i++) {
+          integratorListeners.get(i).onUpdate(x, v);
+        }
+      }
+
+      @Override
+      public void onStop() {
+        for (int i = 0, count = integratorListeners.size(); i < count; i++) {
+          integratorListeners.get(i).onStop();
+        }
+      }
+    });
   }
 
   @Override
   protected void onConnect(final MotionObserver<T> observer) {
-    integrator = new Rk4Integrator();
-    springForce = new Spring();
-    integrator.addForce(springForce);
+    integratorListeners.add(new SimpleListener() {
 
-    integrator.addListener(new Integrator.SimpleListener() {
       @Override
       public void onStart() {
         observer.state(MotionObservable.ACTIVE);
