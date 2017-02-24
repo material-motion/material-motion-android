@@ -16,6 +16,7 @@
 package com.google.android.reactive.motion.sources;
 
 import android.support.v4.view.GestureDetectorCompat;
+import android.view.GestureDetector.OnGestureListener;
 import android.view.GestureDetector.SimpleOnGestureListener;
 import android.view.MotionEvent;
 import android.view.View;
@@ -25,32 +26,43 @@ import com.google.android.reactive.motion.Source;
 import com.google.android.reactive.motion.gestures.OnTouchListeners;
 import com.google.android.reactive.motion.interactions.Tap;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class TapSource extends Source<Float[]> {
 
-  private final Tap tap;
-
-  private View container;
-  private GestureDetectorCompat detector;
+  private final View container;
+  private final GestureDetectorCompat detector;
+  private final List<OnGestureListener> gestureListeners = new ArrayList<>();
 
   public TapSource(Tap tap) {
     super(tap);
-    this.tap = tap;
-  }
-
-  @Override
-  protected void onConnect(final MotionObserver<Float[]> observer) {
     container = tap.container;
     detector = new GestureDetectorCompat(
       container.getContext(),
       new SimpleOnGestureListener() {
         @Override
         public boolean onSingleTapUp(MotionEvent e) {
-          observer.next(new Float[]{e.getX(), e.getY()});
-          return true;
+          boolean consumed = false;
+          for (int i = 0, count = gestureListeners.size(); i < count; i++) {
+            consumed |= gestureListeners.get(i).onSingleTapUp(e);
+          }
+          return consumed;
         }
       });
     detector.setOnDoubleTapListener(null);
     detector.setIsLongpressEnabled(false);
+  }
+
+  @Override
+  protected void onConnect(final MotionObserver<Float[]> observer) {
+    gestureListeners.add(new SimpleOnGestureListener() {
+      @Override
+      public boolean onSingleTapUp(MotionEvent e) {
+        observer.next(new Float[]{e.getX(), e.getY()});
+        return true;
+      }
+    });
   }
 
   @Override
