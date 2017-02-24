@@ -106,7 +106,7 @@ public class MaterialSpring<O, T> extends Interaction<O, T> {
     float threshold,
     float tension,
     float friction,
-    SpringSource springSource) {
+    SpringSource.System system) {
     this(property,
       vectorizer,
       ReactiveProperty.of(destination),
@@ -115,7 +115,7 @@ public class MaterialSpring<O, T> extends Interaction<O, T> {
       ReactiveProperty.of(threshold),
       ReactiveProperty.of(tension),
       ReactiveProperty.of(friction),
-      springSource);
+      system);
   }
 
   /**
@@ -130,7 +130,7 @@ public class MaterialSpring<O, T> extends Interaction<O, T> {
     ReactiveReadable<Float> threshold,
     ReactiveProperty<Float> tension,
     ReactiveProperty<Float> friction,
-    SpringSource springSource) {
+    SpringSource.System system) {
     this.property = property;
     this.vectorizer = vectorizer;
     this.destination = destination;
@@ -140,7 +140,7 @@ public class MaterialSpring<O, T> extends Interaction<O, T> {
     this.tension = tension;
     this.friction = friction;
 
-    this.stream = springSource.create(this);
+    this.stream = system.create(this).getStream();
   }
 
   @Override
