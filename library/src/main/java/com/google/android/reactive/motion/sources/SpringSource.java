@@ -15,19 +15,19 @@
  */
 package com.google.android.reactive.motion.sources;
 
-import com.google.android.reactive.motion.MotionObservable;
+import com.google.android.reactive.motion.Source;
 import com.google.android.reactive.motion.interactions.MaterialSpring;
 
 /**
  * The abstract base class for all spring sources.
  */
-public abstract class SpringSource {
+public abstract class SpringSource<T> extends Source<T> {
 
-  /**
-   * Creates a spring source for a T valued spring.
-   * <p>
-   * The properties on the <code>spring</code> param may be changed to dynamically modify the
-   * behavior of this source.
-   */
-  public abstract <O, T> MotionObservable<T> create(MaterialSpring<O, T> spring);
+  public SpringSource(MaterialSpring<?, T> spring) {
+    super(spring);
+  }
+
+  public static abstract class System {
+    public abstract <T> SpringSource<T> create(MaterialSpring<?, T> spring);
+  }
 }

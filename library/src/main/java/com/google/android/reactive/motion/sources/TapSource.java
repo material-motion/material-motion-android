@@ -15,84 +15,61 @@
  */
 package com.google.android.reactive.motion.sources;
 
-import android.support.annotation.NonNull;
 import android.support.v4.view.GestureDetectorCompat;
 import android.view.GestureDetector.SimpleOnGestureListener;
 import android.view.MotionEvent;
 import android.view.View;
 
-import com.google.android.indefinite.observable.IndefiniteObservable.Connector;
-import com.google.android.indefinite.observable.IndefiniteObservable.Disconnector;
-import com.google.android.indefinite.observable.IndefiniteObservable.Subscription;
-import com.google.android.reactive.motion.MotionObservable;
 import com.google.android.reactive.motion.MotionObservable.MotionObserver;
-import com.google.android.reactive.motion.MotionObservable.SimpleMotionObserver;
+import com.google.android.reactive.motion.Source;
 import com.google.android.reactive.motion.gestures.OnTouchListeners;
 import com.google.android.reactive.motion.interactions.Tap;
-import com.google.android.reactive.motion.operators.CommonOperators;
 
-public class TapSource {
+public class TapSource extends Source<Float[]> {
 
-  public static MotionObservable<Float[]> from(final Tap tap) {
-    return new MotionObservable<>(new Connector<MotionObserver<Float[]>>() {
+  private final Tap tap;
 
-      private View container;
-      private GestureDetectorCompat detector;
+  private View container;
+  private GestureDetectorCompat detector;
 
-      @NonNull
-      @Override
-      public Disconnector connect(final MotionObserver<Float[]> observer) {
-        container = tap.container;
-        detector = new GestureDetectorCompat(
-          container.getContext(),
-          new SimpleOnGestureListener() {
-            @Override
-            public boolean onSingleTapUp(MotionEvent e) {
-              observer.next(new Float[]{e.getX(), e.getY()});
-              return true;
-            }
-          });
-        detector.setOnDoubleTapListener(null);
-        detector.setIsLongpressEnabled(false);
+  public TapSource(Tap tap) {
+    super(tap);
+    this.tap = tap;
+  }
 
-        final Subscription enabledSubscription =
-          tap.enabled.getStream()
-            .compose(CommonOperators.<Boolean>dedupe())
-            .subscribe(new SimpleMotionObserver<Boolean>() {
-              @Override
-              public void next(Boolean value) {
-                if (value) {
-                  start();
-                } else {
-                  stop();
-                }
-              }
-            });
-
-        return new Disconnector() {
-          @Override
-          public void disconnect() {
-            enabledSubscription.unsubscribe();
-            stop();
-          }
-        };
-      }
-
-      private void start() {
-        OnTouchListeners.add(container, listener);
-      }
-
-      private void stop() {
-        OnTouchListeners.remove(container, listener);
-      }
-
-      private final View.OnTouchListener listener = new View.OnTouchListener() {
+  @Override
+  protected void onConnect(final MotionObserver<Float[]> observer) {
+    container = tap.container;
+    detector = new GestureDetectorCompat(
+      container.getContext(),
+      new SimpleOnGestureListener() {
         @Override
-        public boolean onTouch(View v, MotionEvent event) {
-          detector.onTouchEvent(event);
+        public boolean onSingleTapUp(MotionEvent e) {
+          observer.next(new Float[]{e.getX(), e.getY()});
           return true;
         }
-      };
-    });
+      });
+    detector.setOnDoubleTapListener(null);
+    detector.setIsLongpressEnabled(false);
   }
+
+  @Override
+  protected void onEnable(MotionObserver<Float[]> observer) {
+    OnTouchListeners.add(container, listener);
+    // TODO: observer.state()?
+  }
+
+  @Override
+  protected void onDisable(MotionObserver<Float[]> observer) {
+    OnTouchListeners.remove(container, listener);
+    // TODO: observer.state()?
+  }
+
+  private final View.OnTouchListener listener = new View.OnTouchListener() {
+    @Override
+    public boolean onTouch(View v, MotionEvent event) {
+      detector.onTouchEvent(event);
+      return true;
+    }
+  };
 }
