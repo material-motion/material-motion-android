@@ -21,6 +21,7 @@ public class MainActivity extends AppCompatActivity {
 
     demos = new Demo[]{
       new Demo("Tossable Tap", new Intent(this, TossableTapActivity.class)),
+      new Demo("Tween", new Intent(this, TweenActivity.class)),
     };
 
     RecyclerView recyclerView = (RecyclerView) findViewById(R.id.list);
