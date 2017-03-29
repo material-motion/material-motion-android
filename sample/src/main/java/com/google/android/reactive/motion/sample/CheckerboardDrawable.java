@@ -22,6 +22,8 @@ import android.graphics.Paint;
 import android.graphics.PixelFormat;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 /**
  * Draws a checkerboard pattern.
@@ -38,7 +40,7 @@ public class CheckerboardDrawable extends Drawable {
   }
 
   @Override
-  public void draw(Canvas canvas) {
+  public void draw(@NonNull Canvas canvas) {
     Rect bounds = getBounds();
 
     canvas.drawRect(bounds, backgroundPaint);
@@ -71,7 +73,7 @@ public class CheckerboardDrawable extends Drawable {
   }
 
   @Override
-  public void setColorFilter(ColorFilter colorFilter) {
+  public void setColorFilter(@Nullable ColorFilter colorFilter) {
     gridPaint.setColorFilter(colorFilter);
     invalidateSelf();
   }
