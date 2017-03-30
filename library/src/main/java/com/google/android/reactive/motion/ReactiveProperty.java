@@ -58,11 +58,6 @@ public abstract class ReactiveProperty<T> implements ReactiveReadable<T>, Reacti
     return new ValueReactiveProperty<>(initialValue);
   }
 
-  public static <T> ReactiveProperty<T[]> of(T[] initialValue) {
-    return new ValueReactiveProperty<>(Arrays.copyOf(initialValue, initialValue.length));
-  }
-
-
   private final List<MotionObserver<T>> observers = new CopyOnWriteArrayList<>();
 
   @Override
