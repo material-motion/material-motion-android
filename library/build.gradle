@@ -12,12 +12,12 @@ install {
 }
 
 android {
-  compileSdkVersion 25
-  buildToolsVersion '25.0.0'
+  compileSdkVersion rootProject.ext.compileSdkVersion
+  buildToolsVersion rootProject.ext.buildToolsVersion
 
   defaultConfig {
-    minSdkVersion 15
-    targetSdkVersion 25
+    minSdkVersion rootProject.ext.minSdkVersion
+    targetSdkVersion rootProject.ext.targetSdkVersion
     versionCode 1
     versionName "1.0"
     consumerProguardFiles 'proguard-rules.pro'
@@ -39,7 +39,7 @@ dependencies {
   compile 'com.github.material-motion:indefinite-observable-android:develop-SNAPSHOT'
   compile 'com.github.material-motion:gestures-android:develop-SNAPSHOT'
   compile 'com.github.material-motion:physics-android:develop-SNAPSHOT'
-  compile 'com.android.support:support-core-utils:25.1.0'
+  compile "com.android.support:support-core-utils:$supportLibVersion"
 
   testCompile 'com.google.truth:truth:0.28'
   testCompile 'junit:junit:4.12'
