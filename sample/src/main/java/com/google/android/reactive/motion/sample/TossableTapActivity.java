@@ -1,6 +1,7 @@
 package com.google.android.reactive.motion.sample;
 
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
@@ -19,7 +20,7 @@ public class TossableTapActivity extends AppCompatActivity {
   private View destination;
 
   @Override
-  protected void onCreate(Bundle savedInstanceState) {
+  protected void onCreate(@Nullable Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.tossable_tap_activity);
 
