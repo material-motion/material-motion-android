@@ -30,8 +30,8 @@
       </intent-filter>
     </activity>
 
-    <activity android:name=".TossableTapActivity">
-    </activity>
+    <activity android:name=".TossableTapActivity"/>
+    <activity android:name=".TweenActivity"/>
   </application>
 
 </manifest>
