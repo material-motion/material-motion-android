@@ -15,7 +15,7 @@
   ~ limitations under the License.
 -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-  package="com.google.android.reactive.motion.sample">
+  package="com.google.android.material.motion.sample">
 
   <application
     android:allowBackup="true"
