@@ -25,14 +25,13 @@ public class DirectlyManipulable extends Interaction<View, Void> {
   public final Draggable draggable = new Draggable();
   public final Pinchable pinchable = new Pinchable();
   public final Rotatable rotatable = new Rotatable();
-  public final AnchorPointAdjustable anchorPointAdjustable =
-    new AnchorPointAdjustable(pinchable, rotatable);
+  public final AdjustsAnchorPoint adjustsAnchorPoint = new AdjustsAnchorPoint(pinchable, rotatable);
 
   @Override
   public void apply(MotionRuntime runtime, View target) {
     runtime.addInteraction(draggable, target);
     runtime.addInteraction(pinchable, target);
     runtime.addInteraction(rotatable, target);
-    runtime.addInteraction(anchorPointAdjustable, target);
+    runtime.addInteraction(adjustsAnchorPoint, target);
   }
 }
