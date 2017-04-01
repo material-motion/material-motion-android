@@ -25,8 +25,8 @@ import com.google.android.material.motion.gestures.GestureRecognizer;
 import com.google.android.material.motion.gestures.GestureRecognizer.GestureRecognizerState;
 import com.google.android.material.motion.gestures.GestureRecognizer.GestureStateChangeListener;
 import com.google.android.material.motion.MotionObservable;
-import com.google.android.material.motion.MotionObservable.MotionObserver;
-import com.google.android.material.motion.MotionObservable.MotionState;
+import com.google.android.material.motion.MotionObserver;
+import com.google.android.material.motion.MotionState;
 
 /**
  * A source for gestures.
@@ -82,20 +82,20 @@ public final class GestureSource {
       @GestureRecognizerState int state = gesture.getState();
       boolean isActive = state == GestureRecognizer.BEGAN || state == GestureRecognizer.CHANGED;
       boolean wasActive =
-        lastPropagatedState != null && lastPropagatedState == MotionObservable.ACTIVE;
+        lastPropagatedState != null && lastPropagatedState == MotionState.ACTIVE;
       boolean wasAtRest =
-        lastPropagatedState != null && lastPropagatedState == MotionObservable.AT_REST;
+        lastPropagatedState != null && lastPropagatedState == MotionState.AT_REST;
 
       if (isActive && !wasActive) {
-        observer.state(MotionObservable.ACTIVE);
-        lastPropagatedState = MotionObservable.ACTIVE;
+        observer.state(MotionState.ACTIVE);
+        lastPropagatedState = MotionState.ACTIVE;
       }
 
       observer.next(gesture);
 
       if (!isActive && !wasAtRest) {
-        observer.state(MotionObservable.AT_REST);
-        lastPropagatedState = MotionObservable.AT_REST;
+        observer.state(MotionState.AT_REST);
+        lastPropagatedState = MotionState.AT_REST;
       }
     }
 

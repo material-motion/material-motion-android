@@ -19,7 +19,7 @@ import android.support.annotation.Nullable;
 import android.support.annotation.VisibleForTesting;
 
 import com.google.android.indefinite.observable.Observer;
-import com.google.android.material.motion.MotionObservable.Operation;
+import com.google.android.material.motion.Operation;
 
 public class CommonOperators {
 

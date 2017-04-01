@@ -18,16 +18,14 @@ package com.google.android.material.motion;
 import android.util.Property;
 
 import com.google.android.indefinite.observable.IndefiniteObservable.Subscription;
-import com.google.android.material.motion.MotionObservable.MotionObserver;
-import com.google.android.material.motion.MotionObservable.MotionState;
 
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import static com.google.android.material.motion.MotionObservable.ACTIVE;
-import static com.google.android.material.motion.MotionObservable.AT_REST;
+import static com.google.android.material.motion.MotionState.ACTIVE;
+import static com.google.android.material.motion.MotionState.AT_REST;
 
 /**
  * A MotionRuntime writes the output of streams to properties and observes their overall state.

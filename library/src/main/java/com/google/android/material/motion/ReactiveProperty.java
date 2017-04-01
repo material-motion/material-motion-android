@@ -22,7 +22,6 @@ import android.util.Property;
 import com.google.android.indefinite.observable.IndefiniteObservable.Connector;
 import com.google.android.indefinite.observable.IndefiniteObservable.Disconnector;
 import com.google.android.indefinite.observable.IndefiniteObservable.Subscription;
-import com.google.android.material.motion.MotionObservable.MotionObserver;
 
 import java.util.List;
 import java.util.WeakHashMap;
