@@ -18,8 +18,8 @@ package com.google.android.material.motion.operators;
 import android.graphics.RectF;
 import android.support.annotation.VisibleForTesting;
 
-import com.google.android.material.motion.MotionObservable.MapOperation;
-import com.google.android.material.motion.MotionObservable.Operation;
+import com.google.android.material.motion.MapOperation;
+import com.google.android.material.motion.Operation;
 
 public final class FloatArrayOperators {
 

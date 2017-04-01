@@ -19,9 +19,9 @@ import android.support.v4.util.SimpleArrayMap;
 
 import com.google.android.indefinite.observable.IndefiniteObservable.Subscription;
 import com.google.android.indefinite.observable.Observer;
-import com.google.android.material.motion.MotionObservable;
-import com.google.android.material.motion.MotionObservable.MotionObserver;
-import com.google.android.material.motion.MotionObservable.SimpleMotionObserver;
+import com.google.android.material.motion.MotionObserver;
+import com.google.android.material.motion.MotionObserver.SimpleMotionObserver;
+import com.google.android.material.motion.MotionState;
 import com.google.android.material.motion.interactions.MaterialSpring;
 import com.google.android.material.motion.physics.Integrator;
 import com.google.android.material.motion.physics.Integrator.Listener;
@@ -88,7 +88,7 @@ public final class PhysicsSpringSource<T> extends SpringSource<T> {
 
       @Override
       public void onStart() {
-        observer.state(MotionObservable.ACTIVE);
+        observer.state(MotionState.ACTIVE);
       }
 
       @Override
@@ -99,7 +99,7 @@ public final class PhysicsSpringSource<T> extends SpringSource<T> {
 
       @Override
       public void onStop() {
-        observer.state(MotionObservable.AT_REST);
+        observer.state(MotionState.AT_REST);
       }
     });
   }

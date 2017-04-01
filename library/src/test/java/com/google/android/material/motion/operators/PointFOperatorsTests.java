@@ -19,9 +19,9 @@ import android.graphics.PointF;
 import android.support.annotation.NonNull;
 
 import com.google.android.indefinite.observable.IndefiniteObservable;
+import com.google.android.material.motion.MotionObserver;
 import com.google.android.material.motion.gestures.BuildConfig;
 import com.google.android.material.motion.MotionObservable;
-import com.google.android.material.motion.operators.PointFOperators;
 import com.google.android.material.motion.testing.TrackingMotionObserver;
 
 import org.junit.Test;
@@ -66,10 +66,10 @@ public class PointFOperatorsTests {
 
   @NonNull
   private MotionObservable<PointF> pointFSource() {
-    return new MotionObservable<>(new IndefiniteObservable.Connector<MotionObservable.MotionObserver<PointF>>() {
+    return new MotionObservable<>(new IndefiniteObservable.Connector<MotionObserver<PointF>>() {
       @NonNull
       @Override
-      public IndefiniteObservable.Disconnector connect(MotionObservable.MotionObserver<PointF> observer) {
+      public IndefiniteObservable.Disconnector connect(MotionObserver<PointF> observer) {
         observer.next(new PointF(1f, 2f));
         observer.next(new PointF(3f, 4f));
         observer.next(new PointF(5f, 6f));

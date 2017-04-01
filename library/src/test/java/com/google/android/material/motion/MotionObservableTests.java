@@ -21,9 +21,7 @@ import android.view.View;
 
 import com.google.android.indefinite.observable.IndefiniteObservable;
 import com.google.android.indefinite.observable.IndefiniteObservable.Subscription;
-import com.google.android.material.motion.MotionObservable.MotionObserver;
 import com.google.android.material.motion.testing.TrackingMotionObserver;
-import com.google.android.material.motion.BuildConfig;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -34,7 +32,7 @@ import org.robolectric.annotation.Config;
 
 import java.util.Arrays;
 
-import static com.google.android.material.motion.MotionObservable.ACTIVE;
+import static com.google.android.material.motion.MotionState.ACTIVE;
 import static com.google.common.truth.Truth.assertThat;
 
 @RunWith(RobolectricTestRunner.class)
@@ -63,7 +61,7 @@ public class MotionObservableTests {
 
   @Test
   public void mapByHalf() {
-    observable.compose(new MotionObservable.MapOperation<Float, Float>() {
+    observable.compose(new MapOperation<Float, Float>() {
       @Override
       public Float transform(Float value) {
         return value / 2f; // Half.
@@ -75,7 +73,7 @@ public class MotionObservableTests {
       }
 
       @Override
-      public void state(@MotionObservable.MotionState int state) {
+      public void state(@MotionState int state) {
         assertThat(state).isEqualTo(ACTIVE);
       }
     });
@@ -83,7 +81,7 @@ public class MotionObservableTests {
 
   @Test
   public void filterAll() {
-    observable.compose(new MotionObservable.FilterOperation<Float>() {
+    observable.compose(new FilterOperation<Float>() {
       @Override
       public boolean filter(Float value) {
         return false; // All are filtered.
@@ -95,7 +93,7 @@ public class MotionObservableTests {
       }
 
       @Override
-      public void state(@MotionObservable.MotionState int state) {
+      public void state(@MotionState int state) {
         assertThat(state).isEqualTo(ACTIVE);
       }
     }).unsubscribe();
@@ -103,7 +101,7 @@ public class MotionObservableTests {
 
   @Test
   public void filterNone() {
-    observable.compose(new MotionObservable.FilterOperation<Float>() {
+    observable.compose(new FilterOperation<Float>() {
       @Override
       public boolean filter(Float value) {
         return true; // None are filtered.
@@ -115,7 +113,7 @@ public class MotionObservableTests {
       }
 
       @Override
-      public void state(@MotionObservable.MotionState int state) {
+      public void state(@MotionState int state) {
         assertThat(state).isEqualTo(ACTIVE);
       }
     }).unsubscribe();

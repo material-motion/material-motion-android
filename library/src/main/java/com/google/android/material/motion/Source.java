@@ -20,8 +20,7 @@ import android.support.annotation.NonNull;
 import com.google.android.indefinite.observable.IndefiniteObservable.Connector;
 import com.google.android.indefinite.observable.IndefiniteObservable.Disconnector;
 import com.google.android.indefinite.observable.IndefiniteObservable.Subscription;
-import com.google.android.material.motion.MotionObservable.MotionObserver;
-import com.google.android.material.motion.MotionObservable.SimpleMotionObserver;
+import com.google.android.material.motion.MotionObserver.SimpleMotionObserver;
 import com.google.android.material.motion.operators.CommonOperators;
 
 public abstract class Source<T> {
