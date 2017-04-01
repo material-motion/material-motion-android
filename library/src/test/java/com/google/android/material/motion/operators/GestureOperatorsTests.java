@@ -19,11 +19,10 @@ import android.app.Activity;
 import android.graphics.PointF;
 import android.view.View;
 
+import com.google.android.material.motion.MapOperation;
 import com.google.android.material.motion.gestures.BuildConfig;
 import com.google.android.material.motion.gestures.GestureRecognizer;
 import com.google.android.material.motion.gestures.testing.SimulatedGestureRecognizer;
-import com.google.android.material.motion.MotionObservable;
-import com.google.android.material.motion.operators.GestureOperators;
 import com.google.android.material.motion.sources.GestureSource;
 import com.google.android.material.motion.testing.TrackingMotionObserver;
 
@@ -39,8 +38,8 @@ import java.util.Arrays;
 import static com.google.android.material.motion.gestures.GestureRecognizer.BEGAN;
 import static com.google.android.material.motion.gestures.GestureRecognizer.CHANGED;
 import static com.google.android.material.motion.gestures.GestureRecognizer.RECOGNIZED;
-import static com.google.android.material.motion.MotionObservable.ACTIVE;
-import static com.google.android.material.motion.MotionObservable.AT_REST;
+import static com.google.android.material.motion.MotionState.ACTIVE;
+import static com.google.android.material.motion.MotionState.AT_REST;
 import static com.google.common.truth.Truth.assertThat;
 
 @RunWith(RobolectricTestRunner.class)
@@ -111,7 +110,7 @@ public class GestureOperatorsTests {
     GestureSource
       .from(gesture)
       .compose(GestureOperators.onRecognitionState(BEGAN))
-      .compose(new MotionObservable.MapOperation<GestureRecognizer, Integer>() {
+      .compose(new MapOperation<GestureRecognizer, Integer>() {
         @Override
         public Integer transform(GestureRecognizer value) {
           return value.getState();
@@ -133,7 +132,7 @@ public class GestureOperatorsTests {
     GestureSource
       .from(gesture)
       .compose(GestureOperators.onRecognitionState(BEGAN, RECOGNIZED))
-      .compose(new MotionObservable.MapOperation<GestureRecognizer, Integer>() {
+      .compose(new MapOperation<GestureRecognizer, Integer>() {
         @Override
         public Integer transform(GestureRecognizer value) {
           return value.getState();

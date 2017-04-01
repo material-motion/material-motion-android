@@ -18,8 +18,8 @@ package com.google.android.material.motion.testing;
 import com.google.android.indefinite.observable.IndefiniteObservable;
 import com.google.android.indefinite.observable.testing.SimulatedSource;
 import com.google.android.material.motion.MotionObservable;
-import com.google.android.material.motion.MotionObservable.MotionObserver;
-import com.google.android.material.motion.MotionObservable.MotionState;
+import com.google.android.material.motion.MotionObserver;
+import com.google.android.material.motion.MotionState;
 
 
 /**

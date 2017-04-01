@@ -19,7 +19,6 @@ import android.app.Activity;
 import android.view.View;
 
 import com.google.android.material.motion.testing.SimulatedMotionSource;
-import com.google.android.material.motion.BuildConfig;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -28,8 +27,8 @@ import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 
-import static com.google.android.material.motion.MotionObservable.ACTIVE;
-import static com.google.android.material.motion.MotionObservable.AT_REST;
+import static com.google.android.material.motion.MotionState.ACTIVE;
+import static com.google.android.material.motion.MotionState.AT_REST;
 import static com.google.common.truth.Truth.assertThat;
 
 @RunWith(RobolectricTestRunner.class)
@@ -82,7 +81,7 @@ public class MotionRuntimeTests {
     runtime.write(stream, ReactiveProperty.of(0f));
 
     assertThat(runtime.getState()).isEqualTo(AT_REST);
-    source.state(MotionObservable.ACTIVE);
+    source.state(MotionState.ACTIVE);
     assertThat(runtime.getState()).isEqualTo(ACTIVE);
   }
 
@@ -94,9 +93,9 @@ public class MotionRuntimeTests {
     runtime.write(stream, null, null);
 
     assertThat(runtime.getState()).isEqualTo(AT_REST);
-    source.state(MotionObservable.ACTIVE);
+    source.state(MotionState.ACTIVE);
     assertThat(runtime.getState()).isEqualTo(ACTIVE);
-    source.state(MotionObservable.AT_REST);
+    source.state(MotionState.AT_REST);
     assertThat(runtime.getState()).isEqualTo(AT_REST);
   }
 
@@ -108,10 +107,10 @@ public class MotionRuntimeTests {
     runtime.write(stream, null, null);
 
     assertThat(runtime.getState()).isEqualTo(AT_REST);
-    source.state(MotionObservable.ACTIVE);
-    source.state(MotionObservable.ACTIVE);
+    source.state(MotionState.ACTIVE);
+    source.state(MotionState.ACTIVE);
     assertThat(runtime.getState()).isEqualTo(ACTIVE);
-    source.state(MotionObservable.AT_REST);
+    source.state(MotionState.AT_REST);
     assertThat(runtime.getState()).isEqualTo(AT_REST);
   }
 
@@ -123,10 +122,10 @@ public class MotionRuntimeTests {
     runtime.write(stream, null, null);
 
     assertThat(runtime.getState()).isEqualTo(AT_REST);
-    source.state(MotionObservable.ACTIVE);
+    source.state(MotionState.ACTIVE);
     assertThat(runtime.getState()).isEqualTo(ACTIVE);
-    source.state(MotionObservable.AT_REST);
-    source.state(MotionObservable.AT_REST);
+    source.state(MotionState.AT_REST);
+    source.state(MotionState.AT_REST);
     assertThat(runtime.getState()).isEqualTo(AT_REST);
   }
 
@@ -140,14 +139,14 @@ public class MotionRuntimeTests {
 
     assertThat(runtime.getState()).isEqualTo(AT_REST);
 
-    source1.state(MotionObservable.ACTIVE);
+    source1.state(MotionState.ACTIVE);
     assertThat(runtime.getState()).isEqualTo(ACTIVE);
-    source2.state(MotionObservable.ACTIVE);
+    source2.state(MotionState.ACTIVE);
     assertThat(runtime.getState()).isEqualTo(ACTIVE);
 
-    source1.state(MotionObservable.AT_REST);
+    source1.state(MotionState.AT_REST);
     assertThat(runtime.getState()).isEqualTo(ACTIVE);
-    source2.state(MotionObservable.AT_REST);
+    source2.state(MotionState.AT_REST);
     assertThat(runtime.getState()).isEqualTo(AT_REST);
   }
 }

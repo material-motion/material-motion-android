@@ -18,10 +18,9 @@ package com.google.android.material.motion.sources;
 import android.app.Activity;
 import android.view.View;
 
+import com.google.android.material.motion.MapOperation;
 import com.google.android.material.motion.gestures.BuildConfig;
 import com.google.android.material.motion.gestures.testing.SimulatedGestureRecognizer;
-import com.google.android.material.motion.MotionObservable;
-import com.google.android.material.motion.sources.GestureSource;
 import com.google.android.material.motion.testing.TrackingMotionObserver;
 
 import org.junit.Before;
@@ -37,8 +36,8 @@ import static com.google.android.material.motion.gestures.GestureRecognizer.BEGA
 import static com.google.android.material.motion.gestures.GestureRecognizer.CHANGED;
 import static com.google.android.material.motion.gestures.GestureRecognizer.POSSIBLE;
 import static com.google.android.material.motion.gestures.GestureRecognizer.RECOGNIZED;
-import static com.google.android.material.motion.MotionObservable.ACTIVE;
-import static com.google.android.material.motion.MotionObservable.AT_REST;
+import static com.google.android.material.motion.MotionState.ACTIVE;
+import static com.google.android.material.motion.MotionState.AT_REST;
 import static com.google.common.truth.Truth.assertThat;
 
 @RunWith(RobolectricTestRunner.class)
@@ -79,7 +78,7 @@ public class GestureSourceTests {
 
     GestureSource
       .from(gesture)
-      .compose(new MotionObservable.MapOperation<SimulatedGestureRecognizer, Integer>() {
+      .compose(new MapOperation<SimulatedGestureRecognizer, Integer>() {
         @Override
         public Integer transform(SimulatedGestureRecognizer value) {
           return value.getState();
