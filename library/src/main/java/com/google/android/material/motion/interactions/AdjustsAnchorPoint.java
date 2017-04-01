@@ -29,12 +29,12 @@ import static com.google.android.material.motion.operators.GestureOperators.anch
 import static com.google.android.material.motion.operators.GestureOperators.onRecognitionState;
 import static com.google.android.material.motion.operators.GestureOperators.pivot;
 
-public class AnchorPointAdjustable extends Interaction<View, Void> {
+public class AdjustsAnchorPoint extends Interaction<View, Void> {
 
   private final Pinchable pinchable;
   private final Rotatable rotatable;
 
-  public AnchorPointAdjustable(Pinchable pinchable, Rotatable rotatable) {
+  public AdjustsAnchorPoint(Pinchable pinchable, Rotatable rotatable) {
     this.pinchable = pinchable;
     this.rotatable = rotatable;
   }
