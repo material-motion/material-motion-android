@@ -13,7 +13,7 @@
 #
 # Example:
 #
-# com.github.material-motion:reactive-motion-android
+# com.github.material-motion:material-motion-android
 #
 # These are dependencies defined in your build.gradle for which you would like to reflect any local
 # changes. This is useful if you would like to develop multiple libraries in tandem.

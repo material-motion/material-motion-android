@@ -7,7 +7,7 @@ group = 'com.github.material-motion'
 install {
   repositories.mavenInstaller {
     pom.version = 'local'
-    pom.artifactId = 'reactive-motion-android'
+    pom.artifactId = 'material-motion-android'
   }
 }
 
