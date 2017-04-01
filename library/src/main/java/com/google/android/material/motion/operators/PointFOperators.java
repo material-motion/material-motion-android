@@ -19,8 +19,8 @@ import android.graphics.PointF;
 import android.support.annotation.VisibleForTesting;
 
 import com.google.android.material.motion.MotionObservable;
-import com.google.android.material.motion.MotionObservable.MapOperation;
-import com.google.android.material.motion.MotionObservable.Operation;
+import com.google.android.material.motion.MapOperation;
+import com.google.android.material.motion.Operation;
 
 /**
  * Extended operators for PointF.

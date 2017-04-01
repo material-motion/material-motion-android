@@ -18,7 +18,6 @@ package com.google.android.material.motion;
 import android.support.annotation.NonNull;
 
 import com.google.android.indefinite.observable.IndefiniteObservable.Subscription;
-import com.google.android.material.motion.MotionObservable.MotionObserver;
 
 /**
  * A property that can be read into a MotionObservable stream.

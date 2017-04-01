@@ -23,7 +23,7 @@ import android.view.MotionEvent;
 import android.view.View;
 
 import com.google.android.indefinite.observable.Observer;
-import com.google.android.material.motion.MotionObservable.MotionObserver;
+import com.google.android.material.motion.MotionObserver;
 import com.google.android.material.motion.interactions.Tap;
 import com.google.android.material.motion.Source;
 import com.google.android.material.motion.gestures.OnTouchListeners;

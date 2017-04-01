@@ -24,8 +24,8 @@ import android.view.animation.AccelerateDecelerateInterpolator;
 
 import com.google.android.indefinite.observable.IndefiniteObservable.Subscription;
 import com.google.android.material.motion.interactions.Tween;
-import com.google.android.material.motion.MotionObservable.MotionObserver;
-import com.google.android.material.motion.MotionObservable.SimpleMotionObserver;
+import com.google.android.material.motion.MotionObserver;
+import com.google.android.material.motion.MotionObserver.SimpleMotionObserver;
 import com.google.android.material.motion.Source;
 
 public class TweenSource<O, T> extends Source<T> {

@@ -22,11 +22,11 @@ public abstract class Interaction<O, T> {
 
   public final ReactiveProperty<Boolean> enabled = ReactiveProperty.of(true);
 
-  private final List<MotionObservable.Operation<T, T>> operations = new ArrayList<>();
+  private final List<Operation<T, T>> operations = new ArrayList<>();
 
   public abstract void apply(MotionRuntime runtime, O target);
 
-  public final Interaction<O, T> constrain(MotionObservable.Operation<T, T> operation) {
+  public final Interaction<O, T> constrain(Operation<T, T> operation) {
     operations.add(operation);
     return this;
   }

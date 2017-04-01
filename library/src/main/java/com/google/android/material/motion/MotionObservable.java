@@ -15,17 +15,12 @@
  */
 package com.google.android.material.motion;
 
-import android.support.annotation.IntDef;
 import android.support.annotation.NonNull;
 import android.view.View;
 import android.widget.TextView;
 
 import com.google.android.indefinite.observable.IndefiniteObservable;
 import com.google.android.indefinite.observable.Observer;
-import com.google.android.material.motion.MotionObservable.MotionObserver;
-
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
 
 /**
  * A MotionObservable is a type of <a href="http://reactivex.io/documentation/observable.html">Observable</a>
@@ -34,16 +29,6 @@ import java.lang.annotation.RetentionPolicy;
  * Throughout this documentation we will treat the words "observable" and "stream" as synonyms.
  */
 public class MotionObservable<T> extends IndefiniteObservable<MotionObserver<T>> {
-
-  /**
-   * The stream is at rest.
-   */
-  public static final int AT_REST = 0;
-
-  /**
-   * The stream is currently active.
-   */
-  public static final int ACTIVE = 1;
 
   public MotionObservable(Connector<MotionObserver<T>> connector) {
     super(connector);
@@ -64,105 +49,6 @@ public class MotionObservable<T> extends IndefiniteObservable<MotionObserver<T>>
       public void state(@MotionState int state) {
       }
     });
-  }
-
-  /**
-   * The possible states that a stream can be in.
-   * <p>
-   * What "active" means is stream-dependant. The stream is active if you can answer yes to any of
-   * the following questions: <ul> <li>Is my animation currently animating?</li> <li>Is my
-   * physical simulation still moving?</li> <li>Is my gesture recognizer in the .began or .changed
-   * state?</li> </ul> Momentary events such as taps may emit {@link #ACTIVE} immediately followed
-   * by {@link #AT_REST}.
-   */
-  @IntDef({AT_REST, ACTIVE})
-  @Retention(RetentionPolicy.SOURCE)
-  public @interface MotionState {
-
-  }
-
-  /**
-   * An observer with an additional {@link #state(int)} method.
-   */
-  public static abstract class MotionObserver<T> extends Observer<T> {
-
-    @Override
-    public abstract void next(T value);
-
-    /**
-     * A method to handle new incoming state values.
-     */
-    public abstract void state(@MotionState int state);
-  }
-
-  /**
-   * A simple observer for when you only want to implement {@link #next(Object)}.
-   */
-  public static abstract class SimpleMotionObserver<T> extends MotionObserver<T> {
-
-    public void state(@MotionState int state) {
-      // No-op.
-    }
-  }
-
-  /**
-   * An operation is able to transform incoming values before choosing whether or not to pass them
-   * downstream.
-   *
-   * @param <T> The incoming value type.
-   * @param <U> The downstream value type.
-   */
-  public static abstract class Operation<T, U> {
-
-    /**
-     * Transforms the incoming value before passing it to the observer, or blocks the value.
-     *
-     * @param value The incoming value.
-     */
-    public abstract void next(Observer<U> observer, T value);
-
-    public void onConnect() {
-    }
-
-    public void onDisconnect() {
-    }
-  }
-
-  /**
-   * A map operation transforms incoming values before they are passed downstream.
-   *
-   * @param <T> The incoming value type.
-   * @param <U> The downstream value type.
-   */
-  public static abstract class MapOperation<T, U> extends Operation<T, U> {
-
-    /**
-     * Transforms the given value to another value.
-     */
-    public abstract U transform(T value);
-
-    @Override
-    public final void next(Observer<U> observer, T value) {
-      observer.next(transform(value));
-    }
-  }
-
-  /**
-   * A filter operation evaluates whether to pass a value downstream.
-   */
-  public static abstract class FilterOperation<T> extends Operation<T, T> {
-
-    /**
-     * Returns whether to pass the value.
-     */
-    public abstract boolean filter(T value);
-
-    @Override
-    public void next(Observer<T> observer, T value) {
-      if (filter(value)) {
-        observer.next(value);
-      }
-    }
   }
 
   /**

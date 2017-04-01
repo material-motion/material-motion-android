@@ -15,7 +15,7 @@
  */
 package com.google.android.material.motion.operators;
 
-import com.google.android.material.motion.MotionObservable.MapOperation;
+import com.google.android.material.motion.MapOperation;
 
 public final class BooleanOperators {
 
