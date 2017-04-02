@@ -37,16 +37,12 @@ public class MotionObservable<T> extends IndefiniteObservable<MotionObserver<T>>
   /**
    * Subscribes to the IndefiniteObservable and ignores all incoming values.
    *
-   * @see {@link #subscribe(Observer)}
+   * @see #subscribe(Observer)
    */
   public Subscription subscribe() {
     return super.subscribe(new MotionObserver<T>() {
       @Override
       public void next(T value) {
-      }
-
-      @Override
-      public void state(@MotionState int state) {
       }
     });
   }
@@ -78,11 +74,6 @@ public class MotionObservable<T> extends IndefiniteObservable<MotionObserver<T>>
           @Override
           public void next(T value) {
             operation.next(observer, value);
-          }
-
-          @Override
-          public void state(@MotionState int state) {
-            observer.state(state);
           }
         });
 
