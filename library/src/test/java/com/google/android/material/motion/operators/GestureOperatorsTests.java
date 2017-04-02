@@ -20,7 +20,10 @@ import android.graphics.PointF;
 import android.view.View;
 
 import com.google.android.material.motion.MapOperation;
+import com.google.android.material.motion.MotionObservable;
+import com.google.android.material.motion.MotionRuntime;
 import com.google.android.material.motion.gestures.BuildConfig;
+import com.google.android.material.motion.gestures.GestureInteraction;
 import com.google.android.material.motion.gestures.GestureRecognizer;
 import com.google.android.material.motion.gestures.testing.SimulatedGestureRecognizer;
 import com.google.android.material.motion.sources.GestureSource;
@@ -35,11 +38,11 @@ import org.robolectric.annotation.Config;
 
 import java.util.Arrays;
 
+import static com.google.android.material.motion.MotionState.ACTIVE;
+import static com.google.android.material.motion.MotionState.AT_REST;
 import static com.google.android.material.motion.gestures.GestureRecognizer.BEGAN;
 import static com.google.android.material.motion.gestures.GestureRecognizer.CHANGED;
 import static com.google.android.material.motion.gestures.GestureRecognizer.RECOGNIZED;
-import static com.google.android.material.motion.MotionState.ACTIVE;
-import static com.google.android.material.motion.MotionState.AT_REST;
 import static com.google.common.truth.Truth.assertThat;
 
 @RunWith(RobolectricTestRunner.class)
@@ -64,23 +67,27 @@ public class GestureOperatorsTests {
   public void extractsCentroid() {
     TrackingMotionObserver<PointF> tracker = new TrackingMotionObserver<>();
 
+    GestureInteraction<SimulatedGestureRecognizer, ?> interaction = createInteraction(gesture);
     GestureSource
-      .from(gesture)
+      .from(interaction)
       .compose(GestureOperators.centroid())
       .subscribe(tracker);
+
+    assertThat(interaction.state.read()).isEqualTo(AT_REST);
 
     gesture.setCentroid(5f, 5f);
 
     assertThat(tracker.values).isEqualTo(Arrays.asList(new PointF(0f, 0f), new PointF(5f, 5f)));
-    assertThat(tracker.states).isEqualTo(Arrays.asList(AT_REST, ACTIVE));
+    assertThat(interaction.state.read()).isEqualTo(ACTIVE);
   }
 
   @Test
   public void extractsCentroidX() {
     TrackingMotionObserver<Float> tracker = new TrackingMotionObserver<>();
 
+    GestureInteraction<SimulatedGestureRecognizer, ?> interaction = createInteraction(gesture);
     GestureSource
-      .from(gesture)
+      .from(interaction)
       .compose(GestureOperators.centroidX())
       .subscribe(tracker);
 
@@ -93,8 +100,9 @@ public class GestureOperatorsTests {
   public void extractsCentroidY() {
     TrackingMotionObserver<Float> tracker = new TrackingMotionObserver<>();
 
+    GestureInteraction<SimulatedGestureRecognizer, ?> interaction = createInteraction(gesture);
     GestureSource
-      .from(gesture)
+      .from(interaction)
       .compose(GestureOperators.centroidY())
       .subscribe(tracker);
 
@@ -107,8 +115,9 @@ public class GestureOperatorsTests {
   public void forwardsOnState() {
     TrackingMotionObserver<Integer> tracker = new TrackingMotionObserver<>();
 
+    GestureInteraction<SimulatedGestureRecognizer, ?> interaction = createInteraction(gesture);
     GestureSource
-      .from(gesture)
+      .from(interaction)
       .compose(GestureOperators.onRecognitionState(BEGAN))
       .compose(new MapOperation<GestureRecognizer, Integer>() {
         @Override
@@ -129,8 +138,9 @@ public class GestureOperatorsTests {
   public void forwardsOnStates() {
     TrackingMotionObserver<Integer> tracker = new TrackingMotionObserver<>();
 
+    GestureInteraction<SimulatedGestureRecognizer, ?> interaction = createInteraction(gesture);
     GestureSource
-      .from(gesture)
+      .from(interaction)
       .compose(GestureOperators.onRecognitionState(BEGAN, RECOGNIZED))
       .compose(new MapOperation<GestureRecognizer, Integer>() {
         @Override
@@ -145,5 +155,18 @@ public class GestureOperatorsTests {
     gesture.setState(RECOGNIZED);
 
     assertThat(tracker.values).isEqualTo(Arrays.asList(BEGAN, RECOGNIZED));
+  }
+
+  private GestureInteraction<SimulatedGestureRecognizer, ?> createInteraction(
+    SimulatedGestureRecognizer gesture) {
+    return new GestureInteraction<SimulatedGestureRecognizer, Object>(gesture) {
+      @Override
+      protected void onApply(
+        MotionRuntime runtime,
+        MotionObservable<SimulatedGestureRecognizer> stream,
+        View target) {
+        throw new UnsupportedOperationException();
+      }
+    };
   }
 }

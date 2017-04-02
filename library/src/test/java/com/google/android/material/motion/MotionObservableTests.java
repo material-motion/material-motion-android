@@ -32,7 +32,6 @@ import org.robolectric.annotation.Config;
 
 import java.util.Arrays;
 
-import static com.google.android.material.motion.MotionState.ACTIVE;
 import static com.google.common.truth.Truth.assertThat;
 
 @RunWith(RobolectricTestRunner.class)
@@ -53,7 +52,6 @@ public class MotionObservableTests {
         @Override
         public IndefiniteObservable.Disconnector connect(MotionObserver<Float> observer) {
           observer.next(5f);
-          observer.state(ACTIVE);
           return IndefiniteObservable.Disconnector.NO_OP;
         }
       });
@@ -71,11 +69,6 @@ public class MotionObservableTests {
       public void next(Float value) {
         assertThat(value).isWithin(E).of(2.5f);
       }
-
-      @Override
-      public void state(@MotionState int state) {
-        assertThat(state).isEqualTo(ACTIVE);
-      }
     });
   }
 
@@ -91,11 +84,6 @@ public class MotionObservableTests {
       public void next(Float value) {
         throw new AssertionError("Should never arrive here.");
       }
-
-      @Override
-      public void state(@MotionState int state) {
-        assertThat(state).isEqualTo(ACTIVE);
-      }
     }).unsubscribe();
   }
 
@@ -110,11 +98,6 @@ public class MotionObservableTests {
       @Override
       public void next(Float value) {
         assertThat(value).isWithin(E).of(5f);
-      }
-
-      @Override
-      public void state(@MotionState int state) {
-        assertThat(state).isEqualTo(ACTIVE);
       }
     }).unsubscribe();
   }

@@ -19,7 +19,10 @@ import android.app.Activity;
 import android.view.View;
 
 import com.google.android.material.motion.MapOperation;
+import com.google.android.material.motion.MotionObservable;
+import com.google.android.material.motion.MotionRuntime;
 import com.google.android.material.motion.gestures.BuildConfig;
+import com.google.android.material.motion.gestures.GestureInteraction;
 import com.google.android.material.motion.gestures.testing.SimulatedGestureRecognizer;
 import com.google.android.material.motion.testing.TrackingMotionObserver;
 
@@ -55,8 +58,9 @@ public class GestureSourceTests {
 
   @Test
   public void createSource() {
+    GestureInteraction<SimulatedGestureRecognizer, ?> interaction = createInteraction(gesture);
     GestureSource
-      .from(gesture)
+      .from(interaction)
       .subscribe()
       .unsubscribe();
   }
@@ -65,19 +69,21 @@ public class GestureSourceTests {
   public void propogatesInitialState() {
     TrackingMotionObserver<SimulatedGestureRecognizer> tracker = new TrackingMotionObserver<>();
 
+    GestureInteraction<SimulatedGestureRecognizer, ?> interaction = createInteraction(gesture);
     GestureSource
-      .from(gesture)
+      .from(interaction)
       .subscribe(tracker);
 
-    assertThat(tracker.states).isEqualTo(Arrays.asList(POSSIBLE));
+    assertThat(interaction.state.read()).isEqualTo(AT_REST);
   }
 
   @Test
   public void propogatesValueChanges() {
     TrackingMotionObserver<Integer> tracker = new TrackingMotionObserver<>();
 
+    GestureInteraction<SimulatedGestureRecognizer, ?> interaction = createInteraction(gesture);
     GestureSource
-      .from(gesture)
+      .from(interaction)
       .compose(new MapOperation<SimulatedGestureRecognizer, Integer>() {
         @Override
         public Integer transform(SimulatedGestureRecognizer value) {
@@ -100,19 +106,33 @@ public class GestureSourceTests {
   public void propogatesMotionStateChanges() {
     TrackingMotionObserver<SimulatedGestureRecognizer> tracker = new TrackingMotionObserver<>();
 
+    GestureInteraction<SimulatedGestureRecognizer, ?> interaction = createInteraction(gesture);
     GestureSource
-      .from(gesture)
+      .from(interaction)
       .subscribe(tracker);
 
-    assertThat(tracker.states).isEqualTo(Arrays.asList(AT_REST));
+    assertThat(interaction.state.read()).isEqualTo(AT_REST);
 
     gesture.setState(BEGAN);
-    assertThat(tracker.states).isEqualTo(Arrays.asList(AT_REST, ACTIVE));
+    assertThat(interaction.state.read()).isEqualTo(ACTIVE);
 
     gesture.setState(CHANGED); // Should no-op.
-    assertThat(tracker.states).isEqualTo(Arrays.asList(AT_REST, ACTIVE));
+    assertThat(interaction.state.read()).isEqualTo(ACTIVE);
 
     gesture.setState(RECOGNIZED);
-    assertThat(tracker.states).isEqualTo(Arrays.asList(AT_REST, ACTIVE, AT_REST));
+    assertThat(interaction.state.read()).isEqualTo(AT_REST);
+  }
+
+  private GestureInteraction<SimulatedGestureRecognizer, ?> createInteraction(
+    SimulatedGestureRecognizer gesture) {
+    return new GestureInteraction<SimulatedGestureRecognizer, Object>(gesture) {
+      @Override
+      protected void onApply(
+        MotionRuntime runtime,
+        MotionObservable<SimulatedGestureRecognizer> stream,
+        View target) {
+        throw new UnsupportedOperationException();
+      }
+    };
   }
 }

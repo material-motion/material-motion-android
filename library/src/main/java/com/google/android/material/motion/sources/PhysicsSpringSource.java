@@ -42,7 +42,7 @@ public final class PhysicsSpringSource<T> extends SpringSource<T> {
     }
   };
 
-  private final MaterialSpring<?, T> spring;
+  private final MaterialSpring<?, T> interaction;
 
   private final Integrator integrator;
   private final Spring springForce;
@@ -52,9 +52,9 @@ public final class PhysicsSpringSource<T> extends SpringSource<T> {
   private Subscription frictionSubscription;
   private Subscription tensionSubscription;
 
-  public PhysicsSpringSource(MaterialSpring<?, T> spring) {
-    super(spring);
-    this.spring = spring;
+  public PhysicsSpringSource(MaterialSpring<?, T> interaction) {
+    super(interaction);
+    this.interaction = interaction;
     integrator = new Rk4Integrator();
     springForce = new Spring();
     integrator.addForce(springForce);
@@ -88,32 +88,32 @@ public final class PhysicsSpringSource<T> extends SpringSource<T> {
 
       @Override
       public void onStart() {
-        observer.state(MotionState.ACTIVE);
+        interaction.state.write(MotionState.ACTIVE);
       }
 
       @Override
       public void onUpdate(Vector x, Vector v) {
-        T value = spring.vectorizer.compose(x.getValues());
+        T value = interaction.vectorizer.compose(x.getValues());
         observer.next(value);
       }
 
       @Override
       public void onStop() {
-        observer.state(MotionState.AT_REST);
+        interaction.state.write(MotionState.AT_REST);
       }
     });
   }
 
   @Override
   protected void onEnable(MotionObserver<T> observer) {
-    tensionSubscription = spring.tension.subscribe(new SimpleMotionObserver<Float>() {
+    tensionSubscription = interaction.tension.subscribe(new SimpleMotionObserver<Float>() {
       @Override
       public void next(Float value) {
         springForce.k = Spring.tensionFromOrigamiValue(value);
         integrator.start();
       }
     });
-    frictionSubscription = spring.friction.subscribe(new SimpleMotionObserver<Float>() {
+    frictionSubscription = interaction.friction.subscribe(new SimpleMotionObserver<Float>() {
       @Override
       public void next(Float value) {
         springForce.b = Spring.frictionFromOrigamiValue(value);
@@ -121,23 +121,23 @@ public final class PhysicsSpringSource<T> extends SpringSource<T> {
       }
     });
 
-    final int count = spring.vectorizer.getVectorLength();
+    final int count = interaction.vectorizer.getVectorLength();
 
     float[] initialValues = new float[count];
-    spring.vectorizer.vectorize(spring.initialValue.read(), initialValues);
+    interaction.vectorizer.vectorize(interaction.initialValue.read(), initialValues);
 
     float[] initialVelocities = new float[count];
-    spring.vectorizer.vectorize(spring.initialVelocity.read(), initialVelocities);
+    interaction.vectorizer.vectorize(interaction.initialVelocity.read(), initialVelocities);
 
     for (int i = 0; i < count; i++) {
       integrator.setState(new Vector(initialValues), new Vector(initialVelocities));
     }
 
     final float[] endValues = new float[count];
-    destinationSubscription = spring.destination.subscribe(new SimpleMotionObserver<T>() {
+    destinationSubscription = interaction.destination.subscribe(new SimpleMotionObserver<T>() {
       @Override
       public void next(T value) {
-        spring.vectorizer.vectorize(value, endValues);
+        interaction.vectorizer.vectorize(value, endValues);
 
         springForce.setAnchorPoint(new Vector(endValues));
         integrator.start();

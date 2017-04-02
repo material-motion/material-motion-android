@@ -33,7 +33,7 @@ public abstract class GestureInteraction<GR extends GestureRecognizer, T>
 
   protected GestureInteraction(GR gestureRecognizer) {
     this.gestureRecognizer = gestureRecognizer;
-    this.gestureStream = GestureSource.from(gestureRecognizer);
+    this.gestureStream = GestureSource.from(this);
   }
 
   @Override
