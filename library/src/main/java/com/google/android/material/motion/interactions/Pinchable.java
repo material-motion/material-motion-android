@@ -17,11 +17,12 @@ package com.google.android.material.motion.interactions;
 
 import android.view.View;
 
+import com.google.android.material.motion.ConstraintApplicator;
+import com.google.android.material.motion.MotionObservable;
 import com.google.android.material.motion.MotionRuntime;
+import com.google.android.material.motion.gestures.GestureInteraction;
 import com.google.android.material.motion.gestures.ScaleGestureRecognizer;
 import com.google.android.material.motion.properties.ViewProperties;
-import com.google.android.material.motion.MotionObservable;
-import com.google.android.material.motion.gestures.GestureInteraction;
 
 import static com.google.android.material.motion.operators.GestureOperators.scaled;
 
@@ -39,10 +40,13 @@ public class Pinchable extends GestureInteraction<ScaleGestureRecognizer, Float[
   }
 
   @Override
-  protected void onApply(final MotionRuntime runtime, MotionObservable<ScaleGestureRecognizer> stream, final View target) {
+  protected void onApply(
+    final MotionRuntime runtime,
+    MotionObservable<ScaleGestureRecognizer> stream,
+    final View target,
+    ConstraintApplicator<Float[]> constraints) {
     MotionObservable<Float[]> scaledStream = stream.compose(scaled(target));
-    scaledStream = flatten(scaledStream);
 
-    runtime.write(scaledStream, target, ViewProperties.SCALE);
+    runtime.write(constraints.apply(scaledStream), target, ViewProperties.SCALE);
   }
 }

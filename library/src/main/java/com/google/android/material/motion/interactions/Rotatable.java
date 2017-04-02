@@ -17,6 +17,7 @@ package com.google.android.material.motion.interactions;
 
 import android.view.View;
 
+import com.google.android.material.motion.ConstraintApplicator;
 import com.google.android.material.motion.MotionObservable;
 import com.google.android.material.motion.MotionRuntime;
 import com.google.android.material.motion.gestures.RotateGestureRecognizer;
@@ -38,10 +39,13 @@ public class Rotatable extends GestureInteraction<RotateGestureRecognizer, Float
   }
 
   @Override
-  protected void onApply(MotionRuntime runtime, MotionObservable<RotateGestureRecognizer> stream, final View target) {
+  protected void onApply(
+    MotionRuntime runtime,
+    MotionObservable<RotateGestureRecognizer> stream,
+    final View target,
+    ConstraintApplicator<Float> constraints) {
     MotionObservable<Float> rotatedStream = stream.compose(rotated(target));
-    rotatedStream = flatten(rotatedStream);
 
-    runtime.write(rotatedStream, target, View.ROTATION);
+    runtime.write(constraints.apply(rotatedStream), target, View.ROTATION);
   }
 }

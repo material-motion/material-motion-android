@@ -19,9 +19,10 @@ import android.animation.TimeInterpolator;
 import android.animation.TypeEvaluator;
 import android.util.Property;
 
+import com.google.android.material.motion.ConstraintApplicator;
 import com.google.android.material.motion.Interaction;
-import com.google.android.material.motion.MotionRuntime;
 import com.google.android.material.motion.MotionObservable;
+import com.google.android.material.motion.MotionRuntime;
 import com.google.android.material.motion.ReactiveProperty;
 import com.google.android.material.motion.sources.TweenSource;
 
@@ -88,7 +89,7 @@ public class Tween<O, T> extends Interaction<O, T> {
   }
 
   @Override
-  public void apply(MotionRuntime runtime, O target) {
-    runtime.write(flatten(stream), target, property);
+  public void apply(MotionRuntime runtime, O target, ConstraintApplicator<T> constraints) {
+    runtime.write(constraints.apply(stream), target, property);
   }
 }

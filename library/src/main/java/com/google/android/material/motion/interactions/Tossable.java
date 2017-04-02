@@ -18,8 +18,9 @@ package com.google.android.material.motion.interactions;
 import android.util.Property;
 import android.view.View;
 
-import com.google.android.material.motion.MotionRuntime;
+import com.google.android.material.motion.ConstraintApplicator;
 import com.google.android.material.motion.Interaction;
+import com.google.android.material.motion.MotionRuntime;
 import com.google.android.material.motion.ReactiveProperty;
 import com.google.android.material.motion.sources.PhysicsSpringSource;
 import com.google.android.material.motion.springs.FloatArrayTypeVectorizer;
@@ -27,7 +28,7 @@ import com.google.android.material.motion.springs.FloatArrayTypeVectorizer;
 import static com.google.android.material.motion.operators.GestureOperators.isAtRest;
 import static com.google.android.material.motion.operators.GestureOperators.velocity;
 
-public class Tossable extends Interaction<View, Void> {
+public class Tossable extends Interaction<View, Float[]> {
 
   public final Draggable draggable;
   private final Property<View, Float[]> springProperty;
@@ -47,7 +48,7 @@ public class Tossable extends Interaction<View, Void> {
   }
 
   @Override
-  public void apply(MotionRuntime runtime, View target) {
+  public void apply(MotionRuntime runtime, View target, ConstraintApplicator<Float[]> constraints) {
     // TODO: Make spring a field so it can be customized.
     MaterialSpring<View, Float[]> spring = new MaterialSpring<>(
       springProperty,
@@ -60,7 +61,9 @@ public class Tossable extends Interaction<View, Void> {
       ReactiveProperty.of(4f),
       PhysicsSpringSource.SYSTEM);
 
-    runtime.addInteraction(draggable, target);
+    runtime.addInteraction(draggable, target, constraints);
+    // TODO: Cannot apply constraints to spring because while draggable acts on translation
+    // (0-relative), spring acts on position (0-absolute).
     runtime.addInteraction(spring, target);
 
     runtime.write(draggable.gestureStream.compose(velocity()), spring.initialVelocity);

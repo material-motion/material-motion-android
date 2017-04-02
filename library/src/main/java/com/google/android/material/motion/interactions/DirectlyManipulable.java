@@ -17,6 +17,7 @@ package com.google.android.material.motion.interactions;
 
 import android.view.View;
 
+import com.google.android.material.motion.ConstraintApplicator;
 import com.google.android.material.motion.MotionRuntime;
 import com.google.android.material.motion.Interaction;
 
@@ -28,7 +29,7 @@ public class DirectlyManipulable extends Interaction<View, Void> {
   public final AdjustsAnchorPoint adjustsAnchorPoint = new AdjustsAnchorPoint(pinchable, rotatable);
 
   @Override
-  public void apply(MotionRuntime runtime, View target) {
+  public void apply(MotionRuntime runtime, View target, ConstraintApplicator<Void> constraints) {
     runtime.addInteraction(draggable, target);
     runtime.addInteraction(pinchable, target);
     runtime.addInteraction(rotatable, target);
