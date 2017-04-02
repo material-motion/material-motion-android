@@ -17,6 +17,7 @@ package com.google.android.material.motion.interactions;
 
 import android.util.Property;
 
+import com.google.android.material.motion.ConstraintApplicator;
 import com.google.android.material.motion.Interaction;
 import com.google.android.material.motion.MotionObservable;
 import com.google.android.material.motion.MotionRuntime;
@@ -144,7 +145,7 @@ public class MaterialSpring<O, T> extends Interaction<O, T> {
   }
 
   @Override
-  public void apply(MotionRuntime runtime, O target) {
-    runtime.write(flatten(stream), target, property);
+  public void apply(MotionRuntime runtime, O target, ConstraintApplicator<T> constraints) {
+    runtime.write(constraints.apply(stream), target, property);
   }
 }

@@ -17,6 +17,7 @@ package com.google.android.material.motion.gestures;
 
 import android.view.View;
 
+import com.google.android.material.motion.ConstraintApplicator;
 import com.google.android.material.motion.Interaction;
 import com.google.android.material.motion.MotionObservable;
 import com.google.android.material.motion.MotionRuntime;
@@ -37,15 +38,19 @@ public abstract class GestureInteraction<GR extends GestureRecognizer, T>
   }
 
   @Override
-  public final void apply(MotionRuntime runtime, View target) {
+  public final void apply(MotionRuntime runtime, View target, ConstraintApplicator<T> constraints) {
     OnTouchListeners.add(target, gestureRecognizer);
 
-    onApply(runtime, gestureStream, target);
+    onApply(runtime, gestureStream, target, constraints);
   }
 
   /**
    * Applies the values of the gesture recognizer stream to the target view.
    */
-  protected abstract void onApply(MotionRuntime runtime, MotionObservable<GR> stream, View target);
+  protected abstract void onApply(
+    MotionRuntime runtime,
+    MotionObservable<GR> stream,
+    View target,
+    ConstraintApplicator<T> constraints);
 
 }

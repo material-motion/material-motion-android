@@ -50,7 +50,14 @@ public final class MotionRuntime {
     }));
   }
 
-  public <O, T> void addInteraction(Interaction<O, T> interaction, O target) {
-    interaction.apply(this, target);
+  @SafeVarargs
+  public final <O, T> void addInteraction(
+    Interaction<O, T> interaction, O target, Operation<T, T>... constraints) {
+    addInteraction(interaction, target, new ConstraintApplicator<>(constraints));
+  }
+
+  public final <O, T> void addInteraction(
+    Interaction<O, T> interaction, O target, ConstraintApplicator<T> constraints) {
+    interaction.apply(this, target, constraints);
   }
 }

@@ -17,9 +17,10 @@ package com.google.android.material.motion.interactions;
 
 import android.view.View;
 
-import com.google.android.material.motion.gestures.DragGestureRecognizer;
+import com.google.android.material.motion.ConstraintApplicator;
 import com.google.android.material.motion.MotionObservable;
 import com.google.android.material.motion.MotionRuntime;
+import com.google.android.material.motion.gestures.DragGestureRecognizer;
 import com.google.android.material.motion.gestures.GestureInteraction;
 import com.google.android.material.motion.properties.ViewProperties;
 
@@ -39,10 +40,13 @@ public class Draggable extends GestureInteraction<DragGestureRecognizer, Float[]
   }
 
   @Override
-  protected void onApply(MotionRuntime runtime, MotionObservable<DragGestureRecognizer> stream, final View target) {
+  protected void onApply(
+    MotionRuntime runtime,
+    MotionObservable<DragGestureRecognizer> stream,
+    final View target,
+    ConstraintApplicator<Float[]> constraints) {
     MotionObservable<Float[]> translatedStream = stream.compose(translated(target));
-    translatedStream = flatten(translatedStream);
 
-    runtime.write(translatedStream, target, ViewProperties.TRANSLATION);
+    runtime.write(constraints.apply(translatedStream), target, ViewProperties.TRANSLATION);
   }
 }
