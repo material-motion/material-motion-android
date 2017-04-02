@@ -18,7 +18,6 @@ package com.google.android.material.motion.testing;
 import com.google.android.indefinite.observable.IndefiniteObservable;
 import com.google.android.material.motion.BuildConfig;
 import com.google.android.material.motion.MotionObserver;
-import com.google.android.material.motion.MotionState;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -44,35 +43,27 @@ public class SimulatedMotionSourceTests {
   @Test
   public void passesValueAndState() {
     IndefiniteObservable.Subscription assertion =
-      assertThatNextValuesWillBeEqualTo(source, 5f, MotionState.ACTIVE);
+      assertThatNextValuesWillBeEqualTo(source, 5f);
     source.next(5f);
-    source.state(MotionState.ACTIVE);
     assertion.unsubscribe();
 
     assertion =
-      assertThatNextValuesWillBeEqualTo(source, 7f, MotionState.AT_REST);
+      assertThatNextValuesWillBeEqualTo(source, 7f);
     source.next(7f);
-    source.state(MotionState.AT_REST);
     assertion.unsubscribe();
   }
 
   @Test
   public void canPassValuesWithNoObserver() {
     source.next(5f);
-    source.state(MotionState.ACTIVE);
   }
 
   private static <T> IndefiniteObservable.Subscription assertThatNextValuesWillBeEqualTo(
-    SimulatedMotionSource<T> source, final T expectedValue, @MotionState final int expectedState) {
+    SimulatedMotionSource<T> source, final T expectedValue) {
     return source.getObservable().subscribe(new MotionObserver<T>() {
       @Override
       public void next(T value) {
         assertThat(value).isEqualTo(expectedValue);
-      }
-
-      @Override
-      public void state(@MotionState int state) {
-        assertThat(state).isEqualTo(expectedState);
       }
     });
   }

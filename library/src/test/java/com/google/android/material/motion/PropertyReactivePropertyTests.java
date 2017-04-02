@@ -19,7 +19,6 @@ import android.app.Activity;
 import android.view.View;
 
 import com.google.android.material.motion.testing.TrackingMotionObserver;
-import com.google.android.material.motion.BuildConfig;
 
 import org.junit.Before;
 import org.junit.Test;

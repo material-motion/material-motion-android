@@ -21,12 +21,13 @@ import android.support.annotation.VisibleForTesting;
 
 import com.google.android.indefinite.observable.IndefiniteObservable.Connector;
 import com.google.android.indefinite.observable.IndefiniteObservable.Disconnector;
-import com.google.android.material.motion.gestures.GestureRecognizer;
-import com.google.android.material.motion.gestures.GestureRecognizer.GestureRecognizerState;
-import com.google.android.material.motion.gestures.GestureRecognizer.GestureStateChangeListener;
 import com.google.android.material.motion.MotionObservable;
 import com.google.android.material.motion.MotionObserver;
 import com.google.android.material.motion.MotionState;
+import com.google.android.material.motion.gestures.GestureInteraction;
+import com.google.android.material.motion.gestures.GestureRecognizer;
+import com.google.android.material.motion.gestures.GestureRecognizer.GestureRecognizerState;
+import com.google.android.material.motion.gestures.GestureRecognizer.GestureStateChangeListener;
 
 /**
  * A source for gestures.
@@ -39,14 +40,15 @@ public final class GestureSource {
   }
 
   /**
-   * Creates a gesture source that will connect to the provided gesture recognizer.
+   * Creates a gesture source that will connect to the provided gesture interaction.
    */
-  public static <T extends GestureRecognizer> MotionObservable<T> from(final T gesture) {
-    return new MotionObservable<>(new Connector<MotionObserver<T>>() {
+  public static <GR extends GestureRecognizer> MotionObservable<GR> from(
+    final GestureInteraction<GR, ?> interaction) {
+    return new MotionObservable<>(new Connector<MotionObserver<GR>>() {
       @NonNull
       @Override
-      public Disconnector connect(MotionObserver<T> observer) {
-        final GestureConnection connection = new GestureConnection<>(gesture, observer);
+      public Disconnector connect(MotionObserver<GR> observer) {
+        final GestureConnection connection = new GestureConnection<>(interaction, observer);
         return new Disconnector() {
           @Override
           public void disconnect() {
@@ -59,27 +61,27 @@ public final class GestureSource {
 
   private static class GestureConnection<GR extends GestureRecognizer> {
 
-    private final GR gesture;
+    private final GestureInteraction<GR, ?> interaction;
     private final MotionObserver<GR> observer;
     @Nullable
     @MotionState
     private Integer lastPropagatedState = null;
 
-    private GestureConnection(GR gesture, MotionObserver<GR> observer) {
-      this.gesture = gesture;
+    private GestureConnection(GestureInteraction<GR, ?> interaction, MotionObserver<GR> observer) {
+      this.interaction = interaction;
       this.observer = observer;
 
-      gesture.addStateChangeListener(gestureStateChangeListener);
+      interaction.gestureRecognizer.addStateChangeListener(gestureStateChangeListener);
 
       propagate();
     }
 
     private void disconnect() {
-      gesture.removeStateChangeListener(gestureStateChangeListener);
+      interaction.gestureRecognizer.removeStateChangeListener(gestureStateChangeListener);
     }
 
     private void propagate() {
-      @GestureRecognizerState int state = gesture.getState();
+      @GestureRecognizerState int state = interaction.gestureRecognizer.getState();
       boolean isActive = state == GestureRecognizer.BEGAN || state == GestureRecognizer.CHANGED;
       boolean wasActive =
         lastPropagatedState != null && lastPropagatedState == MotionState.ACTIVE;
@@ -87,14 +89,14 @@ public final class GestureSource {
         lastPropagatedState != null && lastPropagatedState == MotionState.AT_REST;
 
       if (isActive && !wasActive) {
-        observer.state(MotionState.ACTIVE);
+        interaction.state.write(MotionState.ACTIVE);
         lastPropagatedState = MotionState.ACTIVE;
       }
 
-      observer.next(gesture);
+      observer.next(interaction.gestureRecognizer);
 
       if (!isActive && !wasAtRest) {
-        observer.state(MotionState.AT_REST);
+        interaction.state.write(MotionState.AT_REST);
         lastPropagatedState = MotionState.AT_REST;
       }
     }
