@@ -18,6 +18,7 @@ package com.google.android.material.motion.sources;
 import android.app.Activity;
 import android.view.View;
 
+import com.google.android.material.motion.ConstraintApplicator;
 import com.google.android.material.motion.MapOperation;
 import com.google.android.material.motion.MotionObservable;
 import com.google.android.material.motion.MotionRuntime;
@@ -130,7 +131,7 @@ public class GestureSourceTests {
       protected void onApply(
         MotionRuntime runtime,
         MotionObservable<SimulatedGestureRecognizer> stream,
-        View target) {
+        View target, ConstraintApplicator<Object> constraints) {
         throw new UnsupportedOperationException();
       }
     };

@@ -17,6 +17,7 @@ package com.google.android.material.motion.interactions;
 
 import android.view.View;
 
+import com.google.android.material.motion.ConstraintApplicator;
 import com.google.android.material.motion.gestures.GestureRecognizer;
 import com.google.android.material.motion.Interaction;
 import com.google.android.material.motion.MotionObservable;
@@ -40,7 +41,7 @@ public class AdjustsAnchorPoint extends Interaction<View, Void> {
   }
 
   @Override
-  public void apply(MotionRuntime runtime, View target) {
+  public void apply(MotionRuntime runtime, View target, ConstraintApplicator<Void> constraints) {
     apply(runtime, target, pinchable);
     apply(runtime, target, rotatable);
   }
