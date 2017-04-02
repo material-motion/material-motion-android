@@ -16,7 +16,6 @@
 package com.google.android.material.motion.testing;
 
 import com.google.android.material.motion.MotionObserver;
-import com.google.android.material.motion.MotionState;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,15 +27,9 @@ import java.util.List;
 public class TrackingMotionObserver<T> extends MotionObserver<T> {
 
   public final List<T> values = new ArrayList<>();
-  public final List<Integer> states = new ArrayList<>();
 
   @Override
   public void next(T value) {
     values.add(value);
-  }
-
-  @Override
-  public void state(@MotionState int state) {
-    states.add(state);
   }
 }

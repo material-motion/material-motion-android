@@ -20,12 +20,7 @@ import android.util.Property;
 import com.google.android.indefinite.observable.IndefiniteObservable.Subscription;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
-
-import static com.google.android.material.motion.MotionState.ACTIVE;
-import static com.google.android.material.motion.MotionState.AT_REST;
 
 /**
  * A MotionRuntime writes the output of streams to properties and observes their overall state.
@@ -33,19 +28,12 @@ import static com.google.android.material.motion.MotionState.AT_REST;
 public final class MotionRuntime {
 
   private final List<Subscription> subscriptions = new ArrayList<>();
-  private final Set<MotionObserver<?>> activeObservers = new HashSet<>();
-  @MotionState
-  private int state = AT_REST;
-
-  @MotionState
-  public int getState() {
-    return state;
-  }
 
   /**
    * Subscribes to the stream, writes its output to the given property, and observes its state.
    */
-  public <O, T> void write(MotionObservable<T> stream, final O target, final Property<O, T> property) {
+  public <O, T> void write(
+    MotionObservable<T> stream, final O target, final Property<O, T> property) {
     write(stream, ReactiveProperty.of(target, property));
   }
 
@@ -59,34 +47,10 @@ public final class MotionRuntime {
       public void next(T value) {
         property.write(value);
       }
-
-      @Override
-      public void state(@MotionState int state) {
-        onObserverStateChange(this, state);
-      }
     }));
   }
 
   public <O, T> void addInteraction(Interaction<O, T> interaction, O target) {
     interaction.apply(this, target);
-  }
-
-  private void onObserverStateChange(MotionObserver<?> observer, @MotionState int state) {
-    boolean changed;
-    if (state == ACTIVE) {
-      changed = activeObservers.add(observer);
-    } else {
-      changed = activeObservers.remove(observer);
-    }
-
-    if (changed) {
-      onStateChange(activeObservers.isEmpty() ? AT_REST : ACTIVE);
-    }
-  }
-
-  private void onStateChange(@MotionState int state) {
-    if (this.state != state) {
-      this.state = state;
-    }
   }
 }

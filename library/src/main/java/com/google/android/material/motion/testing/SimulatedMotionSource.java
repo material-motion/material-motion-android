@@ -23,7 +23,7 @@ import com.google.android.material.motion.MotionState;
 
 
 /**
- * A {@link SimulatedSource} that supports the additional {@link #state(int)} channel.
+ * A {@link SimulatedSource} that can possibly supports additional channels.
  */
 public class SimulatedMotionSource<T> extends SimulatedSource<T, MotionObserver<T>> {
 
@@ -35,11 +35,5 @@ public class SimulatedMotionSource<T> extends SimulatedSource<T, MotionObserver<
   @Override
   public MotionObservable<T> getObservable() {
     return (MotionObservable<T>) super.getObservable();
-  }
-
-  public void state(@MotionState int state) {
-    for (MotionObserver<T> observer : observers) {
-      observer.state(state);
-    }
   }
 }
