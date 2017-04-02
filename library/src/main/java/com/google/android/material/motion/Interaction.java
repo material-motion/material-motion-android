@@ -15,27 +15,10 @@
  */
 package com.google.android.material.motion;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public abstract class Interaction<O, T> {
 
   public final ReactiveProperty<Boolean> enabled = ReactiveProperty.of(true);
   public final ReactiveProperty<Integer> state = ReactiveProperty.of(MotionState.AT_REST);
 
-  private final List<Operation<T, T>> operations = new ArrayList<>();
-
-  public abstract void apply(MotionRuntime runtime, O target);
-
-  public final Interaction<O, T> constrain(Operation<T, T> operation) {
-    operations.add(operation);
-    return this;
-  }
-
-  protected final MotionObservable<T> flatten(MotionObservable<T> stream) {
-    for (int i = 0, count = operations.size(); i < count; i++) {
-      stream = stream.compose(operations.get(i));
-    }
-    return stream;
-  }
+  public abstract void apply(MotionRuntime runtime, O target, ConstraintApplicator<T> constraints);
 }

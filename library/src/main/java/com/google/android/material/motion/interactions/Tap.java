@@ -17,9 +17,10 @@ package com.google.android.material.motion.interactions;
 
 import android.view.View;
 
+import com.google.android.material.motion.ConstraintApplicator;
 import com.google.android.material.motion.Interaction;
-import com.google.android.material.motion.MotionRuntime;
 import com.google.android.material.motion.MotionObservable;
+import com.google.android.material.motion.MotionRuntime;
 import com.google.android.material.motion.ReactiveProperty;
 import com.google.android.material.motion.sources.TapSource;
 
@@ -34,7 +35,10 @@ public class Tap extends Interaction<ReactiveProperty<Float[]>, Float[]> {
   }
 
   @Override
-  public void apply(MotionRuntime runtime, ReactiveProperty<Float[]> target) {
-    runtime.write(flatten(tapStream), target);
+  public void apply(
+    MotionRuntime runtime,
+    ReactiveProperty<Float[]> target,
+    ConstraintApplicator<Float[]> constraints) {
+    runtime.write(constraints.apply(tapStream), target);
   }
 }

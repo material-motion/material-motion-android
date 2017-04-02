@@ -9,6 +9,7 @@ import com.google.android.material.motion.MotionRuntime;
 import com.google.android.material.motion.ReactiveProperty;
 import com.google.android.material.motion.interactions.Tap;
 import com.google.android.material.motion.interactions.Tossable;
+import com.google.android.material.motion.operators.FloatArrayOperators;
 import com.google.android.material.motion.properties.ViewProperties;
 
 public class TossableTapActivity extends AppCompatActivity {
@@ -32,7 +33,16 @@ public class TossableTapActivity extends AppCompatActivity {
 
     target.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
       @Override
-      public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
+      public void onLayoutChange(
+        View v,
+        int left,
+        int top,
+        int right,
+        int bottom,
+        int oldLeft,
+        int oldTop,
+        int oldRight,
+        int oldBottom) {
         v.removeOnLayoutChangeListener(this);
         runDemo();
       }
@@ -43,10 +53,13 @@ public class TossableTapActivity extends AppCompatActivity {
     ReactiveProperty<Float[]> anchor = ReactiveProperty.of(ViewProperties.CENTER.get(target));
 
     Tossable tossable = new Tossable(ViewProperties.CENTER, anchor);
-    runtime.addInteraction(tossable, target);
+    runtime.addInteraction(tossable, target, FloatArrayOperators.lockToYAxis(0f));
 
     Tap tap = new Tap(container);
-    runtime.addInteraction(tap, tossable.anchor);
+    runtime.addInteraction(
+      tap,
+      tossable.anchor,
+      FloatArrayOperators.lockToYAxis(tossable.anchor.read()[0]));
 
     runtime.write(
       tossable.anchor.getStream(), ReactiveProperty.of(destination, ViewProperties.CENTER));
