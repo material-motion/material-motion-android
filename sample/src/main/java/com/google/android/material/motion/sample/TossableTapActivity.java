@@ -7,7 +7,7 @@ import android.view.View;
 
 import com.google.android.material.motion.MotionRuntime;
 import com.google.android.material.motion.ReactiveProperty;
-import com.google.android.material.motion.interactions.Tap;
+import com.google.android.material.motion.interactions.SetPositionOnTap;
 import com.google.android.material.motion.interactions.Tossable;
 import com.google.android.material.motion.operators.FloatArrayOperators;
 import com.google.android.material.motion.properties.ViewProperties;
@@ -55,9 +55,8 @@ public class TossableTapActivity extends AppCompatActivity {
     Tossable tossable = new Tossable(ViewProperties.CENTER, anchor);
     runtime.addInteraction(tossable, target, FloatArrayOperators.lockToYAxis(0f));
 
-    Tap tap = new Tap(container);
     runtime.addInteraction(
-      tap,
+      new SetPositionOnTap(container),
       tossable.anchor,
       FloatArrayOperators.lockToYAxis(tossable.anchor.read()[0]));
 
