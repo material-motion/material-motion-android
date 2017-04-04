@@ -18,9 +18,9 @@ public abstract class Operation<T, U> {
    */
   public abstract void next(Observer<U> observer, T value);
 
-  public void onConnect() {
+  public void onConnect(MotionObserver<U> observer) {
   }
 
-  public void onDisconnect() {
+  public void onDisconnect(MotionObserver<U> observer) {
   }
 }

@@ -19,6 +19,7 @@ import android.support.annotation.Nullable;
 import android.support.annotation.VisibleForTesting;
 
 import com.google.android.indefinite.observable.Observer;
+import com.google.android.material.motion.MotionObserver;
 import com.google.android.material.motion.Operation;
 
 public class CommonOperators {
@@ -44,6 +45,20 @@ public class CommonOperators {
         lastValue = value;
         dispatched = true;
 
+        observer.next(value);
+      }
+    };
+  }
+
+  public static <T> Operation<T, T> initialValue(final T initialValue) {
+    return new Operation<T, T>() {
+      @Override
+      public void onConnect(MotionObserver<T> observer) {
+        observer.next(initialValue);
+      }
+
+      @Override
+      public void next(Observer<T> observer, T value) {
         observer.next(value);
       }
     };
