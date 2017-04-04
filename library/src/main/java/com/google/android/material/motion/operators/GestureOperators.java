@@ -22,11 +22,11 @@ import android.view.View;
 
 import com.google.android.indefinite.observable.IndefiniteObservable.Subscription;
 import com.google.android.indefinite.observable.Observer;
-import com.google.android.material.motion.MotionObservable;
 import com.google.android.material.motion.FilterOperation;
 import com.google.android.material.motion.MapOperation;
-import com.google.android.material.motion.Operation;
+import com.google.android.material.motion.MotionObservable;
 import com.google.android.material.motion.MotionObserver.SimpleMotionObserver;
+import com.google.android.material.motion.Operation;
 import com.google.android.material.motion.ReactiveProperty;
 import com.google.android.material.motion.gestures.DragGestureRecognizer;
 import com.google.android.material.motion.gestures.GestureRecognizer;
@@ -164,7 +164,7 @@ public final class GestureOperators {
       private float adjustmentY;
 
       @Override
-      public void onConnect() {
+      public void onConnect(Observer<Float[]> observer) {
         adjustmentSubscription =
           ReactiveProperty.of(view, ViewProperties.ANCHOR_POINT_ADJUSTMENT)
             .subscribe(new SimpleMotionObserver<Float[]>() {
@@ -198,7 +198,7 @@ public final class GestureOperators {
       }
 
       @Override
-      public void onDisconnect() {
+      public void onDisconnect(Observer<Float[]> observer) {
         adjustmentSubscription.unsubscribe();
       }
     };
