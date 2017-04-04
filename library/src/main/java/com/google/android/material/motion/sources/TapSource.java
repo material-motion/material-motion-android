@@ -24,7 +24,7 @@ import android.view.View;
 
 import com.google.android.indefinite.observable.Observer;
 import com.google.android.material.motion.MotionObserver;
-import com.google.android.material.motion.interactions.Tap;
+import com.google.android.material.motion.interactions.SetPositionOnTap;
 import com.google.android.material.motion.Source;
 import com.google.android.material.motion.gestures.OnTouchListeners;
 
@@ -34,9 +34,9 @@ public class TapSource extends Source<Float[]> {
   private final GestureDetectorCompat detector;
   private final SimpleArrayMap<Observer<Float[]>, OnGestureListener> gestureListeners = new SimpleArrayMap<>();
 
-  public TapSource(Tap tap) {
-    super(tap);
-    container = tap.container;
+  public TapSource(SetPositionOnTap interaction) {
+    super(interaction);
+    container = interaction.container;
     detector = new GestureDetectorCompat(
       container.getContext(),
       new SimpleOnGestureListener() {
