@@ -24,12 +24,12 @@ import com.google.android.material.motion.MotionRuntime;
 import com.google.android.material.motion.ReactiveProperty;
 import com.google.android.material.motion.sources.TapSource;
 
-public class Tap extends Interaction<ReactiveProperty<Float[]>, Float[]> {
+public class SetPositionOnTap extends Interaction<ReactiveProperty<Float[]>, Float[]> {
 
   public final View container;
   public final MotionObservable<Float[]> tapStream;
 
-  public Tap(View container) {
+  public SetPositionOnTap(View container) {
     this.container = container;
     this.tapStream = new TapSource(this).getStream();
   }
