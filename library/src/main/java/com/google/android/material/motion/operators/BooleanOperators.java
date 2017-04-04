@@ -23,7 +23,16 @@ public final class BooleanOperators {
     throw new UnsupportedOperationException();
   }
 
-  public static <T> MapOperation<T, Boolean> not(final MapOperation<T, Boolean> operation) {
+  public static MapOperation<Boolean, Boolean> inverted() {
+    return new MapOperation<Boolean, Boolean>() {
+      @Override
+      public Boolean transform(Boolean value) {
+        return !value;
+      }
+    };
+  }
+
+  static <T> MapOperation<T, Boolean> not(final MapOperation<T, Boolean> operation) {
     return new MapOperation<T, Boolean>() {
       @Override
       public Boolean transform(T value) {
