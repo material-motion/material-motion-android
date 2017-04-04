@@ -68,7 +68,7 @@ public class MotionObservable<T> extends IndefiniteObservable<MotionObserver<T>>
       @NonNull
       @Override
       public Disconnector connect(final MotionObserver<U> observer) {
-        operation.onConnect();
+        operation.onConnect(observer);
         final Subscription subscription = upstream.subscribe(new MotionObserver<T>() {
 
           @Override
@@ -81,7 +81,7 @@ public class MotionObservable<T> extends IndefiniteObservable<MotionObserver<T>>
 
           @Override
           public void disconnect() {
-            operation.onDisconnect();
+            operation.onDisconnect(observer);
             subscription.unsubscribe();
           }
         };
