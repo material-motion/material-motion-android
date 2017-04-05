@@ -126,13 +126,56 @@ public final class FloatArrayOperators {
     return bandLength * (1 - 1 / demoninator);
   }
 
+  public static Operation<Float[], Float[]> offsetBy(final float offset) {
+    return new MapOperation<Float[], Float[]>() {
+      @Override
+      public Float[] transform(Float[] value) {
+        return new Float[]{value[0] + offset, value[1] + offset};
+      }
+    };
+  }
+
+  public static Operation<Float[], Float[]> offsetBy(final Float[] offset) {
+    return new MapOperation<Float[], Float[]>() {
+      @Override
+      public Float[] transform(Float[] value) {
+        return new Float[]{value[0] + offset[0], value[1] + offset[1]};
+      }
+    };
+  }
+
+  public static Operation<Float[], Float[]> scaledBy(final float scale) {
+    return new MapOperation<Float[], Float[]>() {
+      @Override
+      public Float[] transform(Float[] value) {
+        return new Float[]{value[0] * scale, value[1] * scale};
+      }
+    };
+  }
+
+  public static Operation<Float[], Float[]> scaledBy(final Float[] scale) {
+    return new MapOperation<Float[], Float[]>() {
+      @Override
+      public Float[] transform(Float[] value) {
+        return new Float[]{value[0] * scale[0], value[1] * scale[1]};
+      }
+    };
+  }
+
   public static Operation<Float[], Float[]> normalizedBy(final float normal) {
     return new MapOperation<Float[], Float[]>() {
       @Override
       public Float[] transform(Float[] value) {
-        float x = value[0];
-        float y = value[1];
-        return new Float[]{x / normal, y / normal};
+        return new Float[]{value[0] / normal, value[1] / normal};
+      }
+    };
+  }
+
+  public static Operation<Float[], Float[]> normalizedBy(final Float[] normal) {
+    return new MapOperation<Float[], Float[]>() {
+      @Override
+      public Float[] transform(Float[] value) {
+        return new Float[]{value[0] / normal[0], value[1] / normal[1]};
       }
     };
   }
