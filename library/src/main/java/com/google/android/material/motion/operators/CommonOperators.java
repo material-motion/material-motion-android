@@ -19,8 +19,10 @@ import android.support.annotation.Nullable;
 import android.support.annotation.VisibleForTesting;
 import android.util.Log;
 
+import com.google.android.indefinite.observable.IndefiniteObservable.Subscription;
 import com.google.android.indefinite.observable.Observer;
 import com.google.android.material.motion.MapOperation;
+import com.google.android.material.motion.MotionObservable;
 import com.google.android.material.motion.MotionObserver;
 import com.google.android.material.motion.Operation;
 
@@ -55,7 +57,7 @@ public class CommonOperators {
   public static <T> Operation<T, T> initialValue(final T initialValue) {
     return new Operation<T, T>() {
       @Override
-      public void onConnect(MotionObserver<T> observer) {
+      public void preConnect(MotionObserver<T> observer) {
         observer.next(initialValue);
       }
 
@@ -104,6 +106,28 @@ public class CommonOperators {
           return upperBound;
         }
         return value;
+      }
+    };
+  }
+
+  public static <T> Operation<T, T> merge(final MotionObservable<T> stream) {
+    return new Operation<T, T>() {
+
+      private Subscription subscription;
+
+      @Override
+      public void next(Observer<T> observer, T value) {
+        observer.next(value);
+      }
+
+      @Override
+      public void postConnect(MotionObserver<T> observer) {
+        subscription = stream.subscribe(observer);
+      }
+
+      @Override
+      public void preDisconnect(MotionObserver<T> observer) {
+        subscription.unsubscribe();
       }
     };
   }

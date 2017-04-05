@@ -165,7 +165,7 @@ public final class GestureOperators {
       private float adjustmentY;
 
       @Override
-      public void onConnect(MotionObserver<Float[]> observer) {
+      public void preConnect(MotionObserver<Float[]> observer) {
         adjustmentSubscription =
           ReactiveProperty.of(view, ViewProperties.ANCHOR_POINT_ADJUSTMENT)
             .subscribe(new SimpleMotionObserver<Float[]>() {
@@ -199,7 +199,7 @@ public final class GestureOperators {
       }
 
       @Override
-      public void onDisconnect(MotionObserver<Float[]> observer) {
+      public void preDisconnect(MotionObserver<Float[]> observer) {
         adjustmentSubscription.unsubscribe();
       }
     };
