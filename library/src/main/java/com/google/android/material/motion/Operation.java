@@ -11,6 +11,9 @@ import com.google.android.indefinite.observable.Observer;
  */
 public abstract class Operation<T, U> {
 
+  public void preConnect(MotionObserver<U> observer) {
+  }
+
   /**
    * Transforms the incoming value before passing it to the observer, or blocks the value.
    *
@@ -18,9 +21,12 @@ public abstract class Operation<T, U> {
    */
   public abstract void next(Observer<U> observer, T value);
 
-  public void onConnect(MotionObserver<U> observer) {
+  public void postConnect(MotionObserver<U> observer) {
   }
 
-  public void onDisconnect(MotionObserver<U> observer) {
+  public void preDisconnect(MotionObserver<U> observer) {
+  }
+
+  public void postDisconnect(MotionObserver<U> observer) {
   }
 }
