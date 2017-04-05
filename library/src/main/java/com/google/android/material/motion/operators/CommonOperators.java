@@ -17,12 +17,15 @@ package com.google.android.material.motion.operators;
 
 import android.support.annotation.Nullable;
 import android.support.annotation.VisibleForTesting;
+import android.support.v4.util.SimpleArrayMap;
 import android.util.Log;
 
 import com.google.android.indefinite.observable.IndefiniteObservable.Subscription;
 import com.google.android.indefinite.observable.Observer;
 import com.google.android.material.motion.MapOperation;
 import com.google.android.material.motion.Operation;
+
+import java.util.Map;
 
 public class CommonOperators {
 
@@ -112,6 +115,37 @@ public class CommonOperators {
       @Override
       public void preDisconnect(Observer<T> observer) {
         subscription.unsubscribe();
+      }
+    };
+  }
+
+  public static <T, U> Operation<T, U> rewriteTo(final U value) {
+    return new MapOperation<T, U>() {
+      @Override
+      public U transform(T ignored) {
+        return value;
+      }
+    };
+  }
+
+  public static <T, U> Operation<T, U> rewrite(final Map<T, U> map) {
+    return new Operation<T, U>() {
+      @Override
+      public void next(Observer<U> observer, T value) {
+        if (map.containsKey(value)) {
+          observer.next(map.get(value));
+        }
+      }
+    };
+  }
+
+  public static <T, U> Operation<T, U> rewrite(final SimpleArrayMap<T, U> map) {
+    return new Operation<T, U>() {
+      @Override
+      public void next(Observer<U> observer, T value) {
+        if (map.containsKey(value)) {
+          observer.next(map.get(value));
+        }
       }
     };
   }

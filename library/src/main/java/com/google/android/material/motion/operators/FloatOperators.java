@@ -33,4 +33,25 @@ public final class FloatOperators {
   public static Operation<Float, Float> normalizedBy(final float normal) {
     return scaledBy(1 / normal);
   }
+
+  public static Operation<Float, Float> rewriteRange(
+    final float start, final float end, final float destinationStart, final float destinationEnd) {
+    return new MapOperation<Float, Float>() {
+      @Override
+      public Float transform(Float value) {
+        float position = value - start;
+
+        float vector = end - start;
+        if (vector == 0) {
+          return destinationStart;
+        }
+        float progress = position / vector;
+
+        float destinationVector = destinationEnd - destinationStart;
+        float destinationPosition = destinationVector * progress;
+
+        return destinationStart + destinationPosition;
+      }
+    };
+  }
 }
