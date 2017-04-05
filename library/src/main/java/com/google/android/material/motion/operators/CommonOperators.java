@@ -232,4 +232,28 @@ public class CommonOperators {
       }
     };
   }
+
+  public static <T extends Comparable<T>> Operation<T, T> lowerBound(final T lowerBound) {
+    return new MapOperation<T, T>() {
+      @Override
+      public T transform(T value) {
+        if (lowerBound.compareTo(value) > 0) {
+          return lowerBound;
+        }
+        return value;
+      }
+    };
+  }
+
+  public static <T extends Comparable<T>> Operation<T, T> upperBound(final T upperBound) {
+    return new MapOperation<T, T>() {
+      @Override
+      public T transform(T value) {
+        if (upperBound.compareTo(value) < 0) {
+          return upperBound;
+        }
+        return value;
+      }
+    };
+  }
 }
