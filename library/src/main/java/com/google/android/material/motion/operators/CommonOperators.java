@@ -21,7 +21,6 @@ import android.support.v4.util.SimpleArrayMap;
 import android.util.Log;
 
 import com.google.android.indefinite.observable.IndefiniteObservable.Subscription;
-import com.google.android.indefinite.observable.Observer;
 import com.google.android.material.motion.MapOperation;
 import com.google.android.material.motion.MotionObservable;
 import com.google.android.material.motion.MotionObserver;
@@ -149,6 +148,30 @@ public class CommonOperators {
         if (map.containsKey(value)) {
           observer.next(map.get(value));
         }
+      }
+    };
+  }
+
+  public static <T extends Comparable<T>> Operation<T, T> lowerBound(final T lowerBound) {
+    return new MapOperation<T, T>() {
+      @Override
+      public T transform(T value) {
+        if (lowerBound.compareTo(value) > 0) {
+          return lowerBound;
+        }
+        return value;
+      }
+    };
+  }
+
+  public static <T extends Comparable<T>> Operation<T, T> upperBound(final T upperBound) {
+    return new MapOperation<T, T>() {
+      @Override
+      public T transform(T value) {
+        if (upperBound.compareTo(value) < 0) {
+          return upperBound;
+        }
+        return value;
       }
     };
   }
