@@ -20,6 +20,7 @@ import android.support.annotation.VisibleForTesting;
 import android.util.Log;
 
 import com.google.android.indefinite.observable.Observer;
+import com.google.android.material.motion.MapOperation;
 import com.google.android.material.motion.Operation;
 
 public class CommonOperators {
@@ -64,6 +65,30 @@ public class CommonOperators {
       public void next(Observer<T> observer, T value) {
         Log.println(priority, tag, prefix + value);
         observer.next(value);
+      }
+    };
+  }
+
+  public static <T extends Comparable<T>> Operation<T, T> lowerBound(final T lowerBound) {
+    return new MapOperation<T, T>() {
+      @Override
+      public T transform(T value) {
+        if (lowerBound.compareTo(value) > 0) {
+          return lowerBound;
+        }
+        return value;
+      }
+    };
+  }
+
+  public static <T extends Comparable<T>> Operation<T, T> upperBound(final T upperBound) {
+    return new MapOperation<T, T>() {
+      @Override
+      public T transform(T value) {
+        if (upperBound.compareTo(value) < 0) {
+          return upperBound;
+        }
+        return value;
       }
     };
   }
