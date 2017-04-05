@@ -125,4 +125,15 @@ public final class FloatArrayOperators {
     float demoninator = value * rubberBandCoefficient / bandLength + 1;
     return bandLength * (1 - 1 / demoninator);
   }
+
+  public static Operation<Float[], Float[]> normalizedBy(final float normal) {
+    return new MapOperation<Float[], Float[]>() {
+      @Override
+      public Float[] transform(Float[] value) {
+        float x = value[0];
+        float y = value[1];
+        return new Float[]{x / normal, y / normal};
+      }
+    };
+  }
 }
