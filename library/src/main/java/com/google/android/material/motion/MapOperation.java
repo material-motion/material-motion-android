@@ -1,7 +1,5 @@
 package com.google.android.material.motion;
 
-import com.google.android.indefinite.observable.Observer;
-
 /**
  * A map operation transforms incoming values before they are passed downstream.
  *
@@ -16,7 +14,7 @@ public abstract class MapOperation<T, U> extends Operation<T, U> {
   public abstract U transform(T value);
 
   @Override
-  public final void next(Observer<U> observer, T value) {
+  public final void next(MotionObserver<U> observer, T value) {
     observer.next(transform(value));
   }
 }

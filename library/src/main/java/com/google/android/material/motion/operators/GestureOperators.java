@@ -21,10 +21,10 @@ import android.support.annotation.VisibleForTesting;
 import android.view.View;
 
 import com.google.android.indefinite.observable.IndefiniteObservable.Subscription;
-import com.google.android.indefinite.observable.Observer;
 import com.google.android.material.motion.FilterOperation;
 import com.google.android.material.motion.MapOperation;
 import com.google.android.material.motion.MotionObservable;
+import com.google.android.material.motion.MotionObserver;
 import com.google.android.material.motion.MotionObserver.SimpleMotionObserver;
 import com.google.android.material.motion.Operation;
 import com.google.android.material.motion.ReactiveProperty;
@@ -94,7 +94,7 @@ public final class GestureOperators {
   public static <T extends DragGestureRecognizer> Operation<T, Float[]> velocity() {
     return new Operation<T, Float[]>() {
       @Override
-      public void next(Observer<Float[]> observer, T value) {
+      public void next(MotionObserver<Float[]> observer, T value) {
         if (value.getState() == GestureRecognizer.RECOGNIZED) {
           observer.next(new Float[]{value.getVelocityX(), value.getVelocityY()});
         }
@@ -164,7 +164,7 @@ public final class GestureOperators {
       private float adjustmentY;
 
       @Override
-      public void onConnect(Observer<Float[]> observer) {
+      public void preConnect(MotionObserver<Float[]> observer) {
         adjustmentSubscription =
           ReactiveProperty.of(view, ViewProperties.ANCHOR_POINT_ADJUSTMENT)
             .subscribe(new SimpleMotionObserver<Float[]>() {
@@ -177,7 +177,7 @@ public final class GestureOperators {
       }
 
       @Override
-      public void next(Observer<Float[]> observer, T gestureRecognizer) {
+      public void next(MotionObserver<Float[]> observer, T gestureRecognizer) {
         switch (gestureRecognizer.getState()) {
           case BEGAN:
             initialTranslationX = view.getTranslationX();
@@ -198,7 +198,7 @@ public final class GestureOperators {
       }
 
       @Override
-      public void onDisconnect(Observer<Float[]> observer) {
+      public void preDisconnect(MotionObserver<Float[]> observer) {
         adjustmentSubscription.unsubscribe();
       }
     };
@@ -214,7 +214,7 @@ public final class GestureOperators {
       private float initialRotation;
 
       @Override
-      public void next(Observer<Float> observer, T gestureRecognizer) {
+      public void next(MotionObserver<Float> observer, T gestureRecognizer) {
         switch (gestureRecognizer.getState()) {
           case BEGAN:
             initialRotation = view.getRotation();
@@ -240,7 +240,7 @@ public final class GestureOperators {
       private float initialScaleY;
 
       @Override
-      public void next(Observer<Float[]> observer, T gestureRecognizer) {
+      public void next(MotionObserver<Float[]> observer, T gestureRecognizer) {
         switch (gestureRecognizer.getState()) {
           case BEGAN:
             initialScaleX = view.getScaleX();
@@ -260,7 +260,7 @@ public final class GestureOperators {
     return new Operation<T, Float[]>() {
 
       @Override
-      public void next(Observer<Float[]> observer, T gestureRecognizer) {
+      public void next(MotionObserver<Float[]> observer, T gestureRecognizer) {
         Float[] pivot = new Float[]{
           gestureRecognizer.getCentroidX(),
           gestureRecognizer.getCentroidY()
@@ -274,7 +274,7 @@ public final class GestureOperators {
     return new Operation<T, Float[]>() {
 
       @Override
-      public void next(Observer<Float[]> observer, T gestureRecognizer) {
+      public void next(MotionObserver<Float[]> observer, T gestureRecognizer) {
         array[0] = view.getPivotX();
         array[1] = view.getPivotY();
         GestureRecognizer.getTransformationMatrix(view, matrix, inverse);
