@@ -15,6 +15,7 @@
  */
 package com.google.android.material.motion.interactions;
 
+import android.graphics.PointF;
 import android.view.View;
 
 import com.google.android.material.motion.ConstraintApplicator;
@@ -29,7 +30,7 @@ import static com.google.android.material.motion.operators.GestureOperators.scal
 /**
  * A pinchable interaction.
  */
-public class Pinchable extends GestureInteraction<ScaleGestureRecognizer, Float[]> {
+public class Pinchable extends GestureInteraction<ScaleGestureRecognizer, PointF> {
 
   public Pinchable() {
     this(new ScaleGestureRecognizer());
@@ -44,8 +45,8 @@ public class Pinchable extends GestureInteraction<ScaleGestureRecognizer, Float[
     final MotionRuntime runtime,
     MotionObservable<ScaleGestureRecognizer> stream,
     final View target,
-    ConstraintApplicator<Float[]> constraints) {
-    MotionObservable<Float[]> scaledStream = stream.compose(scaled(target));
+    ConstraintApplicator<PointF> constraints) {
+    MotionObservable<PointF> scaledStream = stream.compose(scaled(target));
 
     runtime.write(constraints.apply(scaledStream), target, ViewProperties.SCALE);
   }

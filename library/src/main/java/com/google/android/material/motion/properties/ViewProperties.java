@@ -16,6 +16,7 @@
 package com.google.android.material.motion.properties;
 
 import android.graphics.Color;
+import android.graphics.PointF;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.IdRes;
@@ -32,99 +33,99 @@ public final class ViewProperties {
     throw new UnsupportedOperationException();
   }
 
-  public static final Property<View, Float[]> TRANSLATION =
-    new Property<View, Float[]>(Float[].class, "translation") {
+  public static final Property<View, PointF> TRANSLATION =
+    new Property<View, PointF>(PointF.class, "translation") {
 
-      private final Float[] array = new Float[2];
+      private final PointF pointF = new PointF();
 
       @Override
-      public void set(View object, Float[] value) {
-        object.setTranslationX(value[0]);
-        object.setTranslationY(value[1]);
+      public void set(View object, PointF value) {
+        object.setTranslationX(value.x);
+        object.setTranslationY(value.y);
       }
 
       @Override
-      public Float[] get(View object) {
-        array[0] = object.getTranslationX();
-        array[1] = object.getTranslationY();
-        return array;
-      }
-    };
-
-  public static final Property<View, Float[]> CENTER =
-    new Property<View, Float[]>(Float[].class, "center") {
-
-      private final Float[] array = new Float[2];
-
-      @Override
-      public void set(View object, Float[] value) {
-        object.setX(value[0] - object.getWidth() / 2f);
-        object.setY(value[1] - object.getHeight() / 2f);
-      }
-
-      @Override
-      public Float[] get(View object) {
-        array[0] = object.getX() + object.getWidth() / 2f;
-        array[1] = object.getY() + object.getHeight() / 2f;
-        return array;
+      public PointF get(View object) {
+        pointF.x = object.getTranslationX();
+        pointF.y = object.getTranslationY();
+        return pointF;
       }
     };
 
-  public static final Property<View, Float[]> SCALE =
-    new Property<View, Float[]>(Float[].class, "scale") {
+  public static final Property<View, PointF> CENTER =
+    new Property<View, PointF>(PointF.class, "center") {
 
-      private final Float[] array = new Float[2];
+      private final PointF pointF = new PointF();
 
       @Override
-      public void set(View object, Float[] value) {
-        object.setScaleX(value[0]);
-        object.setScaleY(value[1]);
+      public void set(View object, PointF value) {
+        object.setX(value.x - object.getWidth() / 2f);
+        object.setY(value.y - object.getHeight() / 2f);
       }
 
       @Override
-      public Float[] get(View object) {
-        array[0] = object.getScaleX();
-        array[1] = object.getScaleY();
-        return array;
-      }
-    };
-
-  public static final Property<View, Float[]> PIVOT =
-    new Property<View, Float[]>(Float[].class, "pivot") {
-
-      private final Float[] array = new Float[2];
-
-      @Override
-      public void set(View object, Float[] value) {
-        object.setPivotX(value[0]);
-        object.setPivotY(value[1]);
-      }
-
-      @Override
-      public Float[] get(View object) {
-        array[0] = object.getPivotX();
-        array[1] = object.getPivotY();
-        return array;
+      public PointF get(View object) {
+        pointF.x = object.getX() + object.getWidth() / 2f;
+        pointF.y = object.getY() + object.getHeight() / 2f;
+        return pointF;
       }
     };
 
-  public static final Property<View, Float[]> ANCHOR_POINT_ADJUSTMENT =
-    new TagProperty<Float[]>(
-      Float[].class,
+  public static final Property<View, PointF> SCALE =
+    new Property<View, PointF>(PointF.class, "scale") {
+
+      private final PointF pointF = new PointF();
+
+      @Override
+      public void set(View object, PointF value) {
+        object.setScaleX(value.x);
+        object.setScaleY(value.y);
+      }
+
+      @Override
+      public PointF get(View object) {
+        pointF.x = object.getScaleX();
+        pointF.y = object.getScaleY();
+        return pointF;
+      }
+    };
+
+  public static final Property<View, PointF> PIVOT =
+    new Property<View, PointF>(PointF.class, "pivot") {
+
+      private final PointF pointF = new PointF();
+
+      @Override
+      public void set(View object, PointF value) {
+        object.setPivotX(value.x);
+        object.setPivotY(value.y);
+      }
+
+      @Override
+      public PointF get(View object) {
+        pointF.x = object.getPivotX();
+        pointF.y = object.getPivotY();
+        return pointF;
+      }
+    };
+
+  public static final Property<View, PointF> ANCHOR_POINT_ADJUSTMENT =
+    new TagProperty<PointF>(
+      PointF.class,
       "anchor_point_adjustment",
       R.id.gesture_anchor_point_adjustment_tag,
-      new Float[]{0f, 0f}) {
+      new PointF(0f, 0f)) {
 
       @Override
-      public void set(View object, Float[] adjustment) {
+      public void set(View object, PointF adjustment) {
         super.set(object, adjustment);
 
-        object.setTranslationX(object.getTranslationX() + adjustment[0]);
-        object.setTranslationY(object.getTranslationY() + adjustment[1]);
+        object.setTranslationX(object.getTranslationX() + adjustment.x);
+        object.setTranslationY(object.getTranslationY() + adjustment.y);
       }
 
       @Override
-      public Float[] get(View object) {
+      public PointF get(View object) {
         return super.get(object);
       }
     };
