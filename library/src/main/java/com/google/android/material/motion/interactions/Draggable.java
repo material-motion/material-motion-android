@@ -15,6 +15,7 @@
  */
 package com.google.android.material.motion.interactions;
 
+import android.graphics.PointF;
 import android.view.View;
 
 import com.google.android.material.motion.ConstraintApplicator;
@@ -29,7 +30,7 @@ import static com.google.android.material.motion.operators.GestureOperators.tran
 /**
  * A draggable interaction.
  */
-public class Draggable extends GestureInteraction<DragGestureRecognizer, Float[]> {
+public class Draggable extends GestureInteraction<DragGestureRecognizer, PointF> {
 
   public Draggable() {
     this(new DragGestureRecognizer());
@@ -44,8 +45,8 @@ public class Draggable extends GestureInteraction<DragGestureRecognizer, Float[]
     MotionRuntime runtime,
     MotionObservable<DragGestureRecognizer> stream,
     final View target,
-    ConstraintApplicator<Float[]> constraints) {
-    MotionObservable<Float[]> translatedStream = stream.compose(translated(target));
+    ConstraintApplicator<PointF> constraints) {
+    MotionObservable<PointF> translatedStream = stream.compose(translated(target));
 
     runtime.write(constraints.apply(translatedStream), target, ViewProperties.TRANSLATION);
   }

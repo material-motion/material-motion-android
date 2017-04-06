@@ -1,5 +1,6 @@
 package com.google.android.material.motion.sample;
 
+import android.graphics.PointF;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
@@ -9,7 +10,7 @@ import com.google.android.material.motion.MotionRuntime;
 import com.google.android.material.motion.ReactiveProperty;
 import com.google.android.material.motion.interactions.SetPositionOnTap;
 import com.google.android.material.motion.interactions.Tossable;
-import com.google.android.material.motion.operators.FloatArrayOperators;
+import com.google.android.material.motion.operators.PointFOperators;
 import com.google.android.material.motion.properties.ViewProperties;
 
 public class TossableTapActivity extends AppCompatActivity {
@@ -50,15 +51,15 @@ public class TossableTapActivity extends AppCompatActivity {
   }
 
   private void runDemo() {
-    ReactiveProperty<Float[]> anchor = ReactiveProperty.of(ViewProperties.CENTER.get(target));
+    ReactiveProperty<PointF> anchor = ReactiveProperty.of(ViewProperties.CENTER.get(target));
 
     Tossable tossable = new Tossable(ViewProperties.CENTER, anchor);
-    runtime.addInteraction(tossable, target, FloatArrayOperators.lockToYAxis(0f));
+    runtime.addInteraction(tossable, target, PointFOperators.lockToYAxis(0f));
 
     runtime.addInteraction(
       new SetPositionOnTap(container),
       tossable.anchor,
-      FloatArrayOperators.lockToYAxis(tossable.anchor.read()[0]));
+      PointFOperators.lockToYAxis(tossable.anchor.read().x));
 
     runtime.write(
       tossable.anchor.getStream(), ReactiveProperty.of(destination, ViewProperties.CENTER));
