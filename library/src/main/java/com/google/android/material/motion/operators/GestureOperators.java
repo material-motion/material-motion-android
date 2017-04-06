@@ -27,6 +27,7 @@ import com.google.android.material.motion.MotionObservable;
 import com.google.android.material.motion.MotionObserver;
 import com.google.android.material.motion.MotionObserver.SimpleMotionObserver;
 import com.google.android.material.motion.Operation;
+import com.google.android.material.motion.RawOperation;
 import com.google.android.material.motion.ReactiveProperty;
 import com.google.android.material.motion.gestures.DragGestureRecognizer;
 import com.google.android.material.motion.gestures.GestureRecognizer;
@@ -37,6 +38,7 @@ import com.google.android.material.motion.properties.ViewProperties;
 
 import static com.google.android.material.motion.gestures.GestureRecognizer.BEGAN;
 import static com.google.android.material.motion.gestures.GestureRecognizer.CHANGED;
+import static com.google.android.material.motion.operators.BooleanOperators.inverted;
 
 /**
  * Extended operators for gestures.
@@ -145,15 +147,23 @@ public final class GestureOperators {
     };
   }
 
-  public static <T extends DragGestureRecognizer> MapOperation<T, Boolean> isAtRest() {
-    return BooleanOperators.not(GestureOperators.<T>isActive());
+  public static <T extends DragGestureRecognizer> RawOperation<T, Boolean> isAtRest() {
+    return new RawOperation<T, Boolean>() {
+      @Override
+      public MotionObservable<Boolean> compose(MotionObservable<? extends T> stream) {
+        return stream
+          .compose(GestureOperators.<T>isActive())
+          .compose(inverted());
+      }
+    };
   }
 
   /**
    * Adds the current translation to the initial translation of the given view and emits the
    * result while the gesture recognizer is active.
    */
-  public static <T extends DragGestureRecognizer> Operation<T, Float[]> translated(final View view) {
+  public static <T extends DragGestureRecognizer> Operation<T, Float[]> translated(
+    final View view) {
     return new Operation<T, Float[]>() {
 
       private Subscription adjustmentSubscription;
