@@ -26,8 +26,8 @@ import com.google.android.material.motion.ReactiveProperty;
 import com.google.android.material.motion.sources.PhysicsSpringSource;
 import com.google.android.material.motion.springs.PointFTypeVectorizer;
 
-import static com.google.android.material.motion.operators.GestureOperators.isAtRest;
-import static com.google.android.material.motion.operators.GestureOperators.velocity;
+import static com.google.android.material.motion.operators.IsAtRest.isAtRest;
+import static com.google.android.material.motion.operators.Velocity.velocity;
 
 public class Tossable extends Interaction<View, PointF> {
 

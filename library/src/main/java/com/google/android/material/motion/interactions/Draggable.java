@@ -25,7 +25,7 @@ import com.google.android.material.motion.gestures.DragGestureRecognizer;
 import com.google.android.material.motion.gestures.GestureInteraction;
 import com.google.android.material.motion.properties.ViewProperties;
 
-import static com.google.android.material.motion.operators.GestureOperators.translated;
+import static com.google.android.material.motion.operators.Translated.translated;
 
 /**
  * A draggable interaction.

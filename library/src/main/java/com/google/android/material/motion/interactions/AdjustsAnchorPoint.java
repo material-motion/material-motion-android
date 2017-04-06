@@ -26,9 +26,9 @@ import com.google.android.material.motion.gestures.GestureInteraction;
 import com.google.android.material.motion.properties.ViewProperties;
 
 import static com.google.android.material.motion.gestures.GestureRecognizer.CHANGED;
-import static com.google.android.material.motion.operators.GestureOperators.anchored;
-import static com.google.android.material.motion.operators.GestureOperators.onRecognitionState;
-import static com.google.android.material.motion.operators.GestureOperators.pivot;
+import static com.google.android.material.motion.operators.Anchored.anchored;
+import static com.google.android.material.motion.operators.OnRecognitionState.onRecognitionState;
+import static com.google.android.material.motion.operators.Pivot.pivot;
 
 public class AdjustsAnchorPoint extends Interaction<View, Void> {
 

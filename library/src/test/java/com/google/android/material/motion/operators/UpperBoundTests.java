@@ -28,6 +28,7 @@ import org.robolectric.annotation.Config;
 
 import java.util.Arrays;
 
+import static com.google.android.material.motion.operators.UpperBound.upperBound;
 import static com.google.common.truth.Truth.assertThat;
 
 @RunWith(RobolectricTestRunner.class)
@@ -46,7 +47,7 @@ public class UpperBoundTests {
     MotionObservable<Float> stream =
       property
         .getStream()
-        .compose(CommonOperators.upperBound(1f));
+        .compose(upperBound(1f));
 
     TrackingMotionObserver<Float> tracker = new TrackingMotionObserver<>();
     stream.subscribe(tracker);

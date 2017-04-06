@@ -37,17 +37,12 @@ import static com.google.common.truth.Truth.assertThat;
 @Config(constants = BuildConfig.class, sdk = 21)
 public class PointFOperatorsTests {
 
-  @Test(expected = UnsupportedOperationException.class)
-  public void constructorIsDisabled() {
-    new PointFOperators();
-  }
-
   @Test
   public void extractsX() {
     TrackingMotionObserver<Float> tracker = new TrackingMotionObserver<>();
 
     pointFSource()
-      .compose(PointFOperators.x())
+      .compose(X.x())
       .subscribe(tracker);
 
     assertThat(tracker.values).isEqualTo(Arrays.asList(1f, 3f, 5f));
@@ -58,7 +53,7 @@ public class PointFOperatorsTests {
     TrackingMotionObserver<Float> tracker = new TrackingMotionObserver<>();
 
     pointFSource()
-      .compose(PointFOperators.y())
+      .compose(Y.y())
       .subscribe(tracker);
 
     assertThat(tracker.values).isEqualTo(Arrays.asList(2f, 4f, 6f));

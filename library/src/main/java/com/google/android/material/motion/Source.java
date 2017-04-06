@@ -21,7 +21,7 @@ import com.google.android.indefinite.observable.IndefiniteObservable.Connector;
 import com.google.android.indefinite.observable.IndefiniteObservable.Disconnector;
 import com.google.android.indefinite.observable.IndefiniteObservable.Subscription;
 import com.google.android.material.motion.MotionObserver.SimpleMotionObserver;
-import com.google.android.material.motion.operators.CommonOperators;
+import com.google.android.material.motion.operators.Dedupe;
 
 public abstract class Source<T> {
 
@@ -40,7 +40,7 @@ public abstract class Source<T> {
         onConnect(observer);
 
         final Subscription enabledSubscription = interaction.enabled.getStream()
-          .compose(CommonOperators.<Boolean>dedupe())
+          .compose(Dedupe.<Boolean>dedupe())
           .subscribe(new SimpleMotionObserver<Boolean>() {
             @Override
             public void next(Boolean enabled) {
