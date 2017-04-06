@@ -44,6 +44,10 @@ import static com.google.android.material.motion.MotionState.AT_REST;
 import static com.google.android.material.motion.gestures.GestureRecognizer.BEGAN;
 import static com.google.android.material.motion.gestures.GestureRecognizer.CHANGED;
 import static com.google.android.material.motion.gestures.GestureRecognizer.RECOGNIZED;
+import static com.google.android.material.motion.operators.Centroid.centroid;
+import static com.google.android.material.motion.operators.Centroid.centroidX;
+import static com.google.android.material.motion.operators.Centroid.centroidY;
+import static com.google.android.material.motion.operators.OnRecognitionState.onRecognitionState;
 import static com.google.common.truth.Truth.assertThat;
 
 @RunWith(RobolectricTestRunner.class)
@@ -59,11 +63,6 @@ public class GestureOperatorsTests {
     view.setOnTouchListener(gesture);
   }
 
-  @Test(expected = UnsupportedOperationException.class)
-  public void constructorIsDisabled() {
-    new GestureOperators();
-  }
-
   @Test
   public void extractsCentroid() {
     TrackingMotionObserver<PointF> tracker = new TrackingMotionObserver<>();
@@ -71,7 +70,7 @@ public class GestureOperatorsTests {
     GestureInteraction<SimulatedGestureRecognizer, ?> interaction = createInteraction(gesture);
     GestureSource
       .from(interaction)
-      .compose(GestureOperators.centroid())
+      .compose(centroid())
       .subscribe(tracker);
 
     assertThat(interaction.state.read()).isEqualTo(AT_REST);
@@ -89,7 +88,7 @@ public class GestureOperatorsTests {
     GestureInteraction<SimulatedGestureRecognizer, ?> interaction = createInteraction(gesture);
     GestureSource
       .from(interaction)
-      .compose(GestureOperators.centroidX())
+      .compose(centroidX())
       .subscribe(tracker);
 
     gesture.setCentroid(5f, 10f);
@@ -104,7 +103,7 @@ public class GestureOperatorsTests {
     GestureInteraction<SimulatedGestureRecognizer, ?> interaction = createInteraction(gesture);
     GestureSource
       .from(interaction)
-      .compose(GestureOperators.centroidY())
+      .compose(centroidY())
       .subscribe(tracker);
 
     gesture.setCentroid(5f, 10f);
@@ -119,7 +118,7 @@ public class GestureOperatorsTests {
     GestureInteraction<SimulatedGestureRecognizer, ?> interaction = createInteraction(gesture);
     GestureSource
       .from(interaction)
-      .compose(GestureOperators.onRecognitionState(BEGAN))
+      .compose(onRecognitionState(BEGAN))
       .compose(new MapOperation<GestureRecognizer, Integer>() {
         @Override
         public Integer transform(GestureRecognizer value) {
@@ -142,7 +141,7 @@ public class GestureOperatorsTests {
     GestureInteraction<SimulatedGestureRecognizer, ?> interaction = createInteraction(gesture);
     GestureSource
       .from(interaction)
-      .compose(GestureOperators.onRecognitionState(BEGAN, RECOGNIZED))
+      .compose(onRecognitionState(BEGAN, RECOGNIZED))
       .compose(new MapOperation<GestureRecognizer, Integer>() {
         @Override
         public Integer transform(GestureRecognizer value) {
