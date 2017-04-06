@@ -94,12 +94,12 @@ public final class GestureOperators {
     };
   }
 
-  public static <T extends DragGestureRecognizer> Operation<T, Float[]> velocity() {
-    return new Operation<T, Float[]>() {
+  public static <T extends DragGestureRecognizer> Operation<T, PointF> velocity() {
+    return new Operation<T, PointF>() {
       @Override
-      public void next(Observer<Float[]> observer, T value) {
+      public void next(Observer<PointF> observer, T value) {
         if (value.getState() == GestureRecognizer.RECOGNIZED) {
-          observer.next(new Float[]{value.getVelocityX(), value.getVelocityY()});
+          observer.next(new PointF(value.getVelocityX(), value.getVelocityY()));
         }
       }
     };
@@ -109,7 +109,8 @@ public final class GestureOperators {
    * Only forwards the gesture recognizer if its state matches the provided value.
    */
   public static <T extends GestureRecognizer> Operation<T, T> onRecognitionState(
-    @GestureRecognizerState final int state) {
+    @GestureRecognizerState
+    final int state) {
     return new FilterOperation<T>() {
       @Override
       public boolean filter(T value) {
@@ -122,7 +123,8 @@ public final class GestureOperators {
    * Only forwards the gesture recognizer if its state matches any of the provided values.
    */
   public static <T extends GestureRecognizer> Operation<T, T> onRecognitionState(
-    @GestureRecognizerState final int... states) {
+    @GestureRecognizerState
+    final int... states) {
     return new FilterOperation<T>() {
       @Override
       public boolean filter(T value) {
@@ -163,9 +165,9 @@ public final class GestureOperators {
    * Adds the current translation to the initial translation of the given view and emits the
    * result while the gesture recognizer is active.
    */
-  public static <T extends DragGestureRecognizer> Operation<T, Float[]> translated(
+  public static <T extends DragGestureRecognizer> Operation<T, PointF> translated(
     final View view) {
-    return new Operation<T, Float[]>() {
+    return new Operation<T, PointF>() {
 
       private Subscription adjustmentSubscription;
 
@@ -175,20 +177,20 @@ public final class GestureOperators {
       private float adjustmentY;
 
       @Override
-      public void preConnect(MotionObserver<Float[]> observer) {
+      public void preConnect(MotionObserver<PointF> observer) {
         adjustmentSubscription =
           ReactiveProperty.of(view, ViewProperties.ANCHOR_POINT_ADJUSTMENT)
-            .subscribe(new SimpleMotionObserver<Float[]>() {
+            .subscribe(new SimpleMotionObserver<PointF>() {
               @Override
-              public void next(Float[] value) {
-                adjustmentX += value[0];
-                adjustmentY += value[1];
+              public void next(PointF value) {
+                adjustmentX += value.x;
+                adjustmentY += value.y;
               }
             });
       }
 
       @Override
-      public void next(Observer<Float[]> observer, T gestureRecognizer) {
+      public void next(Observer<PointF> observer, T gestureRecognizer) {
         switch (gestureRecognizer.getState()) {
           case BEGAN:
             initialTranslationX = view.getTranslationX();
@@ -200,16 +202,16 @@ public final class GestureOperators {
             float translationX = gestureRecognizer.getTranslationX();
             float translationY = gestureRecognizer.getTranslationY();
 
-            observer.next(new Float[]{
+            observer.next(new PointF(
               initialTranslationX + adjustmentX + translationX,
-              initialTranslationY + adjustmentY + translationY,
-            });
+              initialTranslationY + adjustmentY + translationY
+            ));
             break;
         }
       }
 
       @Override
-      public void preDisconnect(MotionObserver<Float[]> observer) {
+      public void preDisconnect(MotionObserver<PointF> observer) {
         adjustmentSubscription.unsubscribe();
       }
     };
@@ -244,14 +246,14 @@ public final class GestureOperators {
    * Multiplies the current scale onto the initial scale of the given view and emits the result
    * while the gesture recognizer is active.
    */
-  public static <T extends ScaleGestureRecognizer> Operation<T, Float[]> scaled(final View view) {
-    return new Operation<T, Float[]>() {
+  public static <T extends ScaleGestureRecognizer> Operation<T, PointF> scaled(final View view) {
+    return new Operation<T, PointF>() {
 
       private float initialScaleX;
       private float initialScaleY;
 
       @Override
-      public void next(Observer<Float[]> observer, T gestureRecognizer) {
+      public void next(Observer<PointF> observer, T gestureRecognizer) {
         switch (gestureRecognizer.getState()) {
           case BEGAN:
             initialScaleX = view.getScaleX();
@@ -260,41 +262,41 @@ public final class GestureOperators {
           case CHANGED:
             float scale = gestureRecognizer.getScale();
 
-            observer.next(new Float[]{initialScaleX * scale, initialScaleY * scale});
+            observer.next(new PointF(initialScaleX * scale, initialScaleY * scale));
             break;
         }
       }
     };
   }
 
-  public static <T extends GestureRecognizer> Operation<T, Float[]> pivot() {
-    return new Operation<T, Float[]>() {
+  public static <T extends GestureRecognizer> Operation<T, PointF> pivot() {
+    return new Operation<T, PointF>() {
 
       @Override
-      public void next(Observer<Float[]> observer, T gestureRecognizer) {
-        Float[] pivot = new Float[]{
+      public void next(Observer<PointF> observer, T gestureRecognizer) {
+        PointF pivot = new PointF(
           gestureRecognizer.getCentroidX(),
           gestureRecognizer.getCentroidY()
-        };
+        );
         observer.next(pivot);
       }
     };
   }
 
-  public static <T extends GestureRecognizer> Operation<T, Float[]> anchored(final View view) {
-    return new Operation<T, Float[]>() {
+  public static <T extends GestureRecognizer> Operation<T, PointF> anchored(final View view) {
+    return new Operation<T, PointF>() {
 
       @Override
-      public void next(Observer<Float[]> observer, T gestureRecognizer) {
+      public void next(Observer<PointF> observer, T gestureRecognizer) {
         array[0] = view.getPivotX();
         array[1] = view.getPivotY();
         GestureRecognizer.getTransformationMatrix(view, matrix, inverse);
         matrix.mapPoints(array);
 
-        Float[] adjustment = new Float[]{
+        PointF adjustment = new PointF(
           gestureRecognizer.getUntransformedCentroidX() - array[0],
-          gestureRecognizer.getUntransformedCentroidY() - array[1],
-        };
+          gestureRecognizer.getUntransformedCentroidY() - array[1]
+        );
         observer.next(adjustment);
       }
     };

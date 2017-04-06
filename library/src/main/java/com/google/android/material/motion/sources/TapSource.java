@@ -15,6 +15,7 @@
  */
 package com.google.android.material.motion.sources;
 
+import android.graphics.PointF;
 import android.support.v4.util.SimpleArrayMap;
 import android.support.v4.view.GestureDetectorCompat;
 import android.view.GestureDetector.OnGestureListener;
@@ -24,15 +25,16 @@ import android.view.View;
 
 import com.google.android.indefinite.observable.Observer;
 import com.google.android.material.motion.MotionObserver;
-import com.google.android.material.motion.interactions.SetPositionOnTap;
 import com.google.android.material.motion.Source;
 import com.google.android.material.motion.gestures.OnTouchListeners;
+import com.google.android.material.motion.interactions.SetPositionOnTap;
 
-public class TapSource extends Source<Float[]> {
+public class TapSource extends Source<PointF> {
 
   private final View container;
   private final GestureDetectorCompat detector;
-  private final SimpleArrayMap<Observer<Float[]>, OnGestureListener> gestureListeners = new SimpleArrayMap<>();
+  private final SimpleArrayMap<Observer<PointF>, OnGestureListener> gestureListeners =
+    new SimpleArrayMap<>();
 
   public TapSource(SetPositionOnTap interaction) {
     super(interaction);
@@ -54,30 +56,30 @@ public class TapSource extends Source<Float[]> {
   }
 
   @Override
-  protected void onConnect(final MotionObserver<Float[]> observer) {
+  protected void onConnect(final MotionObserver<PointF> observer) {
     gestureListeners.put(observer, new SimpleOnGestureListener() {
       @Override
       public boolean onSingleTapUp(MotionEvent e) {
-        observer.next(new Float[]{e.getX(), e.getY()});
+        observer.next(new PointF(e.getX(), e.getY()));
         return true;
       }
     });
   }
 
   @Override
-  protected void onEnable(MotionObserver<Float[]> observer) {
+  protected void onEnable(MotionObserver<PointF> observer) {
     OnTouchListeners.add(container, listener);
     // TODO: observer.state()?
   }
 
   @Override
-  protected void onDisable(MotionObserver<Float[]> observer) {
+  protected void onDisable(MotionObserver<PointF> observer) {
     OnTouchListeners.remove(container, listener);
     // TODO: observer.state()?
   }
 
   @Override
-  protected void onDisconnect(MotionObserver<Float[]> observer) {
+  protected void onDisconnect(MotionObserver<PointF> observer) {
     gestureListeners.remove(observer);
   }
 

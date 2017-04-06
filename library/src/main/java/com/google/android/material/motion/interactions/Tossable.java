@@ -15,6 +15,7 @@
  */
 package com.google.android.material.motion.interactions;
 
+import android.graphics.PointF;
 import android.util.Property;
 import android.view.View;
 
@@ -23,23 +24,23 @@ import com.google.android.material.motion.Interaction;
 import com.google.android.material.motion.MotionRuntime;
 import com.google.android.material.motion.ReactiveProperty;
 import com.google.android.material.motion.sources.PhysicsSpringSource;
-import com.google.android.material.motion.springs.FloatArrayTypeVectorizer;
+import com.google.android.material.motion.springs.PointFTypeVectorizer;
 
 import static com.google.android.material.motion.operators.GestureOperators.isAtRest;
 import static com.google.android.material.motion.operators.GestureOperators.velocity;
 
-public class Tossable extends Interaction<View, Float[]> {
+public class Tossable extends Interaction<View, PointF> {
 
   public final Draggable draggable;
-  private final Property<View, Float[]> springProperty;
-  public final ReactiveProperty<Float[]> anchor;
+  private final Property<View, PointF> springProperty;
+  public final ReactiveProperty<PointF> anchor;
 
-  public Tossable(Property<View, Float[]> springProperty, ReactiveProperty<Float[]> anchor) {
+  public Tossable(Property<View, PointF> springProperty, ReactiveProperty<PointF> anchor) {
     this(new Draggable(), springProperty, anchor);
   }
 
   public Tossable(
-    Draggable draggable, Property<View, Float[]> springProperty, ReactiveProperty<Float[]> anchor) {
+    Draggable draggable, Property<View, PointF> springProperty, ReactiveProperty<PointF> anchor) {
     this.draggable = draggable;
     this.springProperty = springProperty;
     this.anchor = anchor;
@@ -48,14 +49,14 @@ public class Tossable extends Interaction<View, Float[]> {
   }
 
   @Override
-  public void apply(MotionRuntime runtime, View target, ConstraintApplicator<Float[]> constraints) {
+  public void apply(MotionRuntime runtime, View target, ConstraintApplicator<PointF> constraints) {
     // TODO: Make spring a field so it can be customized.
-    MaterialSpring<View, Float[]> spring = new MaterialSpring<>(
+    MaterialSpring<View, PointF> spring = new MaterialSpring<>(
       springProperty,
-      new FloatArrayTypeVectorizer(2),
+      new PointFTypeVectorizer(),
       anchor,
       ReactiveProperty.of(target, springProperty),
-      ReactiveProperty.of(new Float[]{0f, 0f}),
+      ReactiveProperty.of(new PointF(0f, 0f)),
       ReactiveProperty.of(1f),
       ReactiveProperty.of(1f),
       ReactiveProperty.of(4f),
