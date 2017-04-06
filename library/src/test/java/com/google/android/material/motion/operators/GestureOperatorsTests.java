@@ -59,11 +59,6 @@ public class GestureOperatorsTests {
     view.setOnTouchListener(gesture);
   }
 
-  @Test(expected = UnsupportedOperationException.class)
-  public void constructorIsDisabled() {
-    new GestureOperators();
-  }
-
   @Test
   public void extractsCentroid() {
     TrackingMotionObserver<PointF> tracker = new TrackingMotionObserver<>();
@@ -71,7 +66,7 @@ public class GestureOperatorsTests {
     GestureInteraction<SimulatedGestureRecognizer, ?> interaction = createInteraction(gesture);
     GestureSource
       .from(interaction)
-      .compose(GestureOperators.centroid())
+      .compose(Centroid.centroid())
       .subscribe(tracker);
 
     assertThat(interaction.state.read()).isEqualTo(AT_REST);
@@ -89,7 +84,7 @@ public class GestureOperatorsTests {
     GestureInteraction<SimulatedGestureRecognizer, ?> interaction = createInteraction(gesture);
     GestureSource
       .from(interaction)
-      .compose(GestureOperators.centroidX())
+      .compose(Centroid.centroidX())
       .subscribe(tracker);
 
     gesture.setCentroid(5f, 10f);
@@ -104,7 +99,7 @@ public class GestureOperatorsTests {
     GestureInteraction<SimulatedGestureRecognizer, ?> interaction = createInteraction(gesture);
     GestureSource
       .from(interaction)
-      .compose(GestureOperators.centroidY())
+      .compose(Centroid.centroidY())
       .subscribe(tracker);
 
     gesture.setCentroid(5f, 10f);
@@ -119,7 +114,7 @@ public class GestureOperatorsTests {
     GestureInteraction<SimulatedGestureRecognizer, ?> interaction = createInteraction(gesture);
     GestureSource
       .from(interaction)
-      .compose(GestureOperators.onRecognitionState(BEGAN))
+      .compose(OnRecognitionState.onRecognitionState(BEGAN))
       .compose(new MapOperation<GestureRecognizer, Integer>() {
         @Override
         public Integer transform(GestureRecognizer value) {
@@ -142,7 +137,7 @@ public class GestureOperatorsTests {
     GestureInteraction<SimulatedGestureRecognizer, ?> interaction = createInteraction(gesture);
     GestureSource
       .from(interaction)
-      .compose(GestureOperators.onRecognitionState(BEGAN, RECOGNIZED))
+      .compose(OnRecognitionState.onRecognitionState(BEGAN, RECOGNIZED))
       .compose(new MapOperation<GestureRecognizer, Integer>() {
         @Override
         public Integer transform(GestureRecognizer value) {
