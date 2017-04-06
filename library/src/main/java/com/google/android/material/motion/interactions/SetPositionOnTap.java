@@ -15,6 +15,7 @@
  */
 package com.google.android.material.motion.interactions;
 
+import android.graphics.PointF;
 import android.view.View;
 
 import com.google.android.material.motion.ConstraintApplicator;
@@ -24,10 +25,10 @@ import com.google.android.material.motion.MotionRuntime;
 import com.google.android.material.motion.ReactiveProperty;
 import com.google.android.material.motion.sources.TapSource;
 
-public class SetPositionOnTap extends Interaction<ReactiveProperty<Float[]>, Float[]> {
+public class SetPositionOnTap extends Interaction<ReactiveProperty<PointF>, PointF> {
 
   public final View container;
-  public final MotionObservable<Float[]> tapStream;
+  public final MotionObservable<PointF> tapStream;
 
   public SetPositionOnTap(View container) {
     this.container = container;
@@ -37,8 +38,8 @@ public class SetPositionOnTap extends Interaction<ReactiveProperty<Float[]>, Flo
   @Override
   public void apply(
     MotionRuntime runtime,
-    ReactiveProperty<Float[]> target,
-    ConstraintApplicator<Float[]> constraints) {
+    ReactiveProperty<PointF> target,
+    ConstraintApplicator<PointF> constraints) {
     runtime.write(constraints.apply(tapStream), target);
   }
 }
