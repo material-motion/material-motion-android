@@ -21,16 +21,27 @@ import android.support.v4.util.SimpleArrayMap;
 import android.util.Log;
 
 import com.google.android.indefinite.observable.IndefiniteObservable.Subscription;
-import com.google.android.indefinite.observable.Observer;
+import com.google.android.material.motion.FilterOperation;
 import com.google.android.material.motion.MapOperation;
 import com.google.android.material.motion.MotionObservable;
 import com.google.android.material.motion.MotionObserver;
 import com.google.android.material.motion.Operation;
+import com.google.android.material.motion.RawOperation;
+import com.google.android.material.motion.SlopEvent;
 import com.google.android.material.motion.ThresholdSide;
 
 import java.util.Map;
 
 public class CommonOperators {
+
+  private static final SimpleArrayMap<Integer, Integer> THRESHOLD_SIDE_TO_SLOP_EVENT_MAP =
+    new SimpleArrayMap<>();
+
+  static {
+    THRESHOLD_SIDE_TO_SLOP_EVENT_MAP.put(ThresholdSide.BELOW, SlopEvent.EXIT);
+    THRESHOLD_SIDE_TO_SLOP_EVENT_MAP.put(ThresholdSide.WITHIN, SlopEvent.RETURN);
+    THRESHOLD_SIDE_TO_SLOP_EVENT_MAP.put(ThresholdSide.ABOVE, SlopEvent.EXIT);
+  }
 
   @VisibleForTesting
   public CommonOperators() {
@@ -54,6 +65,22 @@ public class CommonOperators {
         dispatched = true;
 
         observer.next(value);
+      }
+    };
+  }
+
+  public static <T> Operation<T, T> ignoreUntil(final T expected) {
+    return new FilterOperation<T>() {
+
+      private boolean received;
+
+      @Override
+      public boolean filter(T value) {
+        if (expected.equals(value)) {
+          received = true;
+        }
+
+        return received;
       }
     };
   }
@@ -96,6 +123,19 @@ public class CommonOperators {
         } else {
           observer.next(ThresholdSide.WITHIN);
         }
+      }
+    };
+  }
+
+  public static <T extends Comparable<T>> RawOperation<T, Integer> slop(final T min, final T max) {
+    return new RawOperation<T, Integer>() {
+      @Override
+      public MotionObservable<Integer> compose(MotionObservable<? extends T> stream) {
+        return stream
+          .compose(thresholdRange(min, max))
+          .compose(rewrite(THRESHOLD_SIDE_TO_SLOP_EVENT_MAP))
+          .compose(CommonOperators.<Integer>dedupe())
+          .compose(ignoreUntil(SlopEvent.EXIT));
       }
     };
   }
