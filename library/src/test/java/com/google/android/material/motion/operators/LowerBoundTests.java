@@ -28,6 +28,7 @@ import org.robolectric.annotation.Config;
 
 import java.util.Arrays;
 
+import static com.google.android.material.motion.operators.LowerBound.lowerBound;
 import static com.google.common.truth.Truth.assertThat;
 
 @RunWith(RobolectricTestRunner.class)
@@ -46,7 +47,7 @@ public class LowerBoundTests {
     MotionObservable<Float> stream =
       property
         .getStream()
-        .compose(CommonOperators.lowerBound(0f));
+        .compose(lowerBound(0f));
 
     TrackingMotionObserver<Float> tracker = new TrackingMotionObserver<>();
     stream.subscribe(tracker);

@@ -25,7 +25,7 @@ import com.google.android.material.motion.gestures.GestureInteraction;
 import com.google.android.material.motion.gestures.ScaleGestureRecognizer;
 import com.google.android.material.motion.properties.ViewProperties;
 
-import static com.google.android.material.motion.operators.GestureOperators.scaled;
+import static com.google.android.material.motion.operators.Scaled.scaled;
 
 /**
  * A pinchable interaction.

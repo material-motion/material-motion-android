@@ -1,37 +1,50 @@
 package com.google.android.material.motion.operators;
 
 import android.support.annotation.VisibleForTesting;
+import android.support.v4.util.SimpleArrayMap;
 
+import com.google.android.indefinite.observable.Observer;
 import com.google.android.material.motion.MapOperation;
 import com.google.android.material.motion.Operation;
 
-public final class FloatOperators {
+import java.util.Map;
+
+public final class Rewrite {
 
   @VisibleForTesting
-  FloatOperators() {
+  Rewrite() {
     throw new UnsupportedOperationException();
   }
 
-  public static Operation<Float, Float> offsetBy(final float offset) {
-    return new MapOperation<Float, Float>() {
+  public static <T, U> Operation<T, U> rewriteTo(final U value) {
+    return new MapOperation<T, U>() {
       @Override
-      public Float transform(Float value) {
-        return value + offset;
+      public U transform(T ignored) {
+        return value;
       }
     };
   }
 
-  public static Operation<Float, Float> scaledBy(final float scale) {
-    return new MapOperation<Float, Float>() {
+  public static <T, U> Operation<T, U> rewrite(final Map<T, U> map) {
+    return new Operation<T, U>() {
       @Override
-      public Float transform(Float value) {
-        return value * scale;
+      public void next(Observer<U> observer, T value) {
+        if (map.containsKey(value)) {
+          observer.next(map.get(value));
+        }
       }
     };
   }
 
-  public static Operation<Float, Float> normalizedBy(final float normal) {
-    return scaledBy(1 / normal);
+  public static <T, U> Operation<T, U> rewrite(final SimpleArrayMap<T, U> map) {
+    return new Operation<T, U>() {
+      @Override
+      public void next(Observer<U> observer, T value) {
+        if (map.containsKey(value)) {
+          observer.next(map.get(value));
+        }
+      }
+    };
   }
 
   public static Operation<Float, Float> rewriteRange(
