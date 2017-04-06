@@ -24,6 +24,7 @@ import com.google.android.indefinite.observable.IndefiniteObservable.Subscriptio
 import com.google.android.indefinite.observable.Observer;
 import com.google.android.material.motion.MapOperation;
 import com.google.android.material.motion.Operation;
+import com.google.android.material.motion.ThresholdSide;
 
 import java.util.Map;
 
@@ -93,6 +94,30 @@ public class CommonOperators {
           return upperBound;
         }
         return value;
+      }
+    };
+  }
+
+  public static <T extends Comparable<T>> Operation<T, Integer> threshold(final T threshold) {
+    return thresholdRange(threshold, threshold);
+  }
+
+  public static <T extends Comparable<T>> Operation<T, Integer> thresholdRange(
+    final T min, final T max) {
+    return new Operation<T, Integer>() {
+      @Override
+      public void next(Observer<Integer> observer, T value) {
+        if (min.compareTo(max) > 0) {
+          return;
+        }
+
+        if (min.compareTo(value) > 0) {
+          observer.next(ThresholdSide.BELOW);
+        } else if (max.compareTo(value) < 0) {
+          observer.next(ThresholdSide.ABOVE);
+        } else {
+          observer.next(ThresholdSide.WITHIN);
+        }
       }
     };
   }
