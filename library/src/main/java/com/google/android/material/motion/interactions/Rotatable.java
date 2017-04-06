@@ -23,7 +23,7 @@ import com.google.android.material.motion.MotionRuntime;
 import com.google.android.material.motion.gestures.RotateGestureRecognizer;
 import com.google.android.material.motion.gestures.GestureInteraction;
 
-import static com.google.android.material.motion.operators.GestureOperators.rotated;
+import static com.google.android.material.motion.operators.Rotated.rotated;
 
 /**
  * A rotatable interaction.
