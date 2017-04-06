@@ -31,13 +31,4 @@ public final class BooleanOperators {
       }
     };
   }
-
-  static <T> MapOperation<T, Boolean> not(final MapOperation<T, Boolean> operation) {
-    return new MapOperation<T, Boolean>() {
-      @Override
-      public Boolean transform(T value) {
-        return !operation.transform(value);
-      }
-    };
-  }
 }
