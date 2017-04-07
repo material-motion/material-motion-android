@@ -22,7 +22,6 @@ import com.google.android.material.motion.Interaction;
 import com.google.android.material.motion.MotionObservable;
 import com.google.android.material.motion.MotionRuntime;
 import com.google.android.material.motion.ReactiveProperty;
-import com.google.android.material.motion.ReactiveReadable;
 import com.google.android.material.motion.sources.SpringSource;
 import com.google.android.material.motion.springs.TypeVectorizer;
 
@@ -52,14 +51,16 @@ public class MaterialSpring<O, T> extends Interaction<O, T> {
    * <p>
    * Default extracted from a POP spring with speed = 12 and bounciness = 4.
    */
-  public static final ReactiveReadable<Float> DEFAULT_TENSION_PROPERTY = ReactiveProperty.of(DEFAULT_TENSION);
+  public static final ReactiveProperty<Float> DEFAULT_TENSION_PROPERTY =
+    ReactiveProperty.ofImmutableValue(DEFAULT_TENSION);
 
   /**
    * The default spring friction coefficient. Represents {@link #DEFAULT_FRICTION}.
    * <p>
    * Default extracted from a POP spring with speed = 12 and bounciness = 4.
    */
-  public static final ReactiveReadable<Float> DEFAULT_FRICTION_PROPERTY = ReactiveProperty.of(DEFAULT_FRICTION);
+  public static final ReactiveProperty<Float> DEFAULT_FRICTION_PROPERTY =
+    ReactiveProperty.ofImmutableValue(DEFAULT_FRICTION);
 
   /**
    * The destination value of the spring represented as a property.
@@ -79,7 +80,7 @@ public class MaterialSpring<O, T> extends Interaction<O, T> {
   /**
    * The value used when determining completion of the spring simulation.
    */
-  public final ReactiveReadable<Float> threshold;
+  public final ReactiveProperty<Float> threshold;
 
   /**
    * The tension coefficient of the spring represented as a property.
@@ -128,7 +129,7 @@ public class MaterialSpring<O, T> extends Interaction<O, T> {
     ReactiveProperty<T> destination,
     ReactiveProperty<T> initialValue,
     ReactiveProperty<T> initialVelocity,
-    ReactiveReadable<Float> threshold,
+    ReactiveProperty<Float> threshold,
     ReactiveProperty<Float> tension,
     ReactiveProperty<Float> friction,
     SpringSource.System system) {
