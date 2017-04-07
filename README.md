@@ -34,6 +34,17 @@ dependencies {
 }
 ```
 
+Enable [Java 8 language features](https://developer.android.com/studio/preview/features/java8-support.html).
+
+```gradle
+android {
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+}
+```
+
 For more information regarding versioning, see:
 
 - [Material Motion Versioning Policies](https://material-motion.github.io/material-motion/team/essentials/core_team_contributors/release_process#versioning)
