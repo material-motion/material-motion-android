@@ -55,25 +55,25 @@ subprojects {
       }
     }.findAll()
 
-    resolutionStrategy.dependencySubstitution.all { DependencySubstitution dependency ->
-      if (dependency.requested instanceof ModuleComponentSelector) {
-        ModuleComponentSelector requested = dependency.requested;
-
-        Dependency local = localDependencies.find {
-          it.group == requested.group && it.name == requested.module
-        }
-
-        if (local) {
-          substitutions << local
-          dependency.useTarget([
-            group  : local.group,
-            name   : local.name,
-            version: local.version,
-          ])
-          logger.info("Substituded local dependency for: $requested.")
-        }
-      }
-    }
+//    resolutionStrategy.dependencySubstitution.all { DependencySubstitution dependency ->
+//      if (dependency.requested instanceof ModuleComponentSelector) {
+//        ModuleComponentSelector requested = dependency.requested;
+//
+//        Dependency local = localDependencies.find {
+//          it.group == requested.group && it.name == requested.module
+//        }
+//
+//        if (local) {
+//          substitutions << local
+//          dependency.useTarget([
+//            group  : local.group,
+//            name   : local.name,
+//            version: local.version,
+//          ])
+//          logger.info("Substituded local dependency for: $requested.")
+//        }
+//      }
+//    }
   }
 }
 

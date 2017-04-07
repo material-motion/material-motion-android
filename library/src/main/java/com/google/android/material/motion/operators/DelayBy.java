@@ -27,7 +27,7 @@ public class DelayBy {
       @Override
       public void preConnect(MotionObserver<T> observer) {
         if (!runnables.containsKey(observer)) {
-          runnables.put(observer, new ArrayDeque<Runnable>());
+          runnables.put(observer, new ArrayDeque<>());
         }
       }
 
