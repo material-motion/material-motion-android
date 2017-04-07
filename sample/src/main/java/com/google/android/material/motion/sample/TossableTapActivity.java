@@ -10,9 +10,9 @@ import com.google.android.material.motion.MotionRuntime;
 import com.google.android.material.motion.ReactiveProperty;
 import com.google.android.material.motion.interactions.SetPositionOnTap;
 import com.google.android.material.motion.interactions.Tossable;
-import com.google.android.material.motion.operators.LockToYAxis;
 import com.google.android.material.motion.properties.ViewProperties;
 
+import static com.google.android.material.motion.operators.DelayBy.delayBy;
 import static com.google.android.material.motion.operators.LockToYAxis.lockToYAxis;
 
 public class TossableTapActivity extends AppCompatActivity {
@@ -56,7 +56,7 @@ public class TossableTapActivity extends AppCompatActivity {
     ReactiveProperty<PointF> anchor = ReactiveProperty.of(ViewProperties.CENTER.get(target));
 
     Tossable tossable = new Tossable(ViewProperties.CENTER, anchor);
-    runtime.addInteraction(tossable, target, lockToYAxis(0f));
+    runtime.addInteraction(tossable, target, lockToYAxis(0f), delayBy(500));
 
     runtime.addInteraction(
       new SetPositionOnTap(container),

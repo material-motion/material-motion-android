@@ -28,12 +28,9 @@ public class DelayBy {
 
       @Override
       public void next(final Observer<T> observer, final T value) {
-        handler.postDelayed(new Runnable() {
-          @Override
-          public void run() {
-            if (connected) {
-              observer.next(value);
-            }
+        handler.postDelayed(() -> {
+          if (connected) {
+            observer.next(value);
           }
         }, delayMillis);
       }
