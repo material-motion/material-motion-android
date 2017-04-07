@@ -29,11 +29,13 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * A reactive property represents a subscribable, readable/writable value. Subscribers will receive
- * updates whenever {@link #write(Object)} is invoked.
+ * updates whenever {@link #onWrite(Object)} is invoked.
  */
-public abstract class ReactiveProperty<T> implements ReactiveReadable<T>, ReactiveWritable<T> {
+public abstract class ReactiveProperty<T> {
 
-  private static final WeakHashMap<Object, SimpleArrayMap<Property<?, ?>, ReactiveProperty<?>>> targetProperties = new WeakHashMap<>();
+  private static final WeakHashMap<Object, SimpleArrayMap<Property<?, ?>, ReactiveProperty<?>>>
+    targetProperties =
+    new WeakHashMap<>();
 
   public static <T, O> ReactiveProperty<T> of(O target, Property<O, T> property) {
     SimpleArrayMap<Property<?, ?>, ReactiveProperty<?>> properties = targetProperties.get(target);
@@ -56,9 +58,28 @@ public abstract class ReactiveProperty<T> implements ReactiveReadable<T>, Reacti
     return new ValueReactiveProperty<>(initialValue);
   }
 
+  public static <T> ReactiveProperty<T> ofImmutableValue(T value) {
+    return new ImmutableValueReactiveProperty<>(value);
+  }
+
   private final List<MotionObserver<T>> observers = new CopyOnWriteArrayList<>();
 
-  @Override
+  /**
+   * Reads the property's value.
+   */
+  public abstract T read();
+
+  /**
+   * Writes the property with the given value.
+   */
+  public abstract void write(T value);
+
+  /**
+   * Subscribes to the property's value.
+   * <p>
+   * The given observer will be notified of the property's current value and every time the
+   * property is written to.
+   */
   public final Subscription subscribe(@NonNull final MotionObserver<T> observer) {
     return getStream().subscribe(observer);
   }
@@ -142,6 +163,18 @@ public abstract class ReactiveProperty<T> implements ReactiveReadable<T>, Reacti
       this.value = value;
 
       onWrite(value);
+    }
+  }
+
+  private static class ImmutableValueReactiveProperty<T> extends ValueReactiveProperty<T> {
+
+    public ImmutableValueReactiveProperty(T initialValue) {
+      super(initialValue);
+    }
+
+    @Override
+    public void write(T value) {
+      throw new UnsupportedOperationException();
     }
   }
 }
