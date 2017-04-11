@@ -16,7 +16,7 @@ public final class UpperBound {
     return new MapOperation<T, T>() {
       @Override
       public T transform(T value) {
-        if (upperBound.compareTo(value) < 0) {
+        if (value.compareTo(upperBound) > 0) {
           return upperBound;
         }
         return value;

@@ -38,9 +38,9 @@ public final class Threshold {
           return;
         }
 
-        if (min.compareTo(value) > 0) {
+        if (value.compareTo(min) < 0) {
           observer.next(ThresholdSide.BELOW);
-        } else if (max.compareTo(value) < 0) {
+        } else if (value.compareTo(max) > 0) {
           observer.next(ThresholdSide.ABOVE);
         } else {
           observer.next(ThresholdSide.WITHIN);
