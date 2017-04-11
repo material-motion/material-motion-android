@@ -91,7 +91,7 @@ public class MotionObservable<T> extends IndefiniteObservable<MotionObserver<T>>
     });
   }
 
-  public <U> MotionObservable<U> compose(final RawOperation<? super T, U> operation) {
+  public <U> MotionObservable<U> compose(final RawOperation<T, U> operation) {
     return operation.compose(this);
   }
 }
