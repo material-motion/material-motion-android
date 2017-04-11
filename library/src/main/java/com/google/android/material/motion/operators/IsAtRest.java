@@ -4,9 +4,10 @@ import android.support.annotation.VisibleForTesting;
 
 import com.google.android.material.motion.MotionObservable;
 import com.google.android.material.motion.RawOperation;
-import com.google.android.material.motion.gestures.DragGestureRecognizer;
+import com.google.android.material.motion.gestures.GestureRecognizer;
 
 import static com.google.android.material.motion.operators.Inverted.inverted;
+import static com.google.android.material.motion.operators.IsActive.isActive;
 
 public final class IsAtRest {
 
@@ -15,12 +16,12 @@ public final class IsAtRest {
     throw new UnsupportedOperationException();
   }
 
-  public static <T extends DragGestureRecognizer> RawOperation<T, Boolean> isAtRest() {
+  public static <T extends GestureRecognizer> RawOperation<T, Boolean> isAtRest() {
     return new RawOperation<T, Boolean>() {
       @Override
-      public MotionObservable<Boolean> compose(MotionObservable<? extends T> stream) {
+      public MotionObservable<Boolean> compose(MotionObservable<T> stream) {
         return stream
-          .compose(IsActive.<T>isActive())
+          .compose(isActive())
           .compose(inverted());
       }
     };

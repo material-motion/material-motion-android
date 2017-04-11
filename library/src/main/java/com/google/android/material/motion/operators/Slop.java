@@ -11,6 +11,11 @@ import com.google.android.material.motion.operators.Threshold.ThresholdSide;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
+import static com.google.android.material.motion.operators.Dedupe.dedupe;
+import static com.google.android.material.motion.operators.IgnoreUntil.ignoreUntil;
+import static com.google.android.material.motion.operators.Rewrite.rewrite;
+import static com.google.android.material.motion.operators.Threshold.thresholdRange;
+
 public final class Slop {
 
   @IntDef({SlopEvent.EXIT, SlopEvent.RETURN})
@@ -38,12 +43,12 @@ public final class Slop {
   public static <T extends Comparable<T>> RawOperation<T, Integer> slop(final T min, final T max) {
     return new RawOperation<T, Integer>() {
       @Override
-      public MotionObservable<Integer> compose(MotionObservable<? extends T> stream) {
+      public MotionObservable<Integer> compose(MotionObservable<T> stream) {
         return stream
-          .compose(Threshold.thresholdRange(min, max))
-          .compose(Rewrite.rewrite(THRESHOLD_SIDE_TO_SLOP_EVENT_MAP))
-          .compose(Dedupe.<Integer>dedupe())
-          .compose(IgnoreUntil.ignoreUntil(SlopEvent.EXIT));
+          .compose(thresholdRange(min, max))
+          .compose(rewrite(THRESHOLD_SIDE_TO_SLOP_EVENT_MAP))
+          .compose(dedupe())
+          .compose(ignoreUntil(SlopEvent.EXIT));
       }
     };
   }
