@@ -4,6 +4,7 @@ import android.support.annotation.IntDef;
 import android.support.annotation.VisibleForTesting;
 
 import com.google.android.indefinite.observable.Observer;
+import com.google.android.material.motion.MotionObserver;
 import com.google.android.material.motion.Operation;
 
 import java.lang.annotation.Retention;
@@ -33,14 +34,14 @@ public final class Threshold {
     final T min, final T max) {
     return new Operation<T, Integer>() {
       @Override
-      public void next(Observer<Integer> observer, T value) {
+      public void next(MotionObserver<Integer> observer, T value) {
         if (min.compareTo(max) > 0) {
           return;
         }
 
-        if (min.compareTo(value) > 0) {
+        if (value.compareTo(min) < 0) {
           observer.next(ThresholdSide.BELOW);
-        } else if (max.compareTo(value) < 0) {
+        } else if (value.compareTo(max) > 0) {
           observer.next(ThresholdSide.ABOVE);
         } else {
           observer.next(ThresholdSide.WITHIN);

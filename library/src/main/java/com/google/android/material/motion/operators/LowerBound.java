@@ -16,7 +16,7 @@ public final class LowerBound {
     return new MapOperation<T, T>() {
       @Override
       public T transform(T value) {
-        if (lowerBound.compareTo(value) > 0) {
+        if (value.compareTo(lowerBound) < 0) {
           return lowerBound;
         }
         return value;
