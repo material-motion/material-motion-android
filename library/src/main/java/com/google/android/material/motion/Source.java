@@ -23,6 +23,8 @@ import com.google.android.indefinite.observable.IndefiniteObservable.Subscriptio
 import com.google.android.material.motion.MotionObserver.SimpleMotionObserver;
 import com.google.android.material.motion.operators.Dedupe;
 
+import static com.google.android.material.motion.operators.Dedupe.dedupe;
+
 public abstract class Source<T> {
 
   private final Interaction<?, T> interaction;
@@ -40,7 +42,7 @@ public abstract class Source<T> {
         onConnect(observer);
 
         final Subscription enabledSubscription = interaction.enabled.getStream()
-          .compose(Dedupe.<Boolean>dedupe())
+          .compose(dedupe())
           .subscribe(new SimpleMotionObserver<Boolean>() {
             @Override
             public void next(Boolean enabled) {
