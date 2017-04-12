@@ -1,5 +1,6 @@
 package com.google.android.material.motion.sample;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -23,6 +24,7 @@ public class MainActivity extends AppCompatActivity {
     demos = new Demo[]{
       new Demo("Tossable Tap", new Intent(this, TossableTapActivity.class)),
       new Demo("Tween", new Intent(this, TweenActivity.class)),
+      new Demo("Gesture", new Intent(this, GestureActivity.class)),
     };
 
     RecyclerView recyclerView = (RecyclerView) findViewById(R.id.list);

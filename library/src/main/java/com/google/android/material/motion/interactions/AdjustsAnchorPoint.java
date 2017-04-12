@@ -18,11 +18,11 @@ package com.google.android.material.motion.interactions;
 import android.view.View;
 
 import com.google.android.material.motion.ConstraintApplicator;
-import com.google.android.material.motion.gestures.GestureRecognizer;
 import com.google.android.material.motion.Interaction;
 import com.google.android.material.motion.MotionObservable;
 import com.google.android.material.motion.MotionRuntime;
 import com.google.android.material.motion.gestures.GestureInteraction;
+import com.google.android.material.motion.gestures.GestureRecognizer;
 import com.google.android.material.motion.properties.ViewProperties;
 
 import static com.google.android.material.motion.gestures.GestureRecognizer.CHANGED;
@@ -46,8 +46,11 @@ public class AdjustsAnchorPoint extends Interaction<View, Void> {
     apply(runtime, target, rotatable);
   }
 
-  private void apply(MotionRuntime runtime, View target, GestureInteraction<?, ?> interaction) {
-    MotionObservable<GestureRecognizer> gestureStream =
+  private void apply(
+    MotionRuntime runtime,
+    View target,
+    GestureInteraction<? extends GestureRecognizer, ?> interaction) {
+    MotionObservable<? extends GestureRecognizer> gestureStream =
       interaction.gestureStream.compose(onRecognitionState(CHANGED));
 
     runtime.write(gestureStream.compose(pivot()), target, ViewProperties.PIVOT);
