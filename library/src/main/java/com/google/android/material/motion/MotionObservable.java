@@ -60,7 +60,7 @@ public class MotionObservable<T> extends IndefiniteObservable<MotionObserver<T>>
    * @param <U> The returned stream contains values of this type. The operation must output values
    * of this type.
    */
-  public <U> MotionObservable<U> compose(final Operation<? super T, U> operation) {
+  public <U> MotionObservable<U> compose(final Operation<T, U> operation) {
     final MotionObservable<T> upstream = MotionObservable.this;
 
     return new MotionObservable<>(new Connector<MotionObserver<U>>() {

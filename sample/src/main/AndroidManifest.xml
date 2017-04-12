@@ -32,6 +32,7 @@
 
     <activity android:name=".TossableTapActivity"/>
     <activity android:name=".TweenActivity"/>
+    <activity android:name=".GestureActivity"/>
   </application>
 
 </manifest>

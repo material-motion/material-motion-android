@@ -119,9 +119,9 @@ public class GestureOperatorsTests {
     GestureSource
       .from(interaction)
       .compose(onRecognitionState(BEGAN))
-      .compose(new MapOperation<GestureRecognizer, Integer>() {
+      .compose(new MapOperation<SimulatedGestureRecognizer, Integer>() {
         @Override
-        public Integer transform(GestureRecognizer value) {
+        public Integer transform(SimulatedGestureRecognizer value) {
           return value.getState();
         }
       })
@@ -142,9 +142,9 @@ public class GestureOperatorsTests {
     GestureSource
       .from(interaction)
       .compose(onRecognitionState(BEGAN, RECOGNIZED))
-      .compose(new MapOperation<GestureRecognizer, Integer>() {
+      .compose(new MapOperation<SimulatedGestureRecognizer, Integer>() {
         @Override
-        public Integer transform(GestureRecognizer value) {
+        public Integer transform(SimulatedGestureRecognizer value) {
           return value.getState();
         }
       })

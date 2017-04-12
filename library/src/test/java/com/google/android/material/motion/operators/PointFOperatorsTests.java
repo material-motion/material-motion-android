@@ -31,6 +31,8 @@ import org.robolectric.annotation.Config;
 
 import java.util.Arrays;
 
+import static com.google.android.material.motion.operators.X.x;
+import static com.google.android.material.motion.operators.Y.y;
 import static com.google.common.truth.Truth.assertThat;
 
 @RunWith(RobolectricTestRunner.class)
@@ -42,7 +44,7 @@ public class PointFOperatorsTests {
     TrackingMotionObserver<Float> tracker = new TrackingMotionObserver<>();
 
     pointFSource()
-      .compose(X.x())
+      .compose(x())
       .subscribe(tracker);
 
     assertThat(tracker.values).isEqualTo(Arrays.asList(1f, 3f, 5f));
@@ -53,7 +55,7 @@ public class PointFOperatorsTests {
     TrackingMotionObserver<Float> tracker = new TrackingMotionObserver<>();
 
     pointFSource()
-      .compose(Y.y())
+      .compose(y())
       .subscribe(tracker);
 
     assertThat(tracker.values).isEqualTo(Arrays.asList(2f, 4f, 6f));
