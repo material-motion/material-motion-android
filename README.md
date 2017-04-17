@@ -34,6 +34,10 @@ dependencies {
 }
 ```
 
+For more information regarding versioning, see:
+
+- [Material Motion Versioning Policies](https://material-motion.github.io/material-motion/team/essentials/core_team_contributors/release_process#versioning)
+
 Enable [Java 8 language features](https://developer.android.com/studio/preview/features/java8-support.html).
 
 ```gradle
@@ -45,9 +49,7 @@ android {
 }
 ```
 
-For more information regarding versioning, see:
-
-- [Material Motion Versioning Policies](https://material-motion.github.io/material-motion/team/essentials/core_team_contributors/release_process#versioning)
+**Note**: You must use Android Studio 2.4 Preview 4 or newer.
 
 ### Using the files from a folder local to the machine
 
@@ -80,7 +82,7 @@ How to use the library in your project.
 #### Editing the library in Android Studio
 
 Open Android Studio,
-choose `File > New > Import`,
+choose `File > New > Import Project...`,
 choose the root `build.gradle` file.
 
 ## Example apps/unit tests
