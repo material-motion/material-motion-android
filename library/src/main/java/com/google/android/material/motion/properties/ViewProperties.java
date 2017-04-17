@@ -36,8 +36,6 @@ public final class ViewProperties {
   public static final Property<View, PointF> TRANSLATION =
     new Property<View, PointF>(PointF.class, "translation") {
 
-      private final PointF pointF = new PointF();
-
       @Override
       public void set(View object, PointF value) {
         object.setTranslationX(value.x);
@@ -46,6 +44,7 @@ public final class ViewProperties {
 
       @Override
       public PointF get(View object) {
+        PointF pointF = new PointF();
         pointF.x = object.getTranslationX();
         pointF.y = object.getTranslationY();
         return pointF;
@@ -55,8 +54,6 @@ public final class ViewProperties {
   public static final Property<View, PointF> CENTER =
     new Property<View, PointF>(PointF.class, "center") {
 
-      private final PointF pointF = new PointF();
-
       @Override
       public void set(View object, PointF value) {
         object.setX(value.x - object.getWidth() / 2f);
@@ -65,6 +62,7 @@ public final class ViewProperties {
 
       @Override
       public PointF get(View object) {
+        PointF pointF = new PointF();
         pointF.x = object.getX() + object.getWidth() / 2f;
         pointF.y = object.getY() + object.getHeight() / 2f;
         return pointF;
@@ -74,8 +72,6 @@ public final class ViewProperties {
   public static final Property<View, PointF> SCALE =
     new Property<View, PointF>(PointF.class, "scale") {
 
-      private final PointF pointF = new PointF();
-
       @Override
       public void set(View object, PointF value) {
         object.setScaleX(value.x);
@@ -84,6 +80,7 @@ public final class ViewProperties {
 
       @Override
       public PointF get(View object) {
+        PointF pointF = new PointF();
         pointF.x = object.getScaleX();
         pointF.y = object.getScaleY();
         return pointF;
@@ -93,8 +90,6 @@ public final class ViewProperties {
   public static final Property<View, PointF> PIVOT =
     new Property<View, PointF>(PointF.class, "pivot") {
 
-      private final PointF pointF = new PointF();
-
       @Override
       public void set(View object, PointF value) {
         object.setPivotX(value.x);
@@ -103,6 +98,7 @@ public final class ViewProperties {
 
       @Override
       public PointF get(View object) {
+        PointF pointF = new PointF();
         pointF.x = object.getPivotX();
         pointF.y = object.getPivotY();
         return pointF;
