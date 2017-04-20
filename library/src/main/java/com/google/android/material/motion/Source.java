@@ -21,7 +21,6 @@ import com.google.android.indefinite.observable.IndefiniteObservable.Connector;
 import com.google.android.indefinite.observable.IndefiniteObservable.Disconnector;
 import com.google.android.indefinite.observable.IndefiniteObservable.Subscription;
 import com.google.android.material.motion.MotionObserver.SimpleMotionObserver;
-import com.google.android.material.motion.operators.Dedupe;
 
 import static com.google.android.material.motion.operators.Dedupe.dedupe;
 
@@ -47,9 +46,9 @@ public abstract class Source<T> {
             @Override
             public void next(Boolean enabled) {
               if (enabled) {
-                onEnable(observer);
+                onEnable();
               } else {
-                onDisable(observer);
+                onDisable();
               }
             }
           });
@@ -58,9 +57,11 @@ public abstract class Source<T> {
 
           @Override
           public void disconnect() {
+
             enabledSubscription.unsubscribe();
             // TODO: This will potentially cause onDisable() to be called twice.
-            onDisable(observer);
+            onDisable();
+            onDisconnect(observer);
           }
         };
       }
@@ -69,10 +70,9 @@ public abstract class Source<T> {
 
   protected abstract void onConnect(MotionObserver<T> observer);
 
-  protected abstract void onEnable(MotionObserver<T> observer);
+  protected abstract void onEnable();
 
-  protected abstract void onDisable(MotionObserver<T> observer);
+  protected abstract void onDisable();
 
-  protected void onDisconnect(MotionObserver<T> observer) {
-  }
+  protected abstract void onDisconnect(MotionObserver<T> observer);
 }
