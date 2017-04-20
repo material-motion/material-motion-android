@@ -105,7 +105,7 @@ public final class PhysicsSpringSource<T> extends SpringSource<T> {
   }
 
   @Override
-  protected void onEnable(MotionObserver<T> observer) {
+  protected void onEnable() {
     tensionSubscription = interaction.tension.subscribe(new SimpleMotionObserver<Float>() {
       @Override
       public void next(Float value) {
@@ -148,7 +148,7 @@ public final class PhysicsSpringSource<T> extends SpringSource<T> {
   }
 
   @Override
-  protected void onDisable(MotionObserver<T> observer) {
+  protected void onDisable() {
     integrator.stop();
 
     tensionSubscription.unsubscribe();
