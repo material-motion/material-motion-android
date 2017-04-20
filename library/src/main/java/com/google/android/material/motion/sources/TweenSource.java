@@ -15,18 +15,24 @@
  */
 package com.google.android.material.motion.sources;
 
+import android.animation.Animator;
+import android.animation.Animator.AnimatorListener;
+import android.animation.AnimatorListenerAdapter;
 import android.animation.Keyframe;
 import android.animation.TimeInterpolator;
 import android.animation.TypeEvaluator;
 import android.animation.ValueAnimator;
 import android.animation.ValueAnimator.AnimatorUpdateListener;
+import android.support.v4.util.SimpleArrayMap;
 import android.view.animation.AccelerateDecelerateInterpolator;
 
 import com.google.android.indefinite.observable.IndefiniteObservable.Subscription;
-import com.google.android.material.motion.interactions.Tween;
+import com.google.android.indefinite.observable.Observer;
 import com.google.android.material.motion.MotionObserver;
 import com.google.android.material.motion.MotionObserver.SimpleMotionObserver;
+import com.google.android.material.motion.MotionState;
 import com.google.android.material.motion.Source;
+import com.google.android.material.motion.interactions.Tween;
 
 public class TweenSource<O, T> extends Source<T> {
 
@@ -34,8 +40,12 @@ public class TweenSource<O, T> extends Source<T> {
     new AccelerateDecelerateInterpolator();
   private static final Object[] lengthTwoArray = new Object[2];
 
-  private final Tween<O, T> tween;
+  private final Tween<O, T> interaction;
   private final ValueAnimator animator;
+  private final SimpleArrayMap<Observer<T>, AnimatorUpdateListener> updateListeners =
+    new SimpleArrayMap<>();
+  private final SimpleArrayMap<Observer<T>, AnimatorListener> animatorListeners =
+    new SimpleArrayMap<>();
 
   private Subscription evaluatorSubscription;
   private Subscription valuesSubscription;
@@ -55,49 +65,84 @@ public class TweenSource<O, T> extends Source<T> {
 
   private boolean initialized;
 
-  public TweenSource(Tween<O, T> tween) {
-    super(tween);
-    this.tween = tween;
-    this.animator = new ValueAnimator();
+  public TweenSource(Tween<O, T> interaction) {
+    super(interaction);
+    this.interaction = interaction;
+    animator = new ValueAnimator();
+    animator.addUpdateListener(new AnimatorUpdateListener() {
+      @Override
+      public void onAnimationUpdate(ValueAnimator animation) {
+        for (int i = 0, count = updateListeners.size(); i < count; i++) {
+          updateListeners.valueAt(i).onAnimationUpdate(animation);
+        }
+      }
+    });
+    animator.addListener(new AnimatorListenerAdapter() {
+      @Override
+      public void onAnimationStart(Animator animation) {
+        for (int i = 0, count = updateListeners.size(); i < count; i++) {
+          animatorListeners.valueAt(i).onAnimationStart(animation);
+        }
+      }
+
+      @Override
+      public void onAnimationEnd(Animator animation) {
+        for (int i = 0, count = updateListeners.size(); i < count; i++) {
+          animatorListeners.valueAt(i).onAnimationEnd(animation);
+        }
+      }
+    });
   }
 
   @Override
   protected void onConnect(final MotionObserver<T> observer) {
-    animator.addUpdateListener(new AnimatorUpdateListener() {
+    updateListeners.put(observer, new AnimatorUpdateListener() {
       @Override
       public void onAnimationUpdate(ValueAnimator animation) {
         //noinspection unchecked
         observer.next((T) animation.getAnimatedValue());
       }
     });
+    animatorListeners.put(observer, new AnimatorListenerAdapter() {
+      @Override
+      public void onAnimationStart(Animator animation) {
+        interaction.state.write(MotionState.ACTIVE);
+      }
+
+      @Override
+      public void onAnimationEnd(Animator animation) {
+        interaction.state.write(MotionState.AT_REST);
+      }
+    });
   }
 
   @Override
-  protected void onEnable(MotionObserver<T> observer) {
+  protected void onEnable() {
     initialized = false;
 
-    evaluatorSubscription = tween.evaluator.subscribe(new SimpleMotionObserver<TypeEvaluator<T>>() {
+    evaluatorSubscription = interaction.evaluator.subscribe(new
+                                                              SimpleMotionObserver<TypeEvaluator<T>>() {
       @Override
       public void next(TypeEvaluator<T> value) {
         lastEvaluator = value;
         startAnimator();
       }
     });
-    valuesSubscription = tween.values.subscribe(new SimpleMotionObserver<T[]>() {
+    valuesSubscription = interaction.values.subscribe(new SimpleMotionObserver<T[]>() {
       @Override
       public void next(T[] value) {
         lastValues = value;
         startAnimator();
       }
     });
-    offsetsSubscription = tween.offsets.subscribe(new SimpleMotionObserver<float[]>() {
+    offsetsSubscription = interaction.offsets.subscribe(new SimpleMotionObserver<float[]>() {
       @Override
       public void next(float[] value) {
         lastOffsets = value;
         startAnimator();
       }
     });
-    timingFunctionsSubscription = tween.timingFunctions.subscribe(
+    timingFunctionsSubscription = interaction.timingFunctions.subscribe(
       new SimpleMotionObserver<TimeInterpolator[]>() {
 
         @Override
@@ -106,14 +151,14 @@ public class TweenSource<O, T> extends Source<T> {
           startAnimator();
         }
       });
-    durationSubscription = tween.duration.subscribe(new SimpleMotionObserver<Long>() {
+    durationSubscription = interaction.duration.subscribe(new SimpleMotionObserver<Long>() {
       @Override
       public void next(Long value) {
         lastDuration = value;
         startAnimator();
       }
     });
-    delaySubscription = tween.delay.subscribe(new SimpleMotionObserver<Long>() {
+    delaySubscription = interaction.delay.subscribe(new SimpleMotionObserver<Long>() {
       @Override
       public void next(Long value) {
         lastDelay = value;
@@ -121,7 +166,7 @@ public class TweenSource<O, T> extends Source<T> {
       }
     });
     timingFunctionSubscription =
-      tween.timingFunction.subscribe(new SimpleMotionObserver<TimeInterpolator>() {
+      interaction.timingFunction.subscribe(new SimpleMotionObserver<TimeInterpolator>() {
         @Override
         public void next(TimeInterpolator value) {
           lastTimingFunction = value;
@@ -147,7 +192,7 @@ public class TweenSource<O, T> extends Source<T> {
     Object[] values;
     if (lastValues.length == 1) {
       values = lengthTwoArray;
-      values[0] = tween.property.get(tween.target);
+      values[0] = interaction.property.get(interaction.target);
       values[1] = lastValues[0];
     } else {
       values = lastValues;
@@ -204,7 +249,7 @@ public class TweenSource<O, T> extends Source<T> {
   }
 
   @Override
-  protected void onDisable(MotionObserver<T> observer) {
+  protected void onDisable() {
     animator.cancel();
 
     evaluatorSubscription.unsubscribe();
@@ -214,5 +259,11 @@ public class TweenSource<O, T> extends Source<T> {
     durationSubscription.unsubscribe();
     delaySubscription.unsubscribe();
     timingFunctionSubscription.unsubscribe();
+  }
+
+  @Override
+  protected void onDisconnect(MotionObserver<T> observer) {
+    updateListeners.remove(observer);
+    animatorListeners.remove(observer);
   }
 }

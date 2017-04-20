@@ -67,13 +67,13 @@ public class TapSource extends Source<PointF> {
   }
 
   @Override
-  protected void onEnable(MotionObserver<PointF> observer) {
+  protected void onEnable() {
     OnTouchListeners.add(container, listener);
     // TODO: observer.state()?
   }
 
   @Override
-  protected void onDisable(MotionObserver<PointF> observer) {
+  protected void onDisable() {
     OnTouchListeners.remove(container, listener);
     // TODO: observer.state()?
   }
