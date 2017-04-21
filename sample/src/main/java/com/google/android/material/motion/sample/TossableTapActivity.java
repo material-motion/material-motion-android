@@ -50,7 +50,7 @@ public class TossableTapActivity extends AppCompatActivity {
   }
 
   private void runDemo() {
-    ReactiveProperty<PointF> anchor = ReactiveProperty.of(ViewProperties.CENTER.get(target));
+    ReactiveProperty<PointF> anchor = runtime.get(target).center();
 
     Tossable tossable = new Tossable(ViewProperties.CENTER, anchor);
     runtime.addInteraction(tossable, target);
@@ -58,6 +58,6 @@ public class TossableTapActivity extends AppCompatActivity {
     runtime.addInteraction(new SetPositionOnTap(container), tossable.anchor);
 
     runtime.write(
-      tossable.anchor.getStream(), ReactiveProperty.of(destination, ViewProperties.CENTER));
+      tossable.anchor.getStream(), runtime.get(destination).center());
   }
 }

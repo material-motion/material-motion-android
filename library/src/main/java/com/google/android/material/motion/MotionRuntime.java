@@ -15,7 +15,9 @@
  */
 package com.google.android.material.motion;
 
+import android.support.v4.util.SimpleArrayMap;
 import android.util.Property;
+import android.view.View;
 
 import com.google.android.indefinite.observable.IndefiniteObservable.Subscription;
 
@@ -28,6 +30,7 @@ import java.util.List;
 public final class MotionRuntime {
 
   private final List<Subscription> subscriptions = new ArrayList<>();
+  private final SimpleArrayMap<View, ReactiveView> cachedReactiveViews = new SimpleArrayMap<>();
 
   /**
    * Subscribes to the stream, writes its output to the given property, and observes its state.
@@ -59,5 +62,18 @@ public final class MotionRuntime {
   public final <O, T> void addInteraction(
     Interaction<O, T> interaction, O target, ConstraintApplicator<T> constraints) {
     interaction.apply(this, target, constraints);
+  }
+
+  /**
+   * Returns a reactive version of the given object and caches the returned result for future access.
+   */
+  public ReactiveView get(View view) {
+    ReactiveView reactiveView = cachedReactiveViews.get(view);
+    if (reactiveView == null) {
+      reactiveView = new ReactiveView(view);
+      cachedReactiveViews.put(view, reactiveView);
+    }
+
+    return reactiveView;
   }
 }
