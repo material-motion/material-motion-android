@@ -23,6 +23,7 @@ import com.google.android.indefinite.observable.IndefiniteObservable.Subscriptio
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.WeakHashMap;
 
 /**
  * A MotionRuntime writes the output of streams to properties and observes their overall state.
@@ -30,9 +31,9 @@ import java.util.List;
 public final class MotionRuntime {
 
   private final List<Subscription> subscriptions = new ArrayList<>();
-  private final SimpleArrayMap<View, ReactiveView> cachedReactiveViews = new SimpleArrayMap<>();
-  private final SimpleArrayMap<Object, List<Interaction<?, ?>>> cachedInteractions =
-    new SimpleArrayMap<>();
+  private final WeakHashMap<View, ReactiveView> cachedReactiveViews = new WeakHashMap<>();
+  private final WeakHashMap<Object, List<Interaction<?, ?>>> cachedInteractions =
+    new WeakHashMap<>();
 
   /**
    * Subscribes to the stream, writes its output to the given property, and observes its state.
