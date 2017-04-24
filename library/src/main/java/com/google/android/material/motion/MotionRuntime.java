@@ -31,7 +31,8 @@ public final class MotionRuntime {
 
   private final List<Subscription> subscriptions = new ArrayList<>();
   private final SimpleArrayMap<View, ReactiveView> cachedReactiveViews = new SimpleArrayMap<>();
-  private final SimpleArrayMap<Object, List<Interaction>> cachedInteractions = new SimpleArrayMap<>();
+  private final SimpleArrayMap<Object, List<Interaction<?, ?>>> cachedInteractions =
+    new SimpleArrayMap<>();
 
   /**
    * Subscribes to the stream, writes its output to the given property, and observes its state.
@@ -63,7 +64,7 @@ public final class MotionRuntime {
   public final <O, T> void addInteraction(
     Interaction<O, T> interaction, O target, ConstraintApplicator<T> constraints) {
     interaction.apply(this, target, constraints);
-    List<Interaction> interactions = cachedInteractions.get(target);
+    List<Interaction<?, ?>> interactions = cachedInteractions.get(target);
     if (interactions == null) {
       interactions = new ArrayList<>();
       cachedInteractions.put(target, interactions);
@@ -85,12 +86,13 @@ public final class MotionRuntime {
     return reactiveView;
   }
 
-  public <I extends Interaction> List<I> interactions(View view, Class<I> klass) {
-    List<Interaction> interactions = cachedInteractions.get(view);
+  public <I extends Interaction<O, ?>, O> List<I> interactions(O target, Class<I> klass) {
+    List<Interaction<?, ?>> interactions = cachedInteractions.get(target);
     List<I> filteredInteractions = new ArrayList<>();
 
-    for (Interaction i: interactions) {
+    for (Interaction<?, ?> i : interactions) {
       if(klass.isInstance(i))
+        //noinspection unchecked
         filteredInteractions.add((I)i);
     }
     return filteredInteractions;
