@@ -3,6 +3,7 @@ package com.google.android.material.motion.operators;
 import android.support.annotation.VisibleForTesting;
 
 import com.google.android.indefinite.observable.IndefiniteObservable.Subscription;
+import com.google.android.material.motion.MotionBuilder;
 import com.google.android.material.motion.MotionObservable;
 import com.google.android.material.motion.MotionObserver;
 import com.google.android.material.motion.Operation;
@@ -22,6 +23,11 @@ public final class Merge {
       @Override
       public void next(MotionObserver<T> observer, T value) {
         observer.next(value);
+      }
+
+      @Override
+      public void build(MotionObserver<T> observer, MotionBuilder<T> builder, T[] values) {
+        observer.build(builder, values);
       }
 
       @Override

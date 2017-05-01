@@ -25,7 +25,7 @@ public class FloatArrayTypeVectorizer extends TypeVectorizer<Float[]> {
   }
 
   @Override
-  public void onVectorize(Float[] value, float[] vector) {
+  protected void onVectorize(Float[] value, float[] vector) {
     for (int i = 0; i < value.length; i++) {
       vector[i] = value[i];
     }

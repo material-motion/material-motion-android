@@ -25,7 +25,7 @@ public class FloatVectorizer extends TypeVectorizer<Float> {
   }
 
   @Override
-  public void onVectorize(Float value, float[] vector) {
+  protected void onVectorize(Float value, float[] vector) {
     vector[0] = value;
   }
 

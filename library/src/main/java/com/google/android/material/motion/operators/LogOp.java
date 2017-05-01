@@ -3,7 +3,7 @@ package com.google.android.material.motion.operators;
 import android.support.annotation.VisibleForTesting;
 import android.util.Log;
 
-import com.google.android.material.motion.MotionObserver;
+import com.google.android.material.motion.MapOperation;
 import com.google.android.material.motion.Operation;
 
 public final class LogOp {
@@ -22,11 +22,11 @@ public final class LogOp {
   }
 
   public static <T> Operation<T, T> log(final int priority, final String tag, final String prefix) {
-    return new Operation<T, T>() {
+    return new MapOperation<T, T>() {
       @Override
-      public void next(MotionObserver<T> observer, T value) {
+      public T transform(T value) {
         Log.println(priority, tag, prefix + value);
-        observer.next(value);
+        return value;
       }
     };
   }

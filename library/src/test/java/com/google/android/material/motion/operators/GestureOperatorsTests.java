@@ -25,7 +25,6 @@ import com.google.android.material.motion.MotionObservable;
 import com.google.android.material.motion.MotionRuntime;
 import com.google.android.material.motion.gestures.BuildConfig;
 import com.google.android.material.motion.gestures.GestureInteraction;
-import com.google.android.material.motion.gestures.GestureRecognizer;
 import com.google.android.material.motion.gestures.testing.SimulatedGestureRecognizer;
 import com.google.android.material.motion.sources.GestureSource;
 import com.google.android.material.motion.testing.TrackingMotionObserver;

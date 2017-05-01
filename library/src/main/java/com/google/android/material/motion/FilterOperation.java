@@ -11,9 +11,15 @@ public abstract class FilterOperation<T> extends Operation<T, T> {
   public abstract boolean filter(T value);
 
   @Override
-  public void next(MotionObserver<T> observer, T value) {
+  public final void next(MotionObserver<T> observer, T value) {
     if (filter(value)) {
       observer.next(value);
     }
+  }
+
+  @Override
+  public final void build(
+    MotionObserver<T> observer, MotionBuilder<T> builder, T[] values) {
+    // No-op. Cannot use builder pattern with filter.
   }
 }

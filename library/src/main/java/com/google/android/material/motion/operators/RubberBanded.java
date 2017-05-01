@@ -4,8 +4,8 @@ import android.graphics.PointF;
 import android.graphics.RectF;
 import android.support.annotation.VisibleForTesting;
 
-import com.google.android.material.motion.MapOperation;
 import com.google.android.material.motion.Operation;
+import com.google.android.material.motion.SameTypedMapOperation;
 
 public final class RubberBanded {
 
@@ -19,7 +19,7 @@ public final class RubberBanded {
    * the distance reaches length, where resistance becomes infinite.
    */
   public static Operation<PointF, PointF> rubberBanded(final RectF rect, final float length) {
-    return new MapOperation<PointF, PointF>() {
+    return new SameTypedMapOperation<PointF>() {
       @Override
       public PointF transform(PointF value) {
         float x = rubberBand(value.x, rect.left, rect.right, length);

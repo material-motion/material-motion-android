@@ -21,6 +21,7 @@ import android.widget.TextView;
 
 import com.google.android.indefinite.observable.IndefiniteObservable;
 import com.google.android.indefinite.observable.Observer;
+import com.google.android.material.motion.MotionObserver.SimpleMotionObserver;
 
 /**
  * A MotionObservable is a type of <a href="http://reactivex.io/documentation/observable.html">Observable</a>
@@ -40,7 +41,7 @@ public class MotionObservable<T> extends IndefiniteObservable<MotionObserver<T>>
    * @see #subscribe(Observer)
    */
   public Subscription subscribe() {
-    return super.subscribe(new MotionObserver<T>() {
+    return super.subscribe(new SimpleMotionObserver<T>() {
       @Override
       public void next(T value) {
       }
@@ -74,6 +75,15 @@ public class MotionObservable<T> extends IndefiniteObservable<MotionObserver<T>>
           @Override
           public void next(T value) {
             operation.next(observer, value);
+          }
+
+          @Override
+          public void build(MotionBuilder<T> builder, T[] values) {
+            if (operation instanceof SameTypedMapOperation) {
+              //noinspection unchecked
+              ((SameTypedMapOperation<T>) operation).build(
+                (MotionObserver<T>) observer, builder, values);
+            }
           }
         });
         operation.postConnect(observer);
