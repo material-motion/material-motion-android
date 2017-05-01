@@ -15,7 +15,7 @@
  */
 package com.google.android.material.motion.testing;
 
-import com.google.android.material.motion.MotionObserver;
+import com.google.android.material.motion.MotionObserver.SimpleMotionObserver;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,7 +24,7 @@ import java.util.List;
  * An observer useful in tests. Will track the incoming values and states and save them to be
  * asserted on.
  */
-public class TrackingMotionObserver<T> extends MotionObserver<T> {
+public class TrackingMotionObserver<T> extends SimpleMotionObserver<T> {
 
   public final List<T> values = new ArrayList<>();
 

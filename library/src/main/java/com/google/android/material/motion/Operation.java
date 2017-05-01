@@ -1,7 +1,5 @@
 package com.google.android.material.motion;
 
-import com.google.android.indefinite.observable.Observer;
-
 /**
  * An operation is able to transform incoming values before choosing whether or not to pass them
  * downstream.
@@ -20,6 +18,10 @@ public abstract class Operation<T, U> {
    * @param value The incoming value.
    */
   public abstract void next(MotionObserver<U> observer, T value);
+
+  public void build(MotionObserver<U> observer, MotionBuilder<U> builder, T[] values) {
+    throw new UnsupportedOperationException("This operation does not support the builder channel.");
+  }
 
   public void postConnect(MotionObserver<U> observer) {
   }

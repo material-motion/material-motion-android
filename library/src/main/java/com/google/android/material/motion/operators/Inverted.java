@@ -2,8 +2,8 @@ package com.google.android.material.motion.operators;
 
 import android.support.annotation.VisibleForTesting;
 
-import com.google.android.material.motion.MapOperation;
 import com.google.android.material.motion.Operation;
+import com.google.android.material.motion.SameTypedMapOperation;
 
 public final class Inverted {
 
@@ -13,7 +13,7 @@ public final class Inverted {
   }
 
   public static Operation<Boolean, Boolean> inverted() {
-    return new MapOperation<Boolean, Boolean>() {
+    return new SameTypedMapOperation<Boolean>() {
       @Override
       public Boolean transform(Boolean value) {
         return !value;

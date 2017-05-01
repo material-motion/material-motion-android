@@ -21,6 +21,7 @@ import android.view.View;
 
 import com.google.android.indefinite.observable.IndefiniteObservable;
 import com.google.android.indefinite.observable.IndefiniteObservable.Subscription;
+import com.google.android.material.motion.MotionObserver.SimpleMotionObserver;
 import com.google.android.material.motion.testing.TrackingMotionObserver;
 
 import org.junit.Before;
@@ -59,12 +60,12 @@ public class MotionObservableTests {
 
   @Test
   public void mapByHalf() {
-    observable.compose(new MapOperation<Float, Float>() {
+    observable.compose(new SameTypedMapOperation<Float>() {
       @Override
       public Float transform(Float value) {
         return value / 2f; // Half.
       }
-    }).subscribe(new MotionObserver<Float>() {
+    }).subscribe(new SimpleMotionObserver<Float>() {
       @Override
       public void next(Float value) {
         assertThat(value).isWithin(E).of(2.5f);
@@ -79,7 +80,7 @@ public class MotionObservableTests {
       public boolean filter(Float value) {
         return false; // All are filtered.
       }
-    }).subscribe(new MotionObserver<Float>() {
+    }).subscribe(new SimpleMotionObserver<Float>() {
       @Override
       public void next(Float value) {
         throw new AssertionError("Should never arrive here.");
@@ -94,7 +95,7 @@ public class MotionObservableTests {
       public boolean filter(Float value) {
         return true; // None are filtered.
       }
-    }).subscribe(new MotionObserver<Float>() {
+    }).subscribe(new SimpleMotionObserver<Float>() {
       @Override
       public void next(Float value) {
         assertThat(value).isWithin(E).of(5f);

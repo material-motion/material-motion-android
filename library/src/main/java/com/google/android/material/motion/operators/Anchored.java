@@ -5,7 +5,7 @@ import android.graphics.PointF;
 import android.support.annotation.VisibleForTesting;
 import android.view.View;
 
-import com.google.android.material.motion.MotionObserver;
+import com.google.android.material.motion.MapOperation;
 import com.google.android.material.motion.Operation;
 import com.google.android.material.motion.gestures.GestureRecognizer;
 
@@ -22,10 +22,9 @@ public final class Anchored {
   }
 
   public static <T extends GestureRecognizer> Operation<T, PointF> anchored(final View view) {
-    return new Operation<T, PointF>() {
-
+    return new MapOperation<T, PointF>() {
       @Override
-      public void next(MotionObserver<PointF> observer, T gestureRecognizer) {
+      public PointF transform(T gestureRecognizer) {
         array[0] = view.getPivotX();
         array[1] = view.getPivotY();
         GestureRecognizer.getTransformationMatrix(view, matrix, inverse);
@@ -35,7 +34,7 @@ public final class Anchored {
           gestureRecognizer.getUntransformedCentroidX() - array[0],
           gestureRecognizer.getUntransformedCentroidY() - array[1]
         );
-        observer.next(adjustment);
+        return adjustment;
       }
     };
   }
