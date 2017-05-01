@@ -15,7 +15,6 @@
  */
 package com.google.android.material.motion;
 
-import android.support.v4.util.SimpleArrayMap;
 import android.util.Property;
 import android.view.View;
 
@@ -53,6 +52,11 @@ public final class MotionRuntime {
       public void next(T value) {
         property.write(value);
       }
+
+      @Override
+      public void build(MotionBuilder<T> builder, T[] values) {
+        builder.start(property, values);
+      }
     }));
   }
 
@@ -64,14 +68,14 @@ public final class MotionRuntime {
 
   public final <O, T> void addInteraction(
     Interaction<O, T> interaction, O target, ConstraintApplicator<T> constraints) {
-    interaction.apply(this, target, constraints);
     List<Interaction<?, ?>> interactions = cachedInteractions.get(target);
     if (interactions == null) {
       interactions = new ArrayList<>();
       cachedInteractions.put(target, interactions);
     }
-
     interactions.add(interaction);
+
+    interaction.apply(this, target, constraints);
   }
 
   /**

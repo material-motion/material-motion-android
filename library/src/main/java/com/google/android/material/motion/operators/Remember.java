@@ -10,6 +10,7 @@ import com.google.android.indefinite.observable.IndefiniteObservable.Subscriptio
 import com.google.android.indefinite.observable.Observer;
 import com.google.android.material.motion.MotionObservable;
 import com.google.android.material.motion.MotionObserver;
+import com.google.android.material.motion.MotionObserver.SimpleMotionObserver;
 import com.google.android.material.motion.RawOperation;
 
 import java.util.List;
@@ -38,7 +39,7 @@ public class Remember {
           @Override
           public Disconnector connect(MotionObserver<T> observer) {
             if (observers.isEmpty()) {
-              subscription = stream.subscribe(new MotionObserver<T>() {
+              subscription = stream.subscribe(new SimpleMotionObserver<T>() {
                 @Override
                 public void next(T value) {
                   lastValue = value;

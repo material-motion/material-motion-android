@@ -11,7 +11,7 @@ public abstract class FilterOperation<T> extends Operation<T, T> {
   public abstract boolean filter(T value);
 
   @Override
-  public void next(MotionObserver<T> observer, T value) {
+  public final void next(MotionObserver<T> observer, T value) {
     if (filter(value)) {
       observer.next(value);
     }

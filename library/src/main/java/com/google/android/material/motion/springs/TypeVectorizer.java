@@ -51,7 +51,7 @@ public abstract class TypeVectorizer<T> {
    *
    * @param vector the vector should be written to this parameter.
    */
-  public abstract void onVectorize(T value, float[] vector);
+  protected abstract void onVectorize(T value, float[] vector);
 
   /**
    * Transforms a T typed value from the equivalent float[].

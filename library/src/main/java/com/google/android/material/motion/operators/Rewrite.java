@@ -6,6 +6,7 @@ import android.support.v4.util.SimpleArrayMap;
 import com.google.android.material.motion.MapOperation;
 import com.google.android.material.motion.MotionObserver;
 import com.google.android.material.motion.Operation;
+import com.google.android.material.motion.SameTypedMapOperation;
 
 import java.util.Map;
 
@@ -49,7 +50,7 @@ public final class Rewrite {
 
   public static Operation<Float, Float> rewriteRange(
     final float start, final float end, final float destinationStart, final float destinationEnd) {
-    return new MapOperation<Float, Float>() {
+    return new SameTypedMapOperation<Float>() {
       @Override
       public Float transform(Float value) {
         float position = value - start;
