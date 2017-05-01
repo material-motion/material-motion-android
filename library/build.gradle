@@ -45,6 +45,7 @@ dependencies {
   compile 'com.github.material-motion:gestures-android:develop-SNAPSHOT'
   compile 'com.github.material-motion:physics-android:develop-SNAPSHOT'
   compile "com.android.support:support-core-utils:$supportLibVersion"
+  compile "com.android.support:support-dynamic-animation:$supportLibVersion"
 
   testCompile 'com.google.truth:truth:0.28'
   testCompile 'junit:junit:4.12'

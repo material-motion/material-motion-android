@@ -27,7 +27,7 @@ public class PointFTypeVectorizer extends TypeVectorizer<PointF> {
   }
 
   @Override
-  public void onVectorize(PointF value, float[] vector) {
+  protected void onVectorize(PointF value, float[] vector) {
     vector[0] = value.x;
     vector[1] = value.y;
   }

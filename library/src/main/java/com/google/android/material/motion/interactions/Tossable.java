@@ -23,6 +23,7 @@ import com.google.android.material.motion.ConstraintApplicator;
 import com.google.android.material.motion.Interaction;
 import com.google.android.material.motion.MotionRuntime;
 import com.google.android.material.motion.ReactiveProperty;
+import com.google.android.material.motion.sources.DynamicSpringSource;
 import com.google.android.material.motion.sources.PhysicsSpringSource;
 import com.google.android.material.motion.springs.PointFTypeVectorizer;
 
@@ -60,7 +61,7 @@ public class Tossable extends Interaction<View, PointF> {
       ReactiveProperty.of(1f),
       ReactiveProperty.of(1f),
       ReactiveProperty.of(4f),
-      PhysicsSpringSource.SYSTEM);
+      DynamicSpringSource.SYSTEM);
 
     runtime.addInteraction(draggable, target, constraints);
     // TODO: Cannot apply constraints to spring because while draggable acts on translation

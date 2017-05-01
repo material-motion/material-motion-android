@@ -1,7 +1,5 @@
 package com.google.android.material.motion;
 
-import com.google.android.indefinite.observable.Observer;
-
 /**
  * An operation is able to transform incoming values before choosing whether or not to pass them
  * downstream.

@@ -119,10 +119,10 @@ public abstract class ReactiveProperty<T> {
   /**
    * A reactive property backed by a {@link Property}.
    */
-  private static final class PropertyReactiveProperty<O, T> extends ReactiveProperty<T> {
+  public static final class PropertyReactiveProperty<O, T> extends ReactiveProperty<T> {
 
-    private final O target;
-    private final Property<O, T> property;
+    public final O target;
+    public final Property<O, T> property;
 
     public PropertyReactiveProperty(O target, Property<O, T> property) {
       this.target = target;

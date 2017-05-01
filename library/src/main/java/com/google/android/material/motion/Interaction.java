@@ -20,5 +20,5 @@ public abstract class Interaction<O, T> {
   public final ReactiveProperty<Boolean> enabled = ReactiveProperty.of(true);
   public final ReactiveProperty<Integer> state = ReactiveProperty.of(MotionState.AT_REST);
 
-  public abstract void apply(MotionRuntime runtime, O target, ConstraintApplicator<T> constraints);
+  protected abstract void apply(MotionRuntime runtime, O target, ConstraintApplicator<T> constraints);
 }

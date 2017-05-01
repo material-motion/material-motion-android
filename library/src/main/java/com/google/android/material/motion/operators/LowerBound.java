@@ -2,8 +2,8 @@ package com.google.android.material.motion.operators;
 
 import android.support.annotation.VisibleForTesting;
 
-import com.google.android.material.motion.MapOperation;
 import com.google.android.material.motion.Operation;
+import com.google.android.material.motion.SameTypedMapOperation;
 
 public final class LowerBound {
 
@@ -13,7 +13,7 @@ public final class LowerBound {
   }
 
   public static <T extends Comparable<T>> Operation<T, T> lowerBound(final T lowerBound) {
-    return new MapOperation<T, T>() {
+    return new SameTypedMapOperation<T>() {
       @Override
       public T transform(T value) {
         if (value.compareTo(lowerBound) < 0) {

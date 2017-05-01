@@ -17,7 +17,7 @@ package com.google.android.material.motion.testing;
 
 import com.google.android.indefinite.observable.IndefiniteObservable;
 import com.google.android.material.motion.BuildConfig;
-import com.google.android.material.motion.MotionObserver;
+import com.google.android.material.motion.MotionObserver.SimpleMotionObserver;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -60,7 +60,7 @@ public class SimulatedMotionSourceTests {
 
   private static <T> IndefiniteObservable.Subscription assertThatNextValuesWillBeEqualTo(
     SimulatedMotionSource<T> source, final T expectedValue) {
-    return source.getObservable().subscribe(new MotionObserver<T>() {
+    return source.getObservable().subscribe(new SimpleMotionObserver<T>() {
       @Override
       public void next(T value) {
         assertThat(value).isEqualTo(expectedValue);

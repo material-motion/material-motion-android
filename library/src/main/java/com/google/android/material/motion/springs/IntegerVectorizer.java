@@ -25,7 +25,7 @@ public class IntegerVectorizer extends TypeVectorizer<Integer> {
   }
 
   @Override
-  public void onVectorize(Integer value, float[] vector) {
+  protected void onVectorize(Integer value, float[] vector) {
     vector[0] = value;
   }
 

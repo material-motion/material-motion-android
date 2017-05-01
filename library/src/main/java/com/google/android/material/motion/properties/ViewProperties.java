@@ -25,6 +25,8 @@ import android.util.Property;
 import android.view.View;
 
 import com.google.android.material.motion.R;
+import com.google.android.material.motion.springs.PointFTypeVectorizer;
+import com.google.android.material.motion.springs.TypeVectorizer;
 
 public final class ViewProperties {
 
@@ -34,58 +36,39 @@ public final class ViewProperties {
   }
 
   public static final Property<View, PointF> TRANSLATION =
-    new Property<View, PointF>(PointF.class, "translation") {
-
-      @Override
-      public void set(View object, PointF value) {
-        object.setTranslationX(value.x);
-        object.setTranslationY(value.y);
-      }
-
-      @Override
-      public PointF get(View object) {
-        PointF pointF = new PointF();
-        pointF.x = object.getTranslationX();
-        pointF.y = object.getTranslationY();
-        return pointF;
-      }
-    };
+    new DerivativeProperty<>(
+      PointF.class,
+      "translation",
+      new PointFTypeVectorizer(),
+      View.TRANSLATION_X,
+      View.TRANSLATION_Y);
 
   public static final Property<View, PointF> CENTER =
-    new Property<View, PointF>(PointF.class, "center") {
+    new DerivativeProperty<View, PointF>(
+      PointF.class,
+      "center",
+      new PointFTypeVectorizer(),
+      View.X,
+      View.Y) {
 
       @Override
-      public void set(View object, PointF value) {
-        object.setX(value.x - object.getWidth() / 2f);
-        object.setY(value.y - object.getHeight() / 2f);
+      public float setterTransformation(View object, float value) {
+        return value - object.getWidth() / 2f;
       }
 
       @Override
-      public PointF get(View object) {
-        PointF pointF = new PointF();
-        pointF.x = object.getX() + object.getWidth() / 2f;
-        pointF.y = object.getY() + object.getHeight() / 2f;
-        return pointF;
+      public float getterTransformation(View object, float value) {
+        return value + object.getWidth() / 2f;
       }
     };
 
   public static final Property<View, PointF> SCALE =
-    new Property<View, PointF>(PointF.class, "scale") {
-
-      @Override
-      public void set(View object, PointF value) {
-        object.setScaleX(value.x);
-        object.setScaleY(value.y);
-      }
-
-      @Override
-      public PointF get(View object) {
-        PointF pointF = new PointF();
-        pointF.x = object.getScaleX();
-        pointF.y = object.getScaleY();
-        return pointF;
-      }
-    };
+    new DerivativeProperty<>(
+      PointF.class,
+      "scale",
+      new PointFTypeVectorizer(),
+      View.SCALE_X,
+      View.SCALE_Y);
 
   public static final Property<View, PointF> PIVOT =
     new Property<View, PointF>(PointF.class, "pivot") {
@@ -102,6 +85,32 @@ public final class ViewProperties {
         pointF.x = object.getPivotX();
         pointF.y = object.getPivotY();
         return pointF;
+      }
+    };
+
+  public static final Property<View, Float> SCROLL_X =
+    new Property<View, Float>(Float.class, "scrollX") {
+      @Override
+      public Float get(View object) {
+        return (float) object.getScrollX();
+      }
+
+      @Override
+      public void set(View object, Float value) {
+        object.setScrollX((int) (float) value);
+      }
+    };
+
+  public static final Property<View, Float> SCROLL_Y =
+    new Property<View, Float>(Float.class, "scrollY") {
+      @Override
+      public Float get(View object) {
+        return (float) object.getScrollY();
+      }
+
+      @Override
+      public void set(View object, Float value) {
+        object.setScrollY((int) (float) value);
       }
     };
 
@@ -168,6 +177,49 @@ public final class ViewProperties {
       }
       //noinspection unchecked
       return (T) value;
+    }
+  }
+
+  public static class DerivativeProperty<O, T> extends Property<O, T> {
+
+    public final TypeVectorizer<T> vectorizer;
+    public final Property<O, Float>[] properties;
+    private final float[] vector;
+
+    @SafeVarargs
+    public DerivativeProperty(
+      Class<T> type,
+      String name,
+      TypeVectorizer<T> vectorizer,
+      Property<O, Float>... properties) {
+      super(type, name);
+      this.vectorizer = vectorizer;
+      this.properties = properties;
+      this.vector = new float[vectorizer.getVectorLength()];
+    }
+
+    @Override
+    public final void set(O object, T value) {
+      vectorizer.vectorize(value, vector);
+      for (int i = 0; i < properties.length; i++) {
+        properties[i].set(object, setterTransformation(object, vector[i]));
+      }
+    }
+
+    @Override
+    public final T get(O object) {
+      for (int i = 0; i < properties.length; i++) {
+        vector[i] = getterTransformation(object, properties[i].get(object));
+      }
+      return vectorizer.compose(vector);
+    }
+
+    public float setterTransformation(O object, float value) {
+      return value;
+    }
+
+    public float getterTransformation(O object, float value) {
+      return value;
     }
   }
 }

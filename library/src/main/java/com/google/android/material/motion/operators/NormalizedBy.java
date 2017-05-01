@@ -3,8 +3,8 @@ package com.google.android.material.motion.operators;
 import android.graphics.PointF;
 import android.support.annotation.VisibleForTesting;
 
-import com.google.android.material.motion.MapOperation;
 import com.google.android.material.motion.Operation;
+import com.google.android.material.motion.SameTypedMapOperation;
 
 public final class NormalizedBy {
 
@@ -18,7 +18,7 @@ public final class NormalizedBy {
   }
 
   public static Operation<PointF, PointF> normalizedAllBy(final float normal) {
-    return new MapOperation<PointF, PointF>() {
+    return new SameTypedMapOperation<PointF>() {
       @Override
       public PointF transform(PointF value) {
         return new PointF(value.x / normal, value.y / normal);
@@ -27,7 +27,7 @@ public final class NormalizedBy {
   }
 
   public static Operation<PointF, PointF> normalizedAllBy(final PointF normal) {
-    return new MapOperation<PointF, PointF>() {
+    return new SameTypedMapOperation<PointF>() {
       @Override
       public PointF transform(PointF value) {
         return new PointF(value.x / normal.x, value.y / normal.y);

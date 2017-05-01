@@ -9,6 +9,7 @@ import com.google.android.indefinite.observable.IndefiniteObservable.Subscriptio
 import com.google.android.indefinite.observable.Observer;
 import com.google.android.material.motion.MotionObservable;
 import com.google.android.material.motion.MotionObserver;
+import com.google.android.material.motion.MotionObserver.SimpleMotionObserver;
 import com.google.android.material.motion.Operation;
 import com.google.android.material.motion.RawOperation;
 
@@ -30,7 +31,7 @@ public final class StartWith {
           @Override
           public Disconnector connect(MotionObserver<T> observer) {
             observer.next(initialValue);
-            Subscription subscription = stream.subscribe(new MotionObserver<T>() {
+            Subscription subscription = stream.subscribe(new SimpleMotionObserver<T>() {
               @Override
               public void next(T value) {
                 observer.next(value);

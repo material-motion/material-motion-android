@@ -8,9 +8,12 @@ import android.view.View;
 
 import com.google.android.material.motion.MotionRuntime;
 import com.google.android.material.motion.ReactiveProperty;
+import com.google.android.material.motion.interactions.MaterialSpring;
 import com.google.android.material.motion.interactions.SetPositionOnTap;
 import com.google.android.material.motion.interactions.Tossable;
 import com.google.android.material.motion.properties.ViewProperties;
+import com.google.android.material.motion.sources.DynamicSpringSource;
+import com.google.android.material.motion.springs.FloatVectorizer;
 
 public class TossableTapActivity extends AppCompatActivity {
 
