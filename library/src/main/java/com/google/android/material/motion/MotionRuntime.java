@@ -87,7 +87,7 @@ public final class MotionRuntime {
     return reactiveView;
   }
 
-  public <I extends Interaction<O, ?>, O> List<I> interactions(O target, Class<I> klass) {
+  public <I extends Interaction<O, ?>, O> List<I> interactions(Class<I> klass, O target) {
     List<Interaction<?, ?>> interactions = cachedInteractions.get(target);
     List<I> filteredInteractions = new ArrayList<>();
 
