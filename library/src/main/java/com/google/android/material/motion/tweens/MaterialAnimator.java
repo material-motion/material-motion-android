@@ -58,9 +58,9 @@ public final class MaterialAnimator {
         null));
   }
 
-  private final Tween tween;
+  public final Tween<?, ?> tween;
 
-  private MaterialAnimator(Tween tween) {
+  private MaterialAnimator(Tween<?, ?> tween) {
     this.tween = tween;
   }
 
@@ -71,12 +71,13 @@ public final class MaterialAnimator {
 
   public void setFloatValues(Float... values) {
     //noinspection unchecked
-    tween.values.write(values);
+    ((Tween<?, Float>) tween).values.write(values);
   }
 
-  public void setObjectValues(Object... values) {
+  @SafeVarargs
+  public final <T> void setObjectValues(T... values) {
     //noinspection unchecked
-    tween.values.write(values);
+    ((Tween<?, T>) tween).values.write(values);
   }
 
   public void setDuration(long duration) {
@@ -84,7 +85,8 @@ public final class MaterialAnimator {
     tween.duration.write(duration);
   }
 
-  public void start(MotionRuntime runtime) {
-    runtime.addInteraction(tween, tween.target);
+  public <O> void start(MotionRuntime runtime) {
+    //noinspection unchecked
+    runtime.addInteraction(((Tween<O, ?>) tween), (O) tween.target);
   }
 }
