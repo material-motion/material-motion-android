@@ -25,11 +25,14 @@ import android.view.View;
 
 import com.google.android.indefinite.observable.Observer;
 import com.google.android.material.motion.MotionObserver;
+import com.google.android.material.motion.MotionState;
 import com.google.android.material.motion.Source;
 import com.google.android.material.motion.gestures.OnTouchListeners;
 import com.google.android.material.motion.interactions.SetPositionOnTap;
 
 public class TapSource extends Source<PointF> {
+
+  private final SetPositionOnTap interaction;
 
   private final View container;
   private final GestureDetectorCompat detector;
@@ -38,6 +41,7 @@ public class TapSource extends Source<PointF> {
 
   public TapSource(SetPositionOnTap interaction) {
     super(interaction);
+    this.interaction = interaction;
     container = interaction.container;
     detector = new GestureDetectorCompat(
       container.getContext(),
@@ -60,7 +64,11 @@ public class TapSource extends Source<PointF> {
     gestureListeners.put(observer, new SimpleOnGestureListener() {
       @Override
       public boolean onSingleTapUp(MotionEvent e) {
+        interaction.state.write(MotionState.ACTIVE);
+
         observer.next(new PointF(e.getX(), e.getY()));
+
+        interaction.state.write(MotionState.AT_REST);
         return true;
       }
     });
@@ -69,13 +77,11 @@ public class TapSource extends Source<PointF> {
   @Override
   protected void onEnable() {
     OnTouchListeners.add(container, listener);
-    // TODO: observer.state()?
   }
 
   @Override
   protected void onDisable() {
     OnTouchListeners.remove(container, listener);
-    // TODO: observer.state()?
   }
 
   @Override
