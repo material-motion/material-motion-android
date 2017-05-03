@@ -151,9 +151,11 @@ public final class PhysicsSpringSource<T> extends SpringSource<T> {
   protected void onDisable() {
     integrator.stop();
 
-    tensionSubscription.unsubscribe();
-    frictionSubscription.unsubscribe();
-    destinationSubscription.unsubscribe();
+    if (tensionSubscription != null) {
+      tensionSubscription.unsubscribe();
+      frictionSubscription.unsubscribe();
+      destinationSubscription.unsubscribe();
+    }
   }
 
   @Override

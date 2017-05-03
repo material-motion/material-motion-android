@@ -120,13 +120,13 @@ public class TweenSource<O, T> extends Source<T> {
   protected void onEnable() {
     initialized = false;
 
-    evaluatorSubscription = interaction.evaluator.subscribe(new
-                                                              SimpleMotionObserver<TypeEvaluator<T>>() {
-      @Override
-      public void next(TypeEvaluator<T> value) {
-        lastEvaluator = value;
-        startAnimator();
-      }
+    evaluatorSubscription = interaction.evaluator.subscribe(
+      new SimpleMotionObserver<TypeEvaluator<T>>() {
+        @Override
+        public void next(TypeEvaluator<T> value) {
+          lastEvaluator = value;
+          startAnimator();
+        }
     });
     valuesSubscription = interaction.values.subscribe(new SimpleMotionObserver<T[]>() {
       @Override
@@ -252,13 +252,15 @@ public class TweenSource<O, T> extends Source<T> {
   protected void onDisable() {
     animator.cancel();
 
-    evaluatorSubscription.unsubscribe();
-    valuesSubscription.unsubscribe();
-    offsetsSubscription.unsubscribe();
-    timingFunctionsSubscription.unsubscribe();
-    durationSubscription.unsubscribe();
-    delaySubscription.unsubscribe();
-    timingFunctionSubscription.unsubscribe();
+    if (evaluatorSubscription != null) {
+      evaluatorSubscription.unsubscribe();
+      valuesSubscription.unsubscribe();
+      offsetsSubscription.unsubscribe();
+      timingFunctionsSubscription.unsubscribe();
+      durationSubscription.unsubscribe();
+      delaySubscription.unsubscribe();
+      timingFunctionSubscription.unsubscribe();
+    }
   }
 
   @Override
