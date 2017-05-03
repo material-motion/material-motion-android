@@ -16,7 +16,6 @@
 package com.google.android.material.motion.sources;
 
 import android.animation.Animator;
-import android.animation.Animator.AnimatorListener;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.Keyframe;
 import android.animation.TimeInterpolator;
@@ -43,8 +42,6 @@ public class TweenSource<O, T> extends Source<T> {
   private final Tween<O, T> interaction;
   private final ValueAnimator animator;
   private final SimpleArrayMap<Observer<T>, AnimatorUpdateListener> updateListeners =
-    new SimpleArrayMap<>();
-  private final SimpleArrayMap<Observer<T>, AnimatorListener> animatorListeners =
     new SimpleArrayMap<>();
 
   private Subscription evaluatorSubscription;
@@ -80,16 +77,12 @@ public class TweenSource<O, T> extends Source<T> {
     animator.addListener(new AnimatorListenerAdapter() {
       @Override
       public void onAnimationStart(Animator animation) {
-        for (int i = 0, count = updateListeners.size(); i < count; i++) {
-          animatorListeners.valueAt(i).onAnimationStart(animation);
-        }
+        interaction.state.write(MotionState.ACTIVE);
       }
 
       @Override
       public void onAnimationEnd(Animator animation) {
-        for (int i = 0, count = updateListeners.size(); i < count; i++) {
-          animatorListeners.valueAt(i).onAnimationEnd(animation);
-        }
+        interaction.state.write(MotionState.AT_REST);
       }
     });
   }
@@ -101,17 +94,6 @@ public class TweenSource<O, T> extends Source<T> {
       public void onAnimationUpdate(ValueAnimator animation) {
         //noinspection unchecked
         observer.next((T) animation.getAnimatedValue());
-      }
-    });
-    animatorListeners.put(observer, new AnimatorListenerAdapter() {
-      @Override
-      public void onAnimationStart(Animator animation) {
-        interaction.state.write(MotionState.ACTIVE);
-      }
-
-      @Override
-      public void onAnimationEnd(Animator animation) {
-        interaction.state.write(MotionState.AT_REST);
       }
     });
   }
@@ -266,6 +248,5 @@ public class TweenSource<O, T> extends Source<T> {
   @Override
   protected void onDisconnect(MotionObserver<T> observer) {
     updateListeners.remove(observer);
-    animatorListeners.remove(observer);
   }
 }
