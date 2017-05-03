@@ -115,9 +115,11 @@ public final class DynamicSpringSource<T> extends SpringSource<T> {
 
   @Override
   protected void onDisable() {
-    tensionSubscription.unsubscribe();
-    frictionSubscription.unsubscribe();
-    destinationSubscription.unsubscribe();
+    if (tensionSubscription != null) {
+      tensionSubscription.unsubscribe();
+      frictionSubscription.unsubscribe();
+      destinationSubscription.unsubscribe();
+    }
 
     builder.stop();
   }
