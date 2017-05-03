@@ -61,6 +61,8 @@ public final class PhysicsSpringSource<T> extends SpringSource<T> {
     integrator.addListener(new SimpleListener() {
       @Override
       public void onStart() {
+        interaction.state.write(MotionState.ACTIVE);
+
         for (int i = 0, count = integratorListeners.size(); i < count; i++) {
           integratorListeners.valueAt(i).onStart();
         }
@@ -75,6 +77,8 @@ public final class PhysicsSpringSource<T> extends SpringSource<T> {
 
       @Override
       public void onStop() {
+        interaction.state.write(MotionState.AT_REST);
+
         for (int i = 0, count = integratorListeners.size(); i < count; i++) {
           integratorListeners.valueAt(i).onStop();
         }
@@ -87,19 +91,9 @@ public final class PhysicsSpringSource<T> extends SpringSource<T> {
     integratorListeners.put(observer, new SimpleListener() {
 
       @Override
-      public void onStart() {
-        interaction.state.write(MotionState.ACTIVE);
-      }
-
-      @Override
       public void onUpdate(Vector x, Vector v) {
         T value = interaction.vectorizer.compose(x.getValues());
         observer.next(value);
-      }
-
-      @Override
-      public void onStop() {
-        interaction.state.write(MotionState.AT_REST);
       }
     });
   }
