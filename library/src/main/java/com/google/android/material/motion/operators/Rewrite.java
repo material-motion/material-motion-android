@@ -26,45 +26,6 @@ public final class Rewrite {
     };
   }
 
-  public static <T, U> Operation<T, U> rewrite(T from, U to) {
-    return new Operation<T, U>() {
-      @Override
-      public void next(MotionObserver<U> observer, T value) {
-        if (value == from) {
-          observer.next(to);
-        }
-      }
-    };
-  }
-
-  public static <T, U> Operation<T, U> rewrite(T from1, U to1, T from2, U to2) {
-    return new Operation<T, U>() {
-      @Override
-      public void next(MotionObserver<U> observer, T value) {
-        if (value == from1) {
-          observer.next(to1);
-        } else if (value == from2) {
-          observer.next(to2);
-        }
-      }
-    };
-  }
-
-  public static <T, U> Operation<T, U> rewrite(T from1, U to1, T from2, U to2, T from3, U to3) {
-    return new Operation<T, U>() {
-      @Override
-      public void next(MotionObserver<U> observer, T value) {
-        if (value == from1) {
-          observer.next(to1);
-        } else if (value == from2) {
-          observer.next(to2);
-        } else if (value == from3) {
-          observer.next(to3);
-        }
-      }
-    };
-  }
-
   public static <T, U> Operation<T, U> rewrite(final Map<T, U> map) {
     return new Operation<T, U>() {
       @Override
