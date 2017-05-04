@@ -19,6 +19,8 @@ import android.util.Property;
 import android.view.View;
 
 import com.google.android.indefinite.observable.IndefiniteObservable.Subscription;
+import com.google.android.material.motion.operators.Dedupe;
+import com.google.android.material.motion.operators.Rewrite;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -101,5 +103,15 @@ public final class MotionRuntime {
         filteredInteractions.add((I)i);
     }
     return filteredInteractions;
+  }
+
+  /**
+   * Initiates interaction B when interaction A changes to certain state
+   */
+  public void start(Interaction<?, ?> a, Interaction<?, ?> b, @MotionState int state) {
+    MotionObservable <Boolean> stream = b.state.getStream()
+      .compose(Dedupe.dedupe())
+      .compose(Rewrite.rewrite(state, true));
+    write(stream, a.enabled);
   }
 }
