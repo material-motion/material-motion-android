@@ -19,12 +19,13 @@ import android.util.Property;
 import android.view.View;
 
 import com.google.android.indefinite.observable.IndefiniteObservable.Subscription;
-import com.google.android.material.motion.operators.Dedupe;
-import com.google.android.material.motion.operators.Rewrite;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.WeakHashMap;
+
+import static com.google.android.material.motion.operators.Dedupe.dedupe;
+import static com.google.android.material.motion.operators.Rewrite.rewrite;
 
 /**
  * A MotionRuntime writes the output of streams to properties and observes their overall state.
@@ -106,12 +107,13 @@ public final class MotionRuntime {
   }
 
   /**
-   * Initiates interaction B when interaction A changes to certain state
+   * Initiates interaction {@code a} when interaction {@code b} changes to the given state.
    */
   public void start(Interaction<?, ?> a, Interaction<?, ?> b, @MotionState int state) {
-    MotionObservable <Boolean> stream = b.state.getStream()
-      .compose(Dedupe.dedupe())
-      .compose(Rewrite.rewrite(state, true));
+    MotionObservable<Boolean> stream =
+      b.state.getStream()
+        .compose(dedupe())
+        .compose(rewrite(state, true));
     write(stream, a.enabled);
   }
 }
