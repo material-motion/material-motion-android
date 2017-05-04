@@ -15,7 +15,6 @@
  */
 package com.google.android.material.motion;
 
-import android.support.v4.util.SimpleArrayMap;
 import android.util.Property;
 import android.view.View;
 
@@ -109,10 +108,10 @@ public final class MotionRuntime {
   /**
    * Initiates interaction B when interaction A changes to certain state
    */
-  public void start(Interaction a, Interaction b, @MotionState Integer state) {
-    MotionObservable stream = a.state.getStream()
-      .compose(Dedupe.<Integer>dedupe())
+  public void start(Interaction<?, ?> a, Interaction<?, ?> b, @MotionState int state) {
+    MotionObservable <Boolean> stream = b.state.getStream()
+      .compose(Dedupe.dedupe())
       .compose(Rewrite.rewrite(state, true));
-    write(stream, b.enabled);
+    write(stream, a.enabled);
   }
 }
