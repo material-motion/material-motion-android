@@ -20,6 +20,7 @@ import android.support.animation.DynamicAnimation;
 import android.support.animation.DynamicAnimation.ViewProperty;
 import android.support.animation.SpringAnimation;
 import android.support.animation.SpringForce;
+import android.support.v4.util.SimpleArrayMap;
 import android.util.Property;
 import android.view.View;
 
@@ -33,10 +34,7 @@ import com.google.android.material.motion.interactions.MaterialSpring;
 import com.google.android.material.motion.properties.ViewProperties;
 import com.google.android.material.motion.properties.ViewProperties.DerivativeProperty;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 /**
@@ -132,7 +130,7 @@ public final class DynamicSpringSource<T> extends SpringSource<T> {
   private static class DynamicSpringBuilder<T> extends MotionBuilder<T> {
 
     private final MaterialSpring<?, T> interaction;
-    private List<SpringAnimation> animations;
+    private final SimpleArrayMap<Key, SpringAnimation> animations = new SimpleArrayMap<>();
 
     public DynamicSpringBuilder(MaterialSpring<?, T> interaction) {
       this.interaction = interaction;
@@ -140,69 +138,59 @@ public final class DynamicSpringSource<T> extends SpringSource<T> {
 
     @Override
     public void start(ReactiveProperty<T> property, T[] values) {
-      stop();
-
       float[] initialValues = new float[interaction.vectorizer.getVectorLength()];
       float[] initialVelocities = new float[interaction.vectorizer.getVectorLength()];
-      float[] initialDestinations = new float[interaction.vectorizer.getVectorLength()];
+      float[] destinations = new float[interaction.vectorizer.getVectorLength()];
 
       interaction.vectorizer.vectorize(values[0], initialValues);
       interaction.vectorizer.vectorize(values[1], initialVelocities);
-      interaction.vectorizer.vectorize(values[2], initialDestinations);
+      interaction.vectorizer.vectorize(values[2], destinations);
 
-      PropertyReactiveProperty<View, T> p = (PropertyReactiveProperty<View, T>) property;
-
-      if (p.property instanceof DerivativeProperty) {
-        animations = createAnimations(
-          p.target,
-          (DerivativeProperty<View, T>) p.property,
-          initialValues,
-          initialVelocities,
-          initialDestinations);
-      } else if (p.property.getType() == Float.class) {
-        //noinspection unchecked
-        animations = Collections.singletonList(createAnimation(
-          p.target,
-          (Property<View, Float>) p.property,
-          initialValues[0],
-          initialVelocities[0],
-          initialDestinations[0]));
-      } else {
-        throw new IllegalArgumentException("Property not supported: " + p.property);
-      }
-
-      for (int i = 0, count = animations.size(); i < count; i++) {
-        animations.get(i).start();
-      }
+      startAnimations(
+        (PropertyReactiveProperty<View, T>) property,
+        initialValues,
+        initialVelocities,
+        destinations);
     }
 
-    private List<SpringAnimation> createAnimations(
-      View target,
-      DerivativeProperty<View, T> property,
+    private void startAnimations(
+      PropertyReactiveProperty<View, T> reactiveProperty,
       float[] initialValues,
       float[] initialVelocities,
-      float[] initialDestinations) {
-      List<SpringAnimation> animations = new ArrayList<>();
+      float[] destinations) {
+      View target = reactiveProperty.target;
+      Property<View, T> property = reactiveProperty.property;
 
-      for (int i = 0; i < property.vectorizer.getVectorLength(); i++) {
-        animations.add(createAnimation(
+      if (property instanceof DerivativeProperty) {
+        DerivativeProperty<View, T> derivative = (DerivativeProperty<View, T>) property;
+        for (int i = 0; i < derivative.vectorizer.getVectorLength(); i++) {
+          startAnimation(
+            target,
+            derivative.properties[i],
+            derivative.setterTransformation(target, initialValues[i]),
+            derivative.setterTransformation(target, initialVelocities[i]),
+            derivative.setterTransformation(target, destinations[i]));
+        }
+      } else if (property.getType() == Float.class) {
+        //noinspection unchecked
+        startAnimation(
           target,
-          property.properties[i],
-          property.setterTransformation(target, initialValues[i]),
-          property.setterTransformation(target, initialVelocities[i]),
-          property.setterTransformation(target, initialDestinations[i])));
+          (Property<View, Float>) property,
+          initialValues[0],
+          initialVelocities[0],
+          destinations[0]);
+      } else {
+        throw new IllegalArgumentException("Property not supported: " + property);
       }
-
-      return animations;
     }
 
     @SuppressLint("NewApi")
-    private SpringAnimation createAnimation(
+    private void startAnimation(
       View target,
       Property<View, Float> property,
       float initialValue,
       float initialVelocity,
-      float initialDestination) {
+      float destination) {
       ViewProperty viewProperty;
 
       if (property == View.TRANSLATION_X) {
@@ -237,29 +225,36 @@ public final class DynamicSpringSource<T> extends SpringSource<T> {
         throw new IllegalArgumentException("Property not supported: " + property);
       }
 
-      SpringAnimation animation = new SpringAnimation(target, viewProperty, initialDestination);
-      animation.setStartValue(initialValue);
-      animation.setStartVelocity(initialVelocity);
+      Key key = new Key(target, property);
+      SpringAnimation animation = animations.get(key);
+
+      if (animation == null) {
+        animation = new SpringAnimation(target, viewProperty);
+        animation.setStartValue(initialValue);
+        animation.setStartVelocity(initialVelocity);
+      }
 
       float stiffness = stiffnessFromOrigamiValue(interaction.tension.read());
       float dampingRatio = dampingRatioFromOrigamiValue(stiffness, interaction.friction.read());
 
-      SpringForce force = new SpringForce(initialDestination);
+      SpringForce force = new SpringForce(destination);
       force.setStiffness(stiffness);
       force.setDampingRatio(dampingRatio);
       animation.setSpring(force);
 
-      return animation;
+      animation.animateToFinalPosition(destination);
+
+      animations.put(key, animation);
     }
 
     @Override
     public void stop() {
-      if (animations == null) {
+      if (animations.isEmpty()) {
         return;
       }
 
       for (int i = 0, count = animations.size(); i < count; i++) {
-        animations.get(i).cancel();
+        animations.valueAt(i).cancel();
       }
       animations.clear();
     }
@@ -271,6 +266,35 @@ public final class DynamicSpringSource<T> extends SpringSource<T> {
     public static float dampingRatioFromOrigamiValue(float stiffness, float value) {
       float friction = value == 0f ? 0f : (value - 8f) * 3f + 25f;
       return (float) (friction / (2 * Math.sqrt(stiffness)));
+    }
+
+    private static class Key {
+
+      private View target;
+      private Property<View, Float> property;
+
+      public Key(View target, Property<View, Float> property) {
+        this.target = target;
+        this.property = property;
+      }
+
+      @Override
+      public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Key key = (Key) o;
+
+        if (!target.equals(key.target)) return false;
+        return property.equals(key.property);
+      }
+
+      @Override
+      public int hashCode() {
+        int result = target.hashCode();
+        result = 31 * result + property.hashCode();
+        return result;
+      }
     }
   }
 }
