@@ -39,8 +39,8 @@ public class IgnoreUntilTests {
   @Test
   public void testIgnoreUntil() {
     TrackingMotionObserver<Float> tracker = new TrackingMotionObserver<>();
-
-    floatSource()
+    float[] input = {20, 10, 60, 50, 10, 20, 80};
+    floatSource(input)
       .compose(ignoreUntil(50f))
       .subscribe(tracker);
 
@@ -48,13 +48,13 @@ public class IgnoreUntilTests {
   }
 
   @NonNull
-  private MotionObservable<Float> floatSource() {
-    float input[] = {20, 10, 60, 50, 10, 20, 80};
+  private MotionObservable<Float> floatSource(float[] input) {
+
     return new MotionObservable<>(new IndefiniteObservable.Connector<MotionObserver<Float>>() {
       @NonNull
       @Override
       public IndefiniteObservable.Disconnector connect(MotionObserver<Float> observer) {
-        for(Float f : input){
+        for (float f : input) {
           observer.next(f);
         }
         return IndefiniteObservable.Disconnector.NO_OP;
