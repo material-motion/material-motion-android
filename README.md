@@ -4,6 +4,7 @@
 [![codecov](https://codecov.io/gh/material-motion/material-motion-android/branch/develop/graph/badge.svg)](https://codecov.io/gh/material-motion/material-motion-android)
 [![Release](https://img.shields.io/github/release/material-motion/material-motion-android.svg)](https://github.com/material-motion/material-motion-android/releases/latest)
 [![Docs](https://img.shields.io/badge/jitpack-docs-green.svg)](https://jitpack.io/com/github/material-motion/material-motion-android/stable-SNAPSHOT/javadoc/)
+[![Chat](https://img.shields.io/discord/198544450366996480.svg)](https://discord.gg/material-motion)
 
 The Material Motion for Android repo.
 
