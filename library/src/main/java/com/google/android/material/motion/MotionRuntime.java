@@ -107,13 +107,29 @@ public final class MotionRuntime {
   }
 
   /**
-   * Initiates interaction {@code a} when interaction {@code b} changes to the given state.
+   * Initiates {@code interaction} when {@code other} interaction changes to the given state.
    */
-  public void start(Interaction<?, ?> a, Interaction<?, ?> b, @MotionState int state) {
+  public void start(
+    Interaction<?, ?> interaction, Interaction<?, ?> other, @MotionState int state) {
     MotionObservable<Boolean> stream =
-      b.state.getStream()
+      other.state.getStream()
         .compose(dedupe())
         .compose(rewrite(state, true));
-    write(stream, a.enabled);
+    write(stream, interaction.enabled);
+  }
+
+  /**
+   * Creates a toggling association between the {@code other} interaction's state and
+   * {@code interaction}'s enabling.
+   * <p>
+   * The provided interaction will be disabled when the other interaction's state is ACTIVE,
+   * and enabled when otherInteraction's state is AT_REST.
+   * This is most commonly used to disable a spring when a gestural interaction is active.
+   */
+  public void toggle(Interaction<?, ?> interaction, Interaction<?, ?> other) {
+    MotionObservable<Boolean> stream =
+      other.state.getStream()
+        .compose(rewrite(MotionState.AT_REST, true, MotionState.ACTIVE, false));
+    write(stream, interaction.enabled);
   }
 }
