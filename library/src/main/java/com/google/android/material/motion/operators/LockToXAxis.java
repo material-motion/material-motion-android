@@ -14,7 +14,7 @@ public final class LockToXAxis {
   }
 
   /**
-   * For an incoming translational PointF stream, overwrites the y value with the given yValue.
+   * Lock the point's x value to the given value.
    */
   public static Operation<PointF, PointF> lockToXAxis(final float xValue) {
     return new SameTypedMapOperation<PointF>() {
