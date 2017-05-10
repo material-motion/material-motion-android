@@ -206,14 +206,7 @@ public class TweenSource<O, T> extends Source<T> {
           keyframes[i].setInterpolator(lastTimingFunctions[i - 1]);
         }
       }
-      PropertyValuesHolder[] propertyValuesHolders = animator.getValues();
-      if (propertyValuesHolders == null) {
-        animator.setValues(
-          PropertyValuesHolder.ofKeyframe("p", keyframes)
-        );
-      } else {
-        propertyValuesHolders[0].setKeyframes(keyframes);
-      }
+      animator.setValues(PropertyValuesHolder.ofKeyframe("", keyframes));
     }
     animator.setEvaluator(lastEvaluator);
 
