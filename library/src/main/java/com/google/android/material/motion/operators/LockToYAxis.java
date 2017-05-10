@@ -7,13 +7,13 @@ import com.google.android.material.motion.SameTypedMapOperation;
 
 public final class LockToYAxis {
   /**
-   * For an incoming translational PointF stream, overwrites the x value with the given xValue.
+   * Lock the point's y value to {@code yValue}.
    */
-  public static Operation<PointF, PointF> lockToYAxis(final float xValue) {
+  public static Operation<PointF, PointF> lockToYAxis(final float yValue) {
     return new SameTypedMapOperation<PointF>() {
       @Override
       public PointF transform(PointF value) {
-        return new PointF(xValue, value.y);
+        return new PointF(value.x, yValue);
       }
     };
   }
