@@ -51,6 +51,8 @@ public class TweenSource<O, T> extends Source<T> {
   private Subscription timingFunctionsSubscription;
   private Subscription durationSubscription;
   private Subscription delaySubscription;
+  private Subscription repeatCountSubscription;
+  private Subscription repeatModeSubscription;
   private Subscription timingFunctionSubscription;
 
   private TypeEvaluator<T> lastEvaluator;
@@ -59,6 +61,8 @@ public class TweenSource<O, T> extends Source<T> {
   private TimeInterpolator[] lastTimingFunctions;
   private Long lastDuration;
   private Long lastDelay;
+  private Integer lastRepeatCount;
+  private Integer lastRepeatMode;
   private TimeInterpolator lastTimingFunction;
 
   private boolean initialized;
@@ -148,6 +152,20 @@ public class TweenSource<O, T> extends Source<T> {
         startAnimator();
       }
     });
+    repeatCountSubscription = interaction.repeatCount.subscribe(new SimpleMotionObserver<Integer>() {
+      @Override
+      public void next(Integer value) {
+        lastRepeatCount = value;
+        startAnimator();
+      }
+    });
+    repeatModeSubscription = interaction.repeatMode.subscribe(new SimpleMotionObserver<Integer>() {
+      @Override
+      public void next(Integer value) {
+        lastRepeatMode = value;
+        startAnimator();
+      }
+    });
     timingFunctionSubscription =
       interaction.timingFunction.subscribe(new SimpleMotionObserver<TimeInterpolator>() {
         @Override
@@ -220,6 +238,18 @@ public class TweenSource<O, T> extends Source<T> {
       animator.setStartDelay(lastDelay);
     } else {
       animator.setStartDelay(0);
+    }
+
+    if (lastRepeatCount != null) {
+      animator.setRepeatCount(lastRepeatCount);
+    } else {
+      animator.setRepeatCount(0);
+    }
+
+    if (lastRepeatMode != null) {
+      animator.setRepeatMode(lastRepeatMode);
+    } else {
+      animator.setRepeatMode(ValueAnimator.RESTART);
     }
 
     if (lastTimingFunction != null) {

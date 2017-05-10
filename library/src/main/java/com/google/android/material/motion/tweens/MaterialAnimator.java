@@ -37,6 +37,8 @@ public final class MaterialAnimator {
         null,
         null,
         null,
+        null,
+        null,
         null));
   }
 
@@ -51,6 +53,8 @@ public final class MaterialAnimator {
         property,
         evaluator,
         values,
+        null,
+        null,
         null,
         null,
         null,
