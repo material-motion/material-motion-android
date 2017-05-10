@@ -18,6 +18,7 @@ package com.google.android.material.motion.sources;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.Keyframe;
+import android.animation.PropertyValuesHolder;
 import android.animation.TimeInterpolator;
 import android.animation.TypeEvaluator;
 import android.animation.ValueAnimator;
@@ -205,7 +206,14 @@ public class TweenSource<O, T> extends Source<T> {
           keyframes[i].setInterpolator(lastTimingFunctions[i - 1]);
         }
       }
-      animator.getValues()[0].setKeyframes(keyframes);
+      PropertyValuesHolder[] propertyValuesHolders = animator.getValues();
+      if (propertyValuesHolders == null) {
+        animator.setValues(
+          PropertyValuesHolder.ofKeyframe("p", keyframes)
+        );
+      } else {
+        propertyValuesHolders[0].setKeyframes(keyframes);
+      }
     }
     animator.setEvaluator(lastEvaluator);
 
