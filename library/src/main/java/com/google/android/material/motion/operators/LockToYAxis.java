@@ -7,7 +7,7 @@ import com.google.android.material.motion.SameTypedMapOperation;
 
 public final class LockToYAxis {
   /**
-   * Lock the point's y value to the given value.
+   * Lock the point's y value to {@code yValue}.
    */
   public static Operation<PointF, PointF> lockToYAxis(final float yValue) {
     return new SameTypedMapOperation<PointF>() {

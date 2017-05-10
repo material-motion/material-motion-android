@@ -14,7 +14,7 @@ public final class LockToXAxis {
   }
 
   /**
-   * Lock the point's x value to the given value.
+   * Lock the point's x value to {@code xValue}.
    */
   public static Operation<PointF, PointF> lockToXAxis(final float xValue) {
     return new SameTypedMapOperation<PointF>() {
