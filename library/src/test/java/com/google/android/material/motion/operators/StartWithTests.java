@@ -35,7 +35,7 @@ import static com.google.common.truth.Truth.assertThat;
 
 @RunWith(RobolectricTestRunner.class)
 @Config(constants = BuildConfig.class, sdk = 21)
-public class StartWithTest {
+public class StartWithTests {
 
   @Test
   public void testOverwrittenByReactivePropertyDefaultValue() {
