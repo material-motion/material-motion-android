@@ -38,6 +38,8 @@ public class Tween<O, T> extends Interaction<O, T> {
 
   public final ReactiveProperty<Long> duration;
   public final ReactiveProperty<Long> delay;
+  public final ReactiveProperty<Integer> repeatCount;
+  public final ReactiveProperty<Integer> repeatMode;
   public final ReactiveProperty<TimeInterpolator> timingFunction;
 
   private final MotionObservable<T> stream;
@@ -52,6 +54,8 @@ public class Tween<O, T> extends Interaction<O, T> {
     TimeInterpolator[] timingFunctions,
     Long duration,
     Long delay,
+    Integer repeatCount,
+    Integer repeatMode,
     TimeInterpolator timingFunction) {
     this(
       target,
@@ -62,6 +66,8 @@ public class Tween<O, T> extends Interaction<O, T> {
       ReactiveProperty.of(timingFunctions),
       ReactiveProperty.of(duration),
       ReactiveProperty.of(delay),
+      ReactiveProperty.of(repeatCount),
+      ReactiveProperty.of(repeatMode),
       ReactiveProperty.of(timingFunction));
   }
 
@@ -74,6 +80,8 @@ public class Tween<O, T> extends Interaction<O, T> {
     ReactiveProperty<TimeInterpolator[]> timingFunctions,
     ReactiveProperty<Long> duration,
     ReactiveProperty<Long> delay,
+    ReactiveProperty<Integer> repeatCount,
+    ReactiveProperty<Integer> repeatMode,
     ReactiveProperty<TimeInterpolator> timingFunction) {
     this.target = target;
     this.property = property;
@@ -83,6 +91,8 @@ public class Tween<O, T> extends Interaction<O, T> {
     this.timingFunctions = timingFunctions;
     this.duration = duration;
     this.delay = delay;
+    this.repeatCount = repeatCount;
+    this.repeatMode = repeatMode;
     this.timingFunction = timingFunction;
 
     this.stream = new TweenSource<>(this).getStream();
