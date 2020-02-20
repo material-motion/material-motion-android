@@ -12,6 +12,9 @@ Learn more about the APIs defined in the library by reading our
 [technical documentation](https://jitpack.io/com/github/material-motion/material-motion-android/1.0.0/javadoc/) and our
 [Starmap](https://material-motion.github.io/material-motion/starmap/).
 
+Note: This repo is deprecated. Please use the Motion library in Material Components for Android instead: https://material.io/develop/android/theming/motion/.
+
+
 ## Installation
 
 ### Installation with Jitpack
